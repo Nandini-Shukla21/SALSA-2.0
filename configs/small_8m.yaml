@@ -1,0 +1,18 @@
+# Compression sweep point B3: nominal ~8M parameters.
+# Capacity knobs only; the real count is measured in phase 5.
+extends: base.yaml
+
+experiment:
+  name: small_8m
+  notes: Compression sweep point, nominal ~8M parameters.
+  tags: [sweep, compression]
+
+model:
+  encoder_dim: 384
+  decoder_dim: 192
+  encoder_layers: 2
+  decoder_layers: 2
+  encoder_heads: 16
+  decoder_heads: 4
+  target_parameters: 8000000
+  max_parameters: 9000000

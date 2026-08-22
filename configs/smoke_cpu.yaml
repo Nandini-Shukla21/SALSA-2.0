@@ -1,0 +1,42 @@
+# =============================================================================
+# Smoke / CI configuration - NOT a research result.
+# =============================================================================
+# A deliberately tiny instance used to exercise the full pipeline end to end in
+# seconds on any laptop. Any number produced with this config is a plumbing
+# check, never an experimental finding.
+# =============================================================================
+extends: base.yaml
+
+experiment:
+  name: smoke_cpu
+  notes: Tiny end-to-end plumbing check. Never report these numbers as results.
+  tags: [smoke, ci]
+
+lwe:
+  n: 12
+  hamming_weight: 2
+  num_train_samples: 2000
+  num_valid_samples: 200
+  num_test_samples: 200
+  sample_reuse: 2
+
+model:
+  encoder_dim: 64
+  decoder_dim: 32
+  encoder_layers: 1
+  decoder_layers: 1
+  encoder_heads: 2
+  decoder_heads: 2
+  target_parameters: null
+  min_parameters: null
+  max_parameters: 5000000
+
+training:
+  batch_size: 32
+  eval_batch_size: 32
+  max_epochs: 2
+  steps_per_epoch: 20
+  warmup_steps: 10
+
+verification:
+  num_samples: 200

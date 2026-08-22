@@ -1,0 +1,10 @@
+# Lightweight SALSA - runtime requirements (CPU-first, no CUDA required).
+# Install torch from the CPU wheel index if you want to avoid the CUDA build:
+#   python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
+numpy>=1.23,<3
+PyYAML>=6.0
+torch>=2.0
+psutil>=5.9
+
+# Development / testing
+pytest>=7.4

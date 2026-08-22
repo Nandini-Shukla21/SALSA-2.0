@@ -1,0 +1,41 @@
+# =============================================================================
+# PRIMARY RESEARCH TARGET: ~4-5M trainable parameters, CPU-first.
+# =============================================================================
+# Research question 1: can a model this small retain useful SALSA
+# secret-recovery capability?
+#
+# The budget is a HARD constraint. Phase 5 measures the exact parameter count
+# and reports any model above `max_parameters` as a FAILED BUDGET configuration.
+# `min_parameters` flags a model that came out under-sized so the comparison
+# stays honest in both directions.
+# =============================================================================
+extends: base.yaml
+
+experiment:
+  name: target_4_5m
+  notes: >-
+    Primary compressed candidate. No performance claim is attached to this
+    configuration until controlled experiments have been run.
+  tags: [target, compressed, cpu]
+
+# Approved in phase 4: Gated Universal Transformer.
+# One SHARED encoder layer reused for `encoder_loops` passes, one shared decoder
+# layer reused for `decoder_loops` passes, each wrapped in a learned copy gate.
+# Raising the loop counts changes compute but NOT the parameter count, so
+# effective depth is a free experimental variable at a fixed 4.13M budget.
+model:
+  arch: gated_universal_transformer
+  encoder_dim: 512
+  decoder_dim: 128
+  encoder_layers: 1           # one shared parameter set
+  decoder_layers: 1
+  encoder_heads: 8            # 512 / 8 = 64 per head
+  decoder_heads: 4            # 128 / 4 = 32 per head
+  encoder_loops: 2            # T_e, the effective-depth knob
+  decoder_loops: 2            # T_d
+  gated: true
+  ffn_multiplier: 4.0
+  tie_embeddings: false
+  target_parameters: 4131200  # analytical prediction at V=85
+  min_parameters: 4000000
+  max_parameters: 5000000

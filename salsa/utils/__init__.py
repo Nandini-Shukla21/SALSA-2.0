@@ -1,0 +1,63 @@
+"""Cross-cutting utilities: configuration, logging, device abstraction."""
+
+from .config import (
+    Config,
+    ConfigError,
+    DeviceConfig,
+    EncodingConfig,
+    EvaluationConfig,
+    ExperimentConfig,
+    LWEConfig,
+    ModelConfig,
+    RecoveryConfig,
+    TrainingConfig,
+    VerificationConfig,
+    apply_overrides,
+    config_fingerprint,
+    load_config,
+    save_config,
+)
+from .device import (
+    DeviceSpec,
+    configure_threads,
+    device_report,
+    memory_usage_mb,
+    resolve_device,
+    torch_available,
+)
+from .logging import (
+    MetricsWriter,
+    RunContext,
+    create_run_dir,
+    environment_metadata,
+    setup_logging,
+)
+
+__all__ = [
+    "Config",
+    "ConfigError",
+    "DeviceConfig",
+    "EncodingConfig",
+    "EvaluationConfig",
+    "ExperimentConfig",
+    "LWEConfig",
+    "ModelConfig",
+    "RecoveryConfig",
+    "TrainingConfig",
+    "VerificationConfig",
+    "apply_overrides",
+    "config_fingerprint",
+    "load_config",
+    "save_config",
+    "DeviceSpec",
+    "configure_threads",
+    "device_report",
+    "memory_usage_mb",
+    "resolve_device",
+    "torch_available",
+    "MetricsWriter",
+    "RunContext",
+    "create_run_dir",
+    "environment_metadata",
+    "setup_logging",
+]

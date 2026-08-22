@@ -1,0 +1,36 @@
+# =============================================================================
+# Reference baseline (SALSA-comparable capacity), CPU-first.
+# =============================================================================
+# Purpose: the scientific control. Capacity knobs mirror the SALSA paper's base
+# architecture (1024/512 width, 16/4 heads, 2+2 layers) so the compressed
+# models are compared against something of comparable size.
+#
+# NOTE ON COST: at this width, CPU training is slow. This config exists to
+# define the control condition; run it only when you can afford the time, or
+# reduce steps_per_epoch and record that you did.
+#
+# The "~51M" figure comes from the roadmap document and is a NOMINAL target.
+# The real count is measured automatically in phase 5.
+# =============================================================================
+extends: base.yaml
+
+experiment:
+  name: baseline_cpu
+  notes: >-
+    SALSA-comparable capacity control condition. Nominal ~51M parameters;
+    the actual count is measured, not assumed.
+  tags: [baseline, control]
+
+model:
+  encoder_dim: 1024
+  decoder_dim: 512
+  encoder_layers: 2
+  decoder_layers: 2
+  encoder_heads: 16
+  decoder_heads: 4
+  target_parameters: 51000000
+  max_parameters: 60000000
+
+training:
+  batch_size: 64
+  eval_batch_size: 64

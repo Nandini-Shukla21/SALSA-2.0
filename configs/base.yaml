@@ -1,0 +1,133 @@
+# =============================================================================
+# Lightweight SALSA - shared experimental base
+# =============================================================================
+# Every other config in this directory inherits from this file via `extends:`.
+# That is deliberate: the cryptographic problem (n, q, sigma, secret
+# distribution, Hamming weight, encoding) MUST be byte-identical across the
+# model sweep, otherwise the comparison is not controlled.
+#
+# Values follow the SALSA paper (Wenger et al., NeurIPS 2022) unless noted:
+#   q = 251, base-81 digit encoding, discrete Gaussian error with sigma = 3,
+#   sparse binary secret, RLWE (circulant) sample structure.
+#
+# RESEARCH ASSUMPTIONS RECORDED HERE - do not change them silently in code.
+# =============================================================================
+
+experiment:
+  name: base
+  seed: 0
+  deterministic: true
+  output_root: results
+  notes: >-
+    Shared base configuration. Not meant to be run directly; it fixes the
+    cryptographic instance and the evaluation protocol for the whole sweep.
+  tags: [base]
+
+lwe:
+  structure: rlwe          # 'rlwe' = rows of a circulant matrix (paper setting)
+  rlwe_variant: circulant  # paper wording; 'negacyclic' = Z_q[x]/(x^n+1) ring
+  n: 30                    # lattice dimension / secret length
+  q: 251                   # prime modulus (paper setting)
+  sigma: 3.0               # discrete Gaussian error std (paper setting)
+  error_distribution: discrete_gaussian
+  secret_distribution: binary
+  hamming_weight: 3        # exact number of 1s; paper recovers h=3 up to n=128
+  density: null            # mutually exclusive with hamming_weight
+  max_a_fraction: 1.0      # 1.0 = full range for a; <1 reproduces the bounded-a ablation
+  num_train_samples: 200000
+  num_valid_samples: 5000
+  num_test_samples: 5000
+  sample_reuse: 10         # paper shows reuse cuts the required sample count
+  num_secrets: 1
+  secret_index: 0
+
+encoding:
+  base: 81                 # paper's default digit base
+  input_base: null         # null = use `base`
+  output_base: null        # null = use `base`
+  separator: true          # separator token between coordinates of a
+  include_bos_eos: true
+  balanced: false
+  digit_order: lsb_first   # order the released SALSA code writes digits (audited)
+  fixed_width: true        # every value occupies ceil(log_B q) digit tokens
+
+# Capacity knobs only. The architecture is defined in phase 4 and the parameter
+# count is measured and enforced in phase 5. Numbers in the child configs are
+# NOMINAL TARGETS, not verified counts.
+model:
+  arch: compact_transformer   # plain family; target_4_5m.yaml selects the gated UT
+  encoder_dim: 256
+  decoder_dim: 128
+  encoder_layers: 2
+  decoder_layers: 2
+  encoder_heads: 4
+  decoder_heads: 4
+  encoder_loops: null         # null = one pass per layer
+  decoder_loops: null
+  gated: false
+  ffn_multiplier: 4.0
+  dropout: 0.0
+  attention_dropout: 0.0
+  tie_embeddings: false
+  max_parameters: 5000000   # HARD ceiling; a larger model is a FAILED BUDGET config
+  target_parameters: null
+  min_parameters: null
+
+training:
+  batch_size: 128
+  eval_batch_size: 128
+  max_epochs: 100
+  steps_per_epoch: 1000
+  optimizer: adamw
+  lr: 0.0003
+  weight_decay: 0.01
+  beta1: 0.9
+  beta2: 0.98
+  eps: 1.0e-09
+  warmup_steps: 1000
+  min_lr: 1.0e-06
+  lr_schedule: cosine
+  grad_clip: 1.0
+  label_smoothing: 0.0
+  num_workers: 0            # 0 is the safe default on Windows
+  log_every: 100
+  eval_every: 1
+  checkpoint_every: 1
+  keep_last_checkpoints: 2
+  resume: true
+  early_stopping_patience: 20
+  stop_on_secret_recovery: true
+
+evaluation:
+  tolerance: 0.1            # acc_tau with tau = 0.1 q (paper setting)
+  beam_size: 1              # greedy decoding (paper setting)
+  length_penalty: 1.0
+  early_stopping: true
+  max_eval_batches: 0       # 0 = evaluate the whole validation set
+  report_bitwise: true
+  report_percentiles: true
+
+recovery:
+  enable_direct: true
+  enable_distinguisher: true
+  direct_k_values: [1, 2, 3, 71, 101, 193, 241, 250]
+  direct_k_random_count: 2
+  binarization_methods: [mean, median, mode]
+  distinguisher_min_accuracy: 25.0
+  distinguisher_max_samples: 400
+  distinguisher_tolerance: 0.1
+  run_every: 1
+
+verification:
+  num_samples: 1000
+  std_tolerance_factor: 2.0   # accept when std(residuals) <= 2 * sigma = 6.0
+  use_centered_residuals: true
+  also_check_complement: true
+
+device:
+  prefer: cpu               # CPU-first. Use 'auto' only to opt into a GPU.
+  allow_gpu_fallback: true
+  threads: null             # null = library default
+  interop_threads: null
+  dtype: float32
+  pin_memory: false

@@ -1,0 +1,27 @@
+# =============================================================================
+# Representation P - paper-style
+# =============================================================================
+# The layout the SALSA paper describes in section 3.1: "a special token
+# separates the a coordinates". The released code ships this OFF
+# (--no_separator defaults to True), so P is the paper's description rather
+# than the released behaviour.
+#
+#     base 81, LSB-first digits, coordinate separators, fixed width
+#     n=30 -> 91 input tokens, n=128 -> 385 input tokens
+#
+# This is a MIXIN. Compose it:
+#     extends: [base.yaml, representation_p.yaml]
+#
+# P is also the encoding block already carried by base.yaml, so a config that
+# extends base.yaml alone is running Representation P.
+# =============================================================================
+
+encoding:
+  base: 81
+  input_base: null
+  output_base: null
+  digit_order: lsb_first
+  separator: true
+  fixed_width: true
+  include_bos_eos: true
+  balanced: false

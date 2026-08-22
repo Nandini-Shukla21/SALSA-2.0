@@ -1,0 +1,26 @@
+# =============================================================================
+# Representation R - released-SALSA-code compatible
+# =============================================================================
+# Reproduces the token layout the released Meta SALSA code actually produces
+# (verified token-for-token against src/envs/encoders.py in the phase-3.5 audit):
+#
+#     base 81, LSB-first digits, NO coordinate separators, fixed width
+#     n=30 -> 62 input tokens, n=128 -> 258 input tokens
+#
+# This is a MIXIN, not a standalone experiment. Compose it:
+#     extends: [base.yaml, representation_r.yaml]
+#
+# Note: SALSA 2.0 reproduces the released code's *representation*, not its
+# decoder defects. Round-trip decode(encode(x)) == x holds here; in the
+# released code it does not (parse_int off-by-one + LSB/MSB mismatch).
+# =============================================================================
+
+encoding:
+  base: 81
+  input_base: null
+  output_base: null
+  digit_order: lsb_first
+  separator: false
+  fixed_width: true
+  include_bos_eos: true
+  balanced: false

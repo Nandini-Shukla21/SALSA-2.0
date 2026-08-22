@@ -1,0 +1,39 @@
+# =============================================================================
+# Control model - approved phase 4 Candidate A (Compact Transformer)
+# =============================================================================
+# The matched-budget control for the gated Universal Transformer in
+# target_4_5m.yaml. Same LWE instance, same representation, same seed, same
+# parameter band - no weight sharing and no copy gate.
+#
+# Its whole purpose is to test, at equal budget, whether the SALSA paper's
+# finding that sharing + gating buys ~14x sample efficiency still holds at
+# 4-5M parameters. The paper's own ablation compared a 2-layer UT against an
+# 8-layer plain transformer, so size and sharing were confounded there.
+#
+# Analytical prediction at V=85: 4,251,520 trainable parameters.
+# =============================================================================
+extends: base.yaml
+
+experiment:
+  name: control_a
+  notes: >-
+    Matched-budget control for the gated Universal Transformer. No performance
+    claim is attached to either model until controlled experiments have run.
+  tags: [control, compressed, cpu]
+
+model:
+  arch: compact_transformer
+  encoder_dim: 384
+  decoder_dim: 128
+  encoder_layers: 2           # two distinct parameter sets
+  decoder_layers: 2
+  encoder_heads: 6            # 384 / 6 = 64 per head
+  decoder_heads: 4            # 128 / 4 = 32 per head
+  encoder_loops: null         # one pass per layer
+  decoder_loops: null
+  gated: false
+  ffn_multiplier: 4.0
+  tie_embeddings: false
+  target_parameters: 4251520  # analytical prediction at V=85
+  min_parameters: 4000000
+  max_parameters: 5000000
