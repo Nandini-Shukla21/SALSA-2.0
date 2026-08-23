@@ -96,6 +96,8 @@ training:
   keep_last_checkpoints: 2
   resume: true
   early_stopping_patience: 20
+  monitor_metric: valid_loss   # drives best-checkpoint selection + early stopping
+  monitor_mode: min
   stop_on_secret_recovery: true
 
 evaluation:
