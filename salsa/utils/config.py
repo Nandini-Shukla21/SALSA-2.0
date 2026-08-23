@@ -255,6 +255,10 @@ class TrainingConfig:
         keep_last_checkpoints: How many periodic checkpoints to retain.
         resume: Resume from the run's ``last.pt`` checkpoint when present.
         early_stopping_patience: Stop after N evaluations without improvement.
+        monitor_metric: Validation metric that drives best-checkpoint selection
+            and early stopping.
+        monitor_mode: ``"min"`` or ``"max"`` -- whether lower or higher is better
+            for ``monitor_metric``.
         stop_on_secret_recovery: Terminate as soon as a secret is verified.
     """
 
@@ -280,6 +284,8 @@ class TrainingConfig:
     keep_last_checkpoints: int = 2
     resume: bool = True
     early_stopping_patience: int = 20
+    monitor_metric: str = "valid_loss"
+    monitor_mode: str = "min"
     stop_on_secret_recovery: bool = True
 
 
@@ -613,6 +619,10 @@ class Config:
             raise ConfigError("training.label_smoothing must be in [0, 1).")
         if trn.eval_every < 1:
             raise ConfigError("training.eval_every must be >= 1.")
+        if trn.monitor_mode not in ("min", "max"):
+            raise ConfigError("training.monitor_mode must be 'min' or 'max'.")
+        if not trn.monitor_metric.strip():
+            raise ConfigError("training.monitor_metric must be a non-empty name.")
 
         # -- evaluation
         if not 0.0 < evl.tolerance <= 0.5:
