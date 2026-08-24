@@ -1,0 +1,49 @@
+# =============================================================================
+# Smoke / functional test for the training pipeline - NOT a research result.
+# =============================================================================
+# Deliberately tiny: n=12, a small model, a few hundred samples. It exercises
+# data generation -> encoding -> forward -> loss -> backward -> optimiser step
+# -> validation -> checkpoint save/load -> metric logging in a few seconds.
+#
+# Any number produced by this config is a plumbing check, never a finding.
+# =============================================================================
+extends: [base.yaml, representation_r.yaml]
+
+experiment:
+  name: smoke_train
+  seed: 0
+  notes: Functional smoke test of the training loop. Never report these numbers.
+  tags: [smoke, ci]
+
+lwe:
+  n: 12
+  hamming_weight: 2
+  num_train_samples: 512      # the pilot budget knob, tiny here
+  num_valid_samples: 128
+  num_test_samples: 128
+  sample_reuse: 1
+
+model:
+  arch: gated_universal_transformer
+  encoder_dim: 64
+  decoder_dim: 32
+  encoder_layers: 1
+  decoder_layers: 1
+  encoder_heads: 2            # 64 / 2 = 32 per head
+  decoder_heads: 2            # 32 / 2 = 16 per head
+  encoder_loops: 2
+  decoder_loops: 2
+  gated: true
+  target_parameters: null
+  min_parameters: null
+  max_parameters: 5000000
+
+training:
+  batch_size: 16
+  eval_batch_size: 32
+  max_epochs: 4
+  steps_per_epoch: 8
+  warmup_steps: 4
+  lr: 0.001
+  early_stopping_patience: 0  # never stop early in a smoke test
+  log_every: 4
