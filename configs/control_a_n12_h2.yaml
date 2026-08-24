@@ -1,0 +1,35 @@
+# =============================================================================
+# POSITIVE CONTROL A: n=12, h=2  (easier LWE instance)
+# =============================================================================
+# DIAGNOSTIC, NOT A CRYPTOGRAPHIC RESULT.
+#
+# Phase 6 found no secret-related learning at n=30, h=3 on 100k samples. This
+# control asks a narrower question: does the pipeline EVER move clearly above
+# the integer-level baselines when the problem is made easier?
+#
+# Only n and h differ from experiment_4_13m_n30_r.yaml. Model, representation,
+# q, sigma, seed, optimiser, learning rate, schedule, batch size and evaluation
+# protocol are inherited unchanged.
+#
+# Secret search space: C(12,2) = 66 possible secrets (log2 = 6.0 bits).
+# Sequence length under Representation R: 2*12 + 2 = 26 input tokens.
+#
+# These results must NOT be compared with n=30 as if they represented the same
+# cryptographic difficulty. The comparison is diagnostic only.
+# =============================================================================
+extends: experiment_4_13m_n30_r.yaml
+
+experiment:
+  name: control_a_n12_h2
+  notes: >-
+    Positive control at n=12, h=2. Diagnostic for whether the training pipeline
+    can learn secret-related structure at all. Not a cryptographic result.
+  tags: [positive-control, diagnostic, n12, h2, representation-r]
+
+lwe:
+  n: 12
+  hamming_weight: 2
+  num_train_samples: 100000   # configurable pilot budget
+
+training:
+  max_epochs: 20              # 20 x 79 x 64 = 101,120 >= budget; budget caps it
