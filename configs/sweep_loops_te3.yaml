@@ -1,0 +1,20 @@
+# =============================================================================
+# Loop sweep point: T_e = 3  (NOT YET RUN)
+# =============================================================================
+# Effective encoder depth is a runtime knob on a shared layer, so this changes
+# compute but NOT the parameter count: all three sweep points are exactly
+# 4,131,200 trainable parameters. That is what makes depth a free experimental
+# variable at a fixed budget.
+#
+# Configuration support only - Phase 6 does not run the sweep.
+# =============================================================================
+extends: experiment_4_13m_n30_r.yaml
+
+experiment:
+  name: sweep_loops_te3
+  notes: Loop-sweep point T_e=3. Not run in phase 6.
+  tags: [sweep, loops, n30, representation-r]
+
+model:
+  encoder_loops: 3
+  decoder_loops: 2
