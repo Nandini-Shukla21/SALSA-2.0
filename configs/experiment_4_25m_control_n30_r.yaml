@@ -1,0 +1,77 @@
+# =============================================================================
+# MATCHED CONTROL: Salsa2-CompactTransformer, 4,251,520 parameters, n=30, R
+# =============================================================================
+# PILOT ONLY. The sample budget here is ~2% of what the SALSA paper reports it
+# needed at n=30, h=3 (2^21.9 = 3.8M to 2^24.8 = 29M samples). The purpose is to
+# observe learning behaviour on CPU before committing days of compute.
+#
+# Nothing measured in this run may be reported as a final result, and nothing
+# here may be compared to the paper's multi-million-sample outcome as if the two
+# were equivalent.
+#
+# Cryptographic instance (inherited from base.yaml, unchanged):
+#   n=30, q=251, sigma=3, binary secret, h=3, RLWE circulant
+# Representation R (released-SALSA-code compatible):
+#   base 81, lsb_first, no separators, fixed width -> 62 input tokens
+# =============================================================================
+extends: [base.yaml, representation_r.yaml]
+
+experiment:
+  name: pilot_control_n30_r
+  seed: 0
+  notes: >-
+    Matched-budget control for experiment_4_13m_n30_r.yaml. Identical data,
+    secret, seed, encoding, sample budget, batch size, optimiser, schedule and
+    validation protocol - the architecture is the only intended difference.
+  tags: [pilot, control, compact-transformer, n30, representation-r]
+
+lwe:
+  n: 30
+  q: 251
+  sigma: 3.0
+  secret_distribution: binary
+  hamming_weight: 3
+  structure: rlwe
+  rlwe_variant: circulant
+  num_train_samples: 100000   # PILOT BUDGET - the knob to raise for a real run
+  num_valid_samples: 2048
+  num_test_samples: 2048
+  sample_reuse: 1             # every training sample is a fresh instance
+
+model:
+  arch: compact_transformer
+  encoder_dim: 384
+  decoder_dim: 128
+  encoder_layers: 2           # two distinct parameter sets, no sharing
+  decoder_layers: 2
+  encoder_heads: 6
+  decoder_heads: 4
+  encoder_loops: null         # one pass per layer
+  decoder_loops: null
+  gated: false                # no copy gate
+  ffn_multiplier: 4.0
+  tie_embeddings: false
+  target_parameters: 4251520
+  min_parameters: 4000000
+  max_parameters: 5000000
+
+training:
+  batch_size: 64              # conservative for CPU
+  eval_batch_size: 128
+  max_epochs: 20
+  steps_per_epoch: 79         # ~20 validation points across the budget
+  optimizer: adamw
+  lr: 0.0005
+  weight_decay: 0.01
+  warmup_steps: 200
+  min_lr: 1.0e-06
+  lr_schedule: cosine
+  grad_clip: 1.0
+  early_stopping_patience: 0  # a pilot observes the whole curve
+  monitor_metric: valid_loss
+  monitor_mode: min
+  log_every: 25
+  resume: true
+
+evaluation:
+  tolerance: 0.1              # SALSA acc_tau
