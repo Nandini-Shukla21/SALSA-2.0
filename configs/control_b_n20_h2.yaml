@@ -1,0 +1,35 @@
+# =============================================================================
+# POSITIVE CONTROL B: n=20, h=2  (intermediate LWE instance)
+# =============================================================================
+# DIAGNOSTIC, NOT A CRYPTOGRAPHIC RESULT.
+#
+# Sits between control A (n=12, h=2) and the phase-6 n=30, h=3 pilot, to
+# separate "the pipeline cannot learn" from "the problem is too hard for the
+# sample budget".
+#
+# Only n, h and the sample budget differ from experiment_4_13m_n30_r.yaml.
+#
+# max_epochs is raised to 40 solely so the 200k budget is not truncated by the
+# epoch cap. steps_per_epoch stays at 79, so validation happens every
+# 79 * 64 = 5,056 samples in EVERY control -- an identical evaluation cadence
+# measured in samples, which is what makes the learning curves comparable.
+#
+# Secret search space: C(20,2) = 190 possible secrets (log2 = 7.6 bits).
+# Sequence length under Representation R: 2*20 + 2 = 42 input tokens.
+# =============================================================================
+extends: experiment_4_13m_n30_r.yaml
+
+experiment:
+  name: control_b_n20_h2
+  notes: >-
+    Positive control at n=20, h=2 with a 200k sample budget. Diagnostic for
+    dimension scaling. Not a cryptographic result.
+  tags: [positive-control, diagnostic, n20, h2, representation-r]
+
+lwe:
+  n: 20
+  hamming_weight: 2
+  num_train_samples: 200000   # configurable pilot budget
+
+training:
+  max_epochs: 40              # 40 x 79 x 64 = 202,240 >= budget; budget caps it
