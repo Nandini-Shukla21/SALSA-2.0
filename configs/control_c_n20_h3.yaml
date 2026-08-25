@@ -1,0 +1,39 @@
+# =============================================================================
+# HAMMING-WEIGHT ISOLATION: n=20, h=3
+# =============================================================================
+# DIAGNOSTIC, NOT A CRYPTOGRAPHIC RESULT.
+#
+# The phase-8 extrapolation study found that the dominant unresolved variable
+# was the Hamming weight: both measured learning breakpoints had h=2, while the
+# n=30 target has h=3, so four of five extrapolation models were biased low by
+# construction and the prediction spanned 29x.
+#
+# This experiment isolates h at a dimension where learning is already
+# demonstrated. The ONLY intended change from control_b_n20_h2.yaml is
+# h: 2 -> 3.
+#
+# Two settings necessarily follow from the larger diagnostic budget and are not
+# experimental variables:
+#   num_train_samples 200,000 -> 400,000  (the budget this study was given)
+#   max_epochs        40      -> 80       (so the epoch cap does not truncate it)
+# steps_per_epoch stays at 79, so validation still happens every 79 * 64 = 5,056
+# samples -- the identical evaluation cadence used in every previous run.
+#
+# Secret search space: C(20,3) = 1,140 (10.15 bits), against C(20,2) = 190
+# (7.57 bits) at h=2. Sequence length is unchanged at 2*20 + 2 = 42 tokens.
+# =============================================================================
+extends: control_b_n20_h2.yaml
+
+experiment:
+  name: control_c_n20_h3
+  notes: >-
+    Hamming-weight isolation at n=20. Diagnostic for separating dimension
+    difficulty from secret-density difficulty. Not a cryptographic result.
+  tags: [hamming-isolation, diagnostic, n20, h3, representation-r]
+
+lwe:
+  hamming_weight: 3
+  num_train_samples: 400000   # configurable diagnostic budget; do not exceed
+
+training:
+  max_epochs: 80              # 80 x 79 x 64 = 404,480 >= budget; budget caps it
