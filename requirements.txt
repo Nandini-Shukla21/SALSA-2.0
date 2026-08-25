@@ -8,3 +8,6 @@ psutil>=5.9
 
 # Development / testing
 pytest>=7.4
+
+# Analysis only (plots). Not needed to generate data, train or evaluate.
+matplotlib>=3.7
