@@ -570,7 +570,10 @@ class Trainer:
             "seed": self.config.experiment.seed,
         }
         row.update(result.to_dict("valid"))
-        row.update(self.throughput.to_dict())
+        throughput = self.throughput.to_dict()
+        clashes = set(throughput) & set(row)
+        assert not clashes, f"throughput keys would overwrite run metrics: {clashes}"
+        row.update(throughput)
         self.context.metrics.log(row, step=self.state.global_step)
 
         self.logger.info(
