@@ -258,7 +258,10 @@ def test_throughput_meter_accumulates() -> None:
     meter.update(100, 300, 8.0)
     assert meter.samples_per_second == pytest.approx(20.0)
     assert meter.tokens_per_second == pytest.approx(60.0)
-    assert meter.to_dict()["elapsed_seconds"] == pytest.approx(10.0)
+    assert meter.to_dict()["compute_seconds"] == pytest.approx(10.0)
+    # The meter must not use the wall-clock key: it once overwrote the run's
+    # true elapsed time in every metrics row.
+    assert "elapsed_seconds" not in meter.to_dict()
 
 
 # --------------------------------------------------------------------------- #
