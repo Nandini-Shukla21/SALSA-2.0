@@ -382,11 +382,19 @@ class ThroughputMeter:
         return self.tokens / self.seconds if self.seconds > 0 else 0.0
 
     def to_dict(self) -> Dict[str, float]:
-        """Return the accumulated throughput figures."""
+        """Return the accumulated throughput figures.
+
+        The time key is ``compute_seconds``, deliberately NOT ``elapsed_seconds``:
+        it measures only the optimiser-step time this meter has accumulated,
+        excludes validation, and starts from zero when a run is resumed.  The
+        run's true wall clock lives in ``TrainingState.elapsed_seconds``.  The
+        two once shared a key, and the throughput value silently overwrote the
+        wall clock in every metrics row.
+        """
         return {
             "samples_per_second": round(self.samples_per_second, 3),
             "tokens_per_second": round(self.tokens_per_second, 1),
-            "elapsed_seconds": round(self.seconds, 3),
+            "compute_seconds": round(self.seconds, 3),
         }
 
 
