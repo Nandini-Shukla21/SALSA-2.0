@@ -1,0 +1,37 @@
+# =============================================================================
+# Direct secret recovery against the trained n=12, h=2 checkpoint
+# =============================================================================
+# Inherits the EXACT experiment that produced the checkpoint, so the codec,
+# vocabulary, q, n, sigma, h and representation cannot drift. Only the recovery
+# block differs from control_a_n12_h2.yaml.
+#
+# Choice of K
+# -----------
+# Only K mod q matters, since a . s = K * s_i mod q. The two hypotheses are
+# b ~ 0 and b ~ K, so a probe's whole information budget is the ring distance
+# min(K, q-K): maximal at K ~ q/2 = 125, and ZERO as K approaches 0 or q.
+#
+# The sweep below is ten values (matching the paper's "10 different K values")
+# spanning the full range of separations, deliberately including K=1 and K=250
+# as NEGATIVE CONTROLS: their separation is 1, so they should fail. If they
+# succeed, something is wrong with the measurement rather than right with the
+# model.
+#
+#   K:          1    31    63    94   125   126   157   188   220   250
+#   separation: 1    31    63    94   125   125    94    63    31     1
+# =============================================================================
+extends: control_a_n12_h2.yaml
+
+experiment:
+  name: recovery_n12_h2
+  notes: >-
+    Direct secret recovery (SALSA Algorithm 1) against the trained n=12, h=2
+    GatedUT checkpoint. No training is performed.
+  tags: [recovery, direct, n12, h2]
+
+recovery:
+  enable_direct: true
+  enable_distinguisher: false   # phase 11, not implemented yet
+  direct_k_values: [1, 31, 63, 94, 125, 126, 157, 188, 220, 250]
+  direct_k_random_count: 0
+  binarization_methods: [mean, median, mode]
