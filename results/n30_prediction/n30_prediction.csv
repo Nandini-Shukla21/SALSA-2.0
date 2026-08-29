@@ -1,0 +1,13 @@
+category,label,n,h,secret_bits,samples,basis_or_note,total_cpu_hours
+measured_salsa2,"n=12, h=2",12,2,6.044,40448,"best acc_tau 0.349, best exact 0.0122, min loss 1.7297, 55.57 samples/s, 65.0 min",1.08
+measured_salsa2,"n=20, h=2",20,2,7.57,161792,"best acc_tau 0.234, best exact 0.0068, min loss 1.8233, 43.84 samples/s, 127.3 min",2.12
+measured_salsa2,"n=30, h=3",30,3,11.987,>100032 (no breakpoint),"best acc_tau 0.208, best exact 0.0078, min loss 1.8426, 29.39 samples/s, 69.9 min",1.16
+extrapolated_salsa2,model A: linear in n,30,3,11.987,313000,"IGNORES h, biased low; S(n) = S2 + slope * (n - n2)",3.74
+extrapolated_salsa2,model B: exponential in n,30,3,11.987,915000,"IGNORES h, biased low; S(n) = S2 * exp(k * (n - n2))",10.91
+extrapolated_salsa2,model C: exponential in log2(secret-space size),30,3,11.987,8962000,accounts for h; S = S2 * exp(c * (bits - bits2)),106.85
+extrapolated_salsa2,"model D: observed breakpoint ratio, applied once more",30,3,11.987,647000,"IGNORES h, biased low; S(next) = S2 * (S2 / S1)",7.72
+extrapolated_salsa2,model E: power law in n,30,3,11.987,486000,"IGNORES h, biased low; S(n) = S2 * (n / n2) ** p",5.8
+extrapolated_salsa2,prediction: optimistic,30,3,11.987,915000,"model B, exponential in n; ignores h rising 2->3",10.91
+extrapolated_salsa2,prediction: central,30,3,11.987,2864000,geometric mean of models B and C,34.15
+extrapolated_salsa2,prediction: conservative,30,3,11.987,8962000,"model C, exponential in secret-space bits; the only model that accounts for h",106.85
+external_anchor_original_salsa,SALSA paper Table 2,30,3,11.987,3913424-29210829,"External reference only. Not Salsa 2.0 data. Not fitted to. Different model (~51M parameters), different training setup.",

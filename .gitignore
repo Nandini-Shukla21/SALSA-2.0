@@ -22,8 +22,6 @@ checkpoints/*
 !checkpoints/.gitkeep
 logs/*
 !logs/.gitkeep
-results/*
-!results/.gitkeep
 ``
 *.pt
 *.pth

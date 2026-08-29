@@ -1,0 +1,171 @@
+{
+  "created_at": "2026-08-29T13:17:21",
+  "python_version": "3.10.11 (tags/v3.10.11:7d4cc5a, Apr  5 2023, 00:38:17) [MSC v.1929 64 bit (AMD64)]",
+  "platform": "Windows-10-10.0.26200-SP0",
+  "executable": "C:\\Users\\Nandini Shukla\\OneDrive\\Desktop\\SALSA 2.0\\.venv\\Scripts\\python.exe",
+  "command": "scripts/train.py configs/nact_n12_h2.yaml --run-id v2 --quiet",
+  "cwd": "C:\\Users\\Nandini Shukla\\OneDrive\\Desktop\\SALSA 2.0",
+  "git_commit": "6137906ca60ca68a7ff0f9a420f15c150524d4ea",
+  "packages": {
+    "torch": "2.13.0+cpu",
+    "numpy": "2.2.6",
+    "pyyaml": "6.0.3",
+    "psutil": "7.2.2",
+    "pytest": "9.1.1"
+  },
+  "device_report": {
+    "platform": "Windows-10-10.0.26200-SP0",
+    "machine": "AMD64",
+    "processor": "AMD64 Family 23 Model 104 Stepping 1, AuthenticAMD",
+    "python_version": "3.10.11",
+    "cpu_count_logical": 12,
+    "torch_available": true,
+    "torch_version": "2.13.0+cpu",
+    "torch_threads": 6,
+    "cuda_available": false,
+    "cuda_device_count": 0,
+    "cuda_device_names": [],
+    "mps_available": false,
+    "total_ram_gb": 15.33
+  },
+  "config_fingerprint": "1e547af8352835ef",
+  "config": {
+    "experiment": {
+      "name": "nact_n12_h2",
+      "seed": 0,
+      "deterministic": true,
+      "output_root": "results",
+      "notes": "Salsa2-NACT V2 under the V1 n=12,h=2 training protocol. Only the model changes; every training and data setting is inherited from control_a_n12_h2.yaml. Diagnostic control, not a cryptographic result.",
+      "tags": [
+        "nact",
+        "v2",
+        "n12",
+        "h2",
+        "representation-r",
+        "controlled-comparison"
+      ]
+    },
+    "lwe": {
+      "structure": "rlwe",
+      "rlwe_variant": "circulant",
+      "n": 12,
+      "q": 251,
+      "sigma": 3.0,
+      "error_distribution": "discrete_gaussian",
+      "secret_distribution": "binary",
+      "hamming_weight": 2,
+      "density": null,
+      "max_a_fraction": 1.0,
+      "num_train_samples": 100000,
+      "num_valid_samples": 2048,
+      "num_test_samples": 2048,
+      "sample_reuse": 1,
+      "num_secrets": 1,
+      "secret_index": 0
+    },
+    "encoding": {
+      "base": 81,
+      "input_base": null,
+      "output_base": null,
+      "separator": false,
+      "include_bos_eos": true,
+      "balanced": false,
+      "digit_order": "lsb_first",
+      "fixed_width": true
+    },
+    "model": {
+      "arch": "nact",
+      "encoder_dim": 512,
+      "decoder_dim": 128,
+      "encoder_layers": 1,
+      "decoder_layers": 1,
+      "encoder_heads": 8,
+      "decoder_heads": 4,
+      "encoder_loops": 4,
+      "decoder_loops": 2,
+      "gated": true,
+      "ffn_multiplier": 4.0,
+      "dropout": 0.0,
+      "attention_dropout": 0.0,
+      "tie_embeddings": false,
+      "max_parameters": 5000000,
+      "target_parameters": 4131200,
+      "min_parameters": 4000000
+    },
+    "training": {
+      "batch_size": 64,
+      "eval_batch_size": 128,
+      "max_epochs": 20,
+      "steps_per_epoch": 79,
+      "optimizer": "adamw",
+      "lr": 0.0005,
+      "weight_decay": 0.01,
+      "beta1": 0.9,
+      "beta2": 0.98,
+      "eps": 1e-09,
+      "warmup_steps": 200,
+      "min_lr": 1e-06,
+      "lr_schedule": "cosine",
+      "grad_clip": 1.0,
+      "label_smoothing": 0.0,
+      "num_workers": 0,
+      "log_every": 25,
+      "eval_every": 1,
+      "checkpoint_every": 1,
+      "keep_last_checkpoints": 2,
+      "resume": true,
+      "early_stopping_patience": 0,
+      "monitor_metric": "valid_loss",
+      "monitor_mode": "min",
+      "stop_on_secret_recovery": true
+    },
+    "evaluation": {
+      "tolerance": 0.1,
+      "beam_size": 1,
+      "length_penalty": 1.0,
+      "early_stopping": true,
+      "max_eval_batches": 0,
+      "report_bitwise": true,
+      "report_percentiles": true
+    },
+    "recovery": {
+      "enable_direct": true,
+      "enable_distinguisher": true,
+      "direct_k_values": [
+        1,
+        2,
+        3,
+        71,
+        101,
+        193,
+        241,
+        250
+      ],
+      "direct_k_random_count": 2,
+      "binarization_methods": [
+        "mean",
+        "median",
+        "mode"
+      ],
+      "distinguisher_min_accuracy": 25.0,
+      "distinguisher_max_samples": 400,
+      "distinguisher_tolerance": 0.1,
+      "run_every": 1
+    },
+    "verification": {
+      "num_samples": 1000,
+      "std_tolerance_factor": 2.0,
+      "use_centered_residuals": true,
+      "also_check_complement": true
+    },
+    "device": {
+      "prefer": "cpu",
+      "allow_gpu_fallback": true,
+      "threads": null,
+      "interop_threads": null,
+      "dtype": "float32",
+      "pin_memory": false
+    }
+  },
+  "seed": 0
+}

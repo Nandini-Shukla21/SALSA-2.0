@@ -1,0 +1,15 @@
+2026-08-29 13:18:39 | INFO    | salsa | Run directory: results\_smoke\nact_n12_h2\smoke_nact
+2026-08-29 13:18:39 | INFO    | salsa | Config fingerprint: 80c7b8d4df3f5ee3
+2026-08-29 13:18:44 | INFO    | salsa | ========================================================================
+2026-08-29 13:18:44 | INFO    | salsa | Model: Salsa2-NACT (nact)
+2026-08-29 13:18:44 | INFO    | salsa | Trainable parameters: 4241288
+2026-08-29 13:18:44 | INFO    | salsa | LWE: n=12 q=251 sigma=3.0 h=2 structure=rlwe
+2026-08-29 13:18:44 | INFO    | salsa | Encoding: base=81 order=lsb_first separator=False -> 26 input tokens, 4 output
+2026-08-29 13:18:44 | INFO    | salsa | Plan: {'sample_budget': 1280, 'batch_size': 64, 'total_steps': 20, 'steps_per_epoch': 20, 'epochs': 1, 'warmup_steps': 10, 'valid_samples': 256}
+2026-08-29 13:18:44 | INFO    | salsa | Device: cpu | threads: {'threads': 6, 'interop_threads': 6}
+2026-08-29 13:18:44 | INFO    | salsa | Chance baselines: {'uniform_loss_nats': 4.442651256490317, 'marginal_loss_nats': 1.8649843130825523, 'chance_token_accuracy': 0.44621513944223107, 'chance_perfect_accuracy': 0.005142775511499817, 'chance_digit_accuracy': [0.015936, 0.322709], 'chance_exact_accuracy': 0.00398406374501992, 'chance_acc_tau': 0.19286995444516752, 'chance_acc_tau_circular_DIAGNOSTIC': 0.20318725099601595, 'tolerance': 0.1, 'tolerance_absolute': 25.1}
+2026-08-29 13:18:44 | INFO    | salsa | ========================================================================
+2026-08-29 13:18:44 | INFO    | salsa | Alignment verified: {'src_ids': (64, 26), 'tgt_ids': (64, 4), 'decoder_input': (64, 3), 'target': (64, 3), 'logits': (64, 3, 85), 'vocab_size': 85, 'pad_id': 0}
+2026-08-29 13:19:09 | INFO    | salsa | epoch 0 | train 2.8524 | valid 2.3014 | token 0.434 | acc_tau 0.000 | exact 0.0000 | 57.8 samples/s
+2026-08-29 13:19:09 | INFO    | salsa | New best valid_loss: 2.301402
+2026-08-29 13:19:13 | INFO    | salsa | Training finished: planned epochs completed

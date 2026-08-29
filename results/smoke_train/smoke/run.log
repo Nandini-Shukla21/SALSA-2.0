@@ -1,0 +1,32 @@
+2026-08-24 13:13:34 | INFO    | salsa | Run directory: results\smoke_train\smoke
+2026-08-24 13:13:34 | INFO    | salsa | Config fingerprint: d302379781589846
+2026-08-24 13:13:39 | INFO    | salsa | ========================================================================
+2026-08-24 13:13:39 | INFO    | salsa | Model: Salsa2-GatedUT (gated_universal_transformer)
+2026-08-24 13:13:39 | INFO    | salsa | Trainable parameters: 89120
+2026-08-24 13:13:39 | INFO    | salsa | LWE: n=12 q=251 sigma=3.0 h=2 structure=rlwe
+2026-08-24 13:13:39 | INFO    | salsa | Encoding: base=81 order=lsb_first separator=False -> 26 input tokens, 4 output
+2026-08-24 13:13:39 | INFO    | salsa | Plan: {'sample_budget': 512, 'batch_size': 16, 'total_steps': 32, 'steps_per_epoch': 8, 'epochs': 4, 'warmup_steps': 4, 'valid_samples': 128}
+2026-08-24 13:13:39 | INFO    | salsa | Device: cpu | threads: {'threads': 6, 'interop_threads': 6}
+2026-08-24 13:13:39 | INFO    | salsa | Chance baselines: {'chance_token_accuracy': 0.44621513944223107, 'chance_perfect_accuracy': 0.005142775511499817, 'chance_digit_accuracy': [0.015936, 0.322709], 'uniform_loss_nats': 4.442651256490317, 'chance_exact_accuracy': 0.00398406374501992, 'chance_acc_tau': 0.19286995444516752, 'chance_acc_tau_circular_DIAGNOSTIC': 0.20318725099601595, 'tolerance': 0.1, 'tolerance_absolute': 25.1}
+2026-08-24 13:13:39 | INFO    | salsa | ========================================================================
+2026-08-24 13:13:39 | INFO    | salsa | Alignment verified: {'src_ids': (16, 26), 'tgt_ids': (16, 4), 'decoder_input': (16, 3), 'target': (16, 3), 'logits': (16, 3, 85), 'vocab_size': 85, 'pad_id': 0}
+2026-08-24 13:13:40 | INFO    | salsa | epoch 0 | step 4/32 | loss 3.7620 | lr 1.00e-03 | 184.9 samples/s
+2026-08-24 13:13:40 | INFO    | salsa | epoch 0 | step 8/32 | loss 3.6298 | lr 9.51e-04 | 214.4 samples/s
+2026-08-24 13:13:40 | INFO    | salsa | epoch 0 | train 3.8196 | valid 3.5049 | token 0.333 | acc_tau 0.000 | exact 0.0000 | 214.4 samples/s
+2026-08-24 13:13:40 | INFO    | salsa | New best valid_loss: 3.504851
+2026-08-24 13:13:41 | INFO    | salsa | epoch 1 | step 12/32 | loss 3.4003 | lr 8.12e-04 | 248.9 samples/s
+2026-08-24 13:13:41 | INFO    | salsa | epoch 1 | step 16/32 | loss 3.2100 | lr 6.12e-04 | 258.8 samples/s
+2026-08-24 13:13:41 | INFO    | salsa | epoch 1 | train 3.3597 | valid 3.2382 | token 0.333 | acc_tau 0.000 | exact 0.0000 | 234.5 samples/s
+2026-08-24 13:13:41 | INFO    | salsa | New best valid_loss: 3.238157
+2026-08-24 13:13:41 | INFO    | salsa | epoch 2 | step 20/32 | loss 3.1907 | lr 3.89e-04 | 273.1 samples/s
+2026-08-24 13:13:42 | INFO    | salsa | epoch 2 | step 24/32 | loss 3.1130 | lr 1.89e-04 | 275.9 samples/s
+2026-08-24 13:13:42 | INFO    | salsa | epoch 2 | train 3.1463 | valid 3.1180 | token 0.333 | acc_tau 0.000 | exact 0.0000 | 246.9 samples/s
+2026-08-24 13:13:42 | INFO    | salsa | New best valid_loss: 3.117986
+2026-08-24 13:13:42 | INFO    | salsa | epoch 3 | step 28/32 | loss 3.1423 | lr 5.05e-05 | 255.2 samples/s
+2026-08-24 13:13:42 | INFO    | salsa | epoch 3 | step 32/32 | loss 3.0715 | lr 1.00e-06 | 259.6 samples/s
+2026-08-24 13:13:43 | INFO    | salsa | epoch 3 | train 3.1054 | valid 3.0969 | token 0.333 | acc_tau 0.000 | exact 0.0000 | 249.9 samples/s
+2026-08-24 13:13:43 | INFO    | salsa | New best valid_loss: 3.096893
+2026-08-24 13:13:43 | INFO    | salsa | Training finished: planned epochs completed
+2026-08-24 13:14:17 | INFO    | salsa | Run directory: results\smoke_train\smoke
+2026-08-24 13:14:17 | INFO    | salsa | Config fingerprint: d302379781589846
+2026-08-24 13:14:22 | INFO    | salsa | Resumed from results\smoke_train\smoke\checkpoints\best.pt at epoch 3 / step 32 (512 samples seen)

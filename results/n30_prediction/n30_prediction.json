@@ -1,0 +1,194 @@
+{
+  "status": "PREDICTION FROM EXISTING RUNS ONLY - NO NEW TRAINING WAS PERFORMED",
+  "target": {
+    "n": 30,
+    "h": 3,
+    "secret_space": 4060,
+    "secret_bits": 11.9873
+  },
+  "model_under_test": "Salsa2-GatedUT, 4,131,200 parameters, T_e=2, T_d=2, Representation R, q=251, sigma=3, seed 0",
+  "measured_salsa2": [
+    {
+      "label": "n=12, h=2",
+      "n": 12,
+      "h": 2,
+      "secrets": 66,
+      "samples_seen": 100032,
+      "breakpoint_samples": 40448,
+      "breakpoint_epoch": 7,
+      "best_acc_tau": 0.349121,
+      "best_exact": 0.012207,
+      "min_valid_loss": 1.729735,
+      "loss_below_marginal": 0.1352,
+      "samples_per_second": 55.569,
+      "end_to_end_samples_per_second": 25.662,
+      "wall_clock_min": 64.97,
+      "fingerprint": "98afa3f729f8607e",
+      "secret_bits": 6.0444,
+      "category": "measured_salsa2"
+    },
+    {
+      "label": "n=20, h=2",
+      "n": 20,
+      "h": 2,
+      "secrets": 190,
+      "samples_seen": 200000,
+      "breakpoint_samples": 161792,
+      "breakpoint_epoch": 30,
+      "best_acc_tau": 0.234375,
+      "best_exact": 0.006836,
+      "min_valid_loss": 1.823288,
+      "loss_below_marginal": 0.0417,
+      "samples_per_second": 43.838,
+      "end_to_end_samples_per_second": 26.19,
+      "wall_clock_min": 127.27,
+      "fingerprint": "b3eb9775e8c0d955",
+      "secret_bits": 7.5699,
+      "category": "measured_salsa2"
+    },
+    {
+      "label": "n=30, h=3",
+      "n": 30,
+      "h": 3,
+      "secrets": 4060,
+      "samples_seen": 100032,
+      "breakpoint_samples": null,
+      "breakpoint_epoch": null,
+      "best_acc_tau": 0.208496,
+      "best_exact": 0.007812,
+      "min_valid_loss": 1.842569,
+      "loss_below_marginal": 0.0224,
+      "samples_per_second": 29.392,
+      "end_to_end_samples_per_second": 23.857,
+      "wall_clock_min": 69.88,
+      "fingerprint": "4b1582c2b2c05fb7",
+      "secret_bits": 11.9873,
+      "category": "measured_salsa2"
+    }
+  ],
+  "extrapolated_salsa2": [
+    {
+      "id": "A",
+      "name": "linear in n",
+      "form": "S(n) = S2 + slope * (n - n2)",
+      "fitted": {
+        "slope_samples_per_dimension": 15168.0
+      },
+      "estimate": 313472.0,
+      "accounts_for_h": false,
+      "note": "Slowest growth. Assumes each extra dimension costs a constant number of samples, which no learning-theoretic argument supports.",
+      "estimate_rounded": 313000,
+      "category": "extrapolated_salsa2"
+    },
+    {
+      "id": "B",
+      "name": "exponential in n",
+      "form": "S(n) = S2 * exp(k * (n - n2))",
+      "fitted": {
+        "k_per_dimension": 0.17329,
+        "multiplier_per_dimension": 1.1892
+      },
+      "estimate": 915233.7627338712,
+      "accounts_for_h": false,
+      "note": "Constant multiplicative cost per added dimension.",
+      "estimate_rounded": 915000,
+      "category": "extrapolated_salsa2"
+    },
+    {
+      "id": "C",
+      "name": "exponential in log2(secret-space size)",
+      "form": "S = S2 * exp(c * (bits - bits2))",
+      "fitted": {
+        "c_per_bit": 0.90877,
+        "multiplier_per_bit": 2.4813
+      },
+      "estimate": 8961759.779462919,
+      "accounts_for_h": true,
+      "note": "The only model that sees the h increase from 2 to 3. Treats the cost as driven by how many secrets must be distinguished.",
+      "estimate_rounded": 8962000,
+      "category": "extrapolated_salsa2"
+    },
+    {
+      "id": "D",
+      "name": "observed breakpoint ratio, applied once more",
+      "form": "S(next) = S2 * (S2 / S1)",
+      "fitted": {
+        "observed_ratio": 4.0
+      },
+      "estimate": 647168.0,
+      "accounts_for_h": false,
+      "note": "Deliberately naive: the measured jump was exactly 4.00x for a step of 8 dimensions, and this applies the same factor to a step of 10 dimensions with a higher h. Included as a transparent lower reference, not as a defensible model.",
+      "estimate_rounded": 647000,
+      "category": "extrapolated_salsa2"
+    },
+    {
+      "id": "E",
+      "name": "power law in n",
+      "form": "S(n) = S2 * (n / n2) ** p",
+      "fitted": {
+        "exponent_p": 2.7138
+      },
+      "estimate": 486226.8565291232,
+      "accounts_for_h": false,
+      "note": "Polynomial growth; between linear and exponential.",
+      "estimate_rounded": 486000,
+      "category": "extrapolated_salsa2"
+    }
+  ],
+  "prediction_band": {
+    "optimistic": {
+      "samples": 915000,
+      "basis": "model B, exponential in n; ignores h rising 2->3",
+      "training_hours": 8.65,
+      "validation_hours": 2.26,
+      "total_hours": 10.91,
+      "total_days": 0.45
+    },
+    "central": {
+      "samples": 2864000,
+      "basis": "geometric mean of models B and C",
+      "training_hours": 27.07,
+      "validation_hours": 7.08,
+      "total_hours": 34.15,
+      "total_days": 1.42
+    },
+    "conservative": {
+      "samples": 8962000,
+      "basis": "model C, exponential in secret-space bits; the only model that accounts for h",
+      "training_hours": 84.7,
+      "validation_hours": 22.16,
+      "total_hours": 106.85,
+      "total_days": 4.45
+    }
+  },
+  "model_spread_factor": 28.6,
+  "external_anchor_original_salsa": {
+    "source": "Wenger, Chen, Charton, Lauter, SALSA (NeurIPS 2022), Table 2",
+    "instance": "n=30, q=251, sparse binary secret",
+    "log2_samples_range": [
+      21.9,
+      24.8
+    ],
+    "samples_range": [
+      3913424,
+      29210829
+    ],
+    "role": "External reference only. Not Salsa 2.0 data. Not fitted to. Different model (~51M parameters), different training setup."
+  },
+  "throughput_basis": {
+    "source": "measured in the completed Salsa 2.0 n=30 pilot",
+    "training_samples_per_second": 29.392,
+    "end_to_end_samples_per_second": 23.857,
+    "validation_seconds_per_evaluation": 45.0,
+    "samples_per_epoch": 5056
+  },
+  "uncertainty": [
+    "Only TWO positive breakpoints exist. Every two-parameter model fits them exactly, so the fits carry no residual and no goodness-of-fit evidence; model choice, not data, drives the answer.",
+    "Both measured breakpoints have h=2, while the target has h=3. Models A, B, D and E cannot see that change and are biased LOW by construction.",
+    "Only one n=30 pilot exists, and it produced no breakpoint - a censored observation. It bounds the answer from below (>100,032) and nothing more.",
+    "Sample-efficiency scaling need not stay linear, polynomial or exponential across this range; a regime change between n=20 and n=30 would invalidate all five models equally.",
+    "Model capacity has not been varied. 4.13M may be adequate at n=12-20 and inadequate at n=30, in which case no sample budget succeeds and the whole extrapolation is moot.",
+    "The n=20 run had not converged when its budget ran out - its loss was still falling - so its breakpoint is the earliest detectable one, not the point of useful performance.",
+    "The five models span a factor of 29x at n=30. A prediction with that spread cannot be settled by one more training run."
+  ]
+}

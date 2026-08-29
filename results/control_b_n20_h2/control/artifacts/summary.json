@@ -1,0 +1,71 @@
+{
+  "model_name": "Salsa2-GatedUT",
+  "architecture": "gated_universal_transformer",
+  "parameter_count": 4131200,
+  "config_fingerprint": "b3eb9775e8c0d955",
+  "seed": 0,
+  "experiment": "control_b_n20_h2",
+  "plan": {
+    "sample_budget": 200000,
+    "batch_size": 64,
+    "total_steps": 3125,
+    "steps_per_epoch": 79,
+    "epochs": 40,
+    "warmup_steps": 200,
+    "valid_samples": 2048
+  },
+  "state": {
+    "epoch": 39,
+    "global_step": 3125,
+    "samples_seen": 200000,
+    "tokens_seen": 600000,
+    "best_metric": 1.823288,
+    "best_epoch": 38,
+    "epochs_without_improvement": 0,
+    "elapsed_seconds": 7636.391262054443,
+    "stop_reason": "sample budget exhausted"
+  },
+  "final_validation": {
+    "valid_loss": 1.823288,
+    "valid_token_accuracy": 0.458984,
+    "valid_perfect_accuracy": 0.003418,
+    "valid_greedy_token_accuracy": 0.439128,
+    "valid_exact_accuracy": 0.003418,
+    "valid_acc_tau": 0.234375,
+    "valid_tolerance": 0.1,
+    "valid_mean_distance": 76.9692,
+    "valid_median_distance": 61.0,
+    "valid_percentiles": "[0.2344, 0.4326, 0.5957, 0.6875, 0.7739, 0.8521, 0.9224, 0.9453, 0.9717, 1.0]",
+    "valid_acc_tau_circular_DIAGNOSTIC": 0.262695,
+    "valid_mean_circular_distance_DIAGNOSTIC": 56.1289,
+    "valid_median_circular_distance_DIAGNOSTIC": 52.0,
+    "valid_decode_failure_rate": 0.0,
+    "valid_sequences": 2048,
+    "valid_tokens": 6144
+  },
+  "throughput": {
+    "samples_per_second": 43.838,
+    "tokens_per_second": 131.5,
+    "elapsed_seconds": 1794.254
+  },
+  "chance_baselines": {
+    "uniform_loss_nats": 4.442651256490317,
+    "marginal_loss_nats": 1.8649843130825523,
+    "chance_token_accuracy": 0.44621513944223107,
+    "chance_perfect_accuracy": 0.005142775511499817,
+    "chance_digit_accuracy": [
+      0.015936,
+      0.322709
+    ],
+    "chance_exact_accuracy": 0.00398406374501992,
+    "chance_acc_tau": 0.19286995444516752,
+    "chance_acc_tau_circular_DIAGNOSTIC": 0.20318725099601595,
+    "tolerance": 0.1,
+    "tolerance_absolute": 25.1
+  },
+  "cpu_memory_mb": {
+    "rss_mb": 236.78125,
+    "peak_rss_mb": 662.73828125
+  },
+  "run_dir": "results\\control_b_n20_h2\\control"
+}
