@@ -24,7 +24,7 @@ logs/*
 !logs/.gitkeep
 results/*
 !results/.gitkeep
-data/
+
 *.pt
 *.pth
 *.ckpt
