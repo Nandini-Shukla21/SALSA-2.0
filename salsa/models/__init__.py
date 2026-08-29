@@ -8,6 +8,12 @@ Two architectures, both inside the 4-5M trainable-parameter budget at V=85:
     learned copy gate on every layer.  4,131,200 parameters, independent of the
     loop counts.
 
+``nact`` -- Salsa2-NACT V2 (phase 14).  The V1 gated encoder body and decoder
+    unchanged, with the digit-token input front end replaced by one learned
+    coordinate representation carrying numerical features, an absolute
+    coordinate embedding and a learned per-head bias on zero-coordinate keys.
+    4,241,288 parameters, likewise independent of the loop counts and of ``n``.
+
 ``compact_transformer`` -- the matched-budget control (candidate A).
     Encoder 384 wide / 6 heads / 2 distinct layers; decoder 128 wide / 4 heads /
     2 distinct layers; no sharing, no gate.  4,251,520 parameters.
@@ -43,6 +49,14 @@ from .parameter_count import (
     report_from_config,
     unclassified_parameters,
 )
+from .nact import (
+    NUMERICAL_FEATURES,
+    NactEncoderLayer,
+    NactFrontEnd,
+    NactSpec,
+    SalsaNact,
+    build_nact,
+)
 from .transformer import (
     ARCHITECTURES,
     CopyGate,
@@ -73,6 +87,13 @@ __all__ = [
     "ModelSpec",
     "SalsaTransformer",
     "build_model",
+    # NACT V2
+    "NactSpec",
+    "NactFrontEnd",
+    "NactEncoderLayer",
+    "SalsaNact",
+    "build_nact",
+    "NUMERICAL_FEATURES",
     # accounting
     "COMPONENTS",
     "ParameterReport",
