@@ -162,6 +162,7 @@ class MultiHeadAttention(nn.Module):
         key_value: Optional[Tensor] = None,
         attn_mask: Optional[Tensor] = None,
         query_offset: int = 0,
+        key_bias: Optional[Tensor] = None,
     ) -> Tensor:
         """Run attention.
 
@@ -172,6 +173,11 @@ class MultiHeadAttention(nn.Module):
             attn_mask: Boolean tensor broadcastable to
                 ``(batch, heads, q_len, kv_len)``, where True means the key may
                 be attended to.
+            key_bias: Optional additive bias on the attention logits, indexed by
+                KEY position only and broadcastable to
+                ``(batch, heads, 1, kv_len)``.  ``None`` -- the default and the
+                only value V1 ever passes -- leaves this call bit-identical to
+                the unbiased implementation.
             query_offset: Position offset for the query's rotary embedding,
                 used by incremental decoding in a later phase.
 
@@ -201,11 +207,21 @@ class MultiHeadAttention(nn.Module):
             cos_k, sin_k = self.rope(k.shape[-2], k.device, k.dtype)
             k = apply_rope(k, cos_k, sin_k)
 
+        mask = attn_mask
+        if key_bias is not None:
+            # scaled_dot_product_attention ADDS a float mask to the logits, so a
+            # boolean key mask has to become -inf / 0 before the bias joins it.
+            if mask is not None and mask.dtype == torch.bool:
+                mask = torch.zeros_like(mask, dtype=q.dtype).masked_fill(
+                    ~mask, float("-inf")
+                )
+            mask = key_bias if mask is None else mask + key_bias
+
         context = torch.nn.functional.scaled_dot_product_attention(
             q,
             k,
             v,
-            attn_mask=attn_mask,
+            attn_mask=mask,
             dropout_p=self.dropout if self.training else 0.0,
         )
         return self.out_proj(self._merge_heads(context))
