@@ -1,0 +1,71 @@
+{
+  "model_name": "Salsa2-GatedUT",
+  "architecture": "gated_universal_transformer",
+  "parameter_count": 4131200,
+  "config_fingerprint": "4b1582c2b2c05fb7",
+  "seed": 0,
+  "experiment": "pilot_gatedut_n30_r",
+  "plan": {
+    "sample_budget": 100000,
+    "batch_size": 64,
+    "total_steps": 1563,
+    "steps_per_epoch": 79,
+    "epochs": 20,
+    "warmup_steps": 200,
+    "valid_samples": 2048
+  },
+  "state": {
+    "epoch": 20,
+    "global_step": 1563,
+    "samples_seen": 100032,
+    "tokens_seen": 300096,
+    "best_metric": 1.842763,
+    "best_epoch": 19,
+    "epochs_without_improvement": 0,
+    "elapsed_seconds": 1008.6881458759308,
+    "stop_reason": "planned epochs completed"
+  },
+  "final_validation": {
+    "valid_loss": 1.842763,
+    "valid_token_accuracy": 0.446452,
+    "valid_perfect_accuracy": 0.00293,
+    "valid_greedy_token_accuracy": 0.445964,
+    "valid_exact_accuracy": 0.00293,
+    "valid_acc_tau": 0.134277,
+    "valid_tolerance": 0.1,
+    "valid_mean_distance": 118.5776,
+    "valid_median_distance": 118.0,
+    "valid_percentiles": "[0.1343, 0.2305, 0.3242, 0.4287, 0.5225, 0.6265, 0.7217, 0.835, 0.9302, 1.0]",
+    "valid_acc_tau_circular_DIAGNOSTIC": 0.204102,
+    "valid_mean_circular_distance_DIAGNOSTIC": 62.6909,
+    "valid_median_circular_distance_DIAGNOSTIC": 63.0,
+    "valid_decode_failure_rate": 0.0,
+    "valid_sequences": 2048,
+    "valid_tokens": 6144
+  },
+  "throughput": {
+    "samples_per_second": 178.53,
+    "tokens_per_second": 535.6,
+    "compute_seconds": 560.308
+  },
+  "chance_baselines": {
+    "uniform_loss_nats": 4.442651256490317,
+    "marginal_loss_nats": 1.8649843130825523,
+    "chance_token_accuracy": 0.44621513944223107,
+    "chance_perfect_accuracy": 0.005142775511499817,
+    "chance_digit_accuracy": [
+      0.015936,
+      0.322709
+    ],
+    "chance_exact_accuracy": 0.00398406374501992,
+    "chance_acc_tau": 0.19286995444516752,
+    "chance_acc_tau_circular_DIAGNOSTIC": 0.20318725099601595,
+    "tolerance": 0.1,
+    "tolerance_absolute": 25.1
+  },
+  "cpu_memory_mb": {
+    "rss_mb": 864.875,
+    "peak_rss_mb": 426468.40625
+  },
+  "run_dir": "results/pilot_gatedut_n30_r/experiment_4_13m"
+}

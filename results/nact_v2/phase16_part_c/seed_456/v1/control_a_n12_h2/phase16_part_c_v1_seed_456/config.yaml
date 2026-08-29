@@ -1,0 +1,124 @@
+device:
+  allow_gpu_fallback: true
+  dtype: float32
+  interop_threads: null
+  pin_memory: false
+  prefer: cpu
+  threads: null
+encoding:
+  balanced: false
+  base: 81
+  digit_order: lsb_first
+  fixed_width: true
+  include_bos_eos: true
+  input_base: null
+  output_base: null
+  separator: false
+evaluation:
+  beam_size: 1
+  early_stopping: true
+  length_penalty: 1.0
+  max_eval_batches: 0
+  report_bitwise: true
+  report_percentiles: true
+  tolerance: 0.1
+experiment:
+  deterministic: true
+  name: control_a_n12_h2
+  notes: Positive control at n=12, h=2. Diagnostic for whether the training pipeline
+    can learn secret-related structure at all. Not a cryptographic result.
+  output_root: results/nact_v2/phase16_part_c/seed_456/v1
+  seed: 456
+  tags:
+  - positive-control
+  - diagnostic
+  - n12
+  - h2
+  - representation-r
+lwe:
+  density: null
+  error_distribution: discrete_gaussian
+  hamming_weight: 2
+  max_a_fraction: 1.0
+  n: 12
+  num_secrets: 1
+  num_test_samples: 2048
+  num_train_samples: 100000
+  num_valid_samples: 2048
+  q: 251
+  rlwe_variant: circulant
+  sample_reuse: 1
+  secret_distribution: binary
+  secret_index: 0
+  sigma: 3.0
+  structure: rlwe
+model:
+  arch: gated_universal_transformer
+  attention_dropout: 0.0
+  decoder_dim: 128
+  decoder_heads: 4
+  decoder_layers: 1
+  decoder_loops: 2
+  dropout: 0.0
+  encoder_dim: 512
+  encoder_heads: 8
+  encoder_layers: 1
+  encoder_loops: 2
+  ffn_multiplier: 4.0
+  gated: true
+  max_parameters: 5000000
+  min_parameters: 4000000
+  target_parameters: 4131200
+  tie_embeddings: false
+recovery:
+  binarization_methods:
+  - mean
+  - median
+  - mode
+  direct_k_random_count: 2
+  direct_k_values:
+  - 1
+  - 2
+  - 3
+  - 71
+  - 101
+  - 193
+  - 241
+  - 250
+  distinguisher_max_samples: 400
+  distinguisher_min_accuracy: 25.0
+  distinguisher_tolerance: 0.1
+  enable_direct: true
+  enable_distinguisher: true
+  run_every: 1
+training:
+  batch_size: 64
+  beta1: 0.9
+  beta2: 0.98
+  checkpoint_every: 1
+  early_stopping_patience: 0
+  eps: 1.0e-09
+  eval_batch_size: 128
+  eval_every: 1
+  grad_clip: 1.0
+  keep_last_checkpoints: 2
+  label_smoothing: 0.0
+  log_every: 25
+  lr: 0.0005
+  lr_schedule: cosine
+  max_epochs: 20
+  min_lr: 1.0e-06
+  monitor_metric: valid_loss
+  monitor_mode: min
+  num_workers: 0
+  optimizer: adamw
+  resume: true
+  steps_per_epoch: 79
+  stop_on_secret_recovery: true
+  warmup_steps: 200
+  weight_decay: 0.01
+verification:
+  also_check_complement: true
+  num_samples: 1000
+  std_tolerance_factor: 2.0
+  use_centered_residuals: true
