@@ -51,7 +51,7 @@ __all__ = [
 ]
 
 #: Architecture names accepted by :func:`build_model`.
-ARCHITECTURES = ("compact_transformer", "gated_universal_transformer")
+ARCHITECTURES = ("compact_transformer", "gated_universal_transformer", "nact")
 
 
 # --------------------------------------------------------------------------- #
@@ -652,4 +652,9 @@ def build_model(config, vocab_size: Optional[int] = None) -> SalsaTransformer:
     Returns:
         An initialised :class:`SalsaTransformer` on the CPU.
     """
+    if config.model.arch == "nact":
+        # Local import: nact imports building blocks from this module.
+        from .nact import build_nact
+
+        return build_nact(config, vocab_size=vocab_size)
     return SalsaTransformer(ModelSpec.from_config(config, vocab_size=vocab_size))
