@@ -558,10 +558,10 @@ class Config:
                     f"model.{dim_name} ({dim}) must be divisible by "
                     f"model.{head_name} ({heads})."
                 )
-        if mdl.arch not in ("compact_transformer", "gated_universal_transformer"):
+        if mdl.arch not in ("compact_transformer", "gated_universal_transformer", "nact"):
             raise ConfigError(
-                "model.arch must be 'compact_transformer' or "
-                "'gated_universal_transformer'."
+                "model.arch must be 'compact_transformer', "
+                "'gated_universal_transformer' or 'nact'."
             )
         for loop_name, layer_name in (
             ("encoder_loops", "encoder_layers"),

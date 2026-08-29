@@ -42,6 +42,14 @@ __all__ = [
 #: one of these; ``other`` must stay empty for the shipped architectures.
 COMPONENTS: Tuple[str, ...] = (
     "encoder_embedding",
+    # -- NACT V2 front end.  Zero for V1 architectures. -------------------- #
+    "encoder_digit_embeddings",
+    "encoder_special_embeddings",
+    "numerical_projection",
+    "coordinate_embedding",
+    "zero_coordinate_vector",
+    "sparse_attention_bias",
+    # ---------------------------------------------------------------------- #
     "decoder_embedding",
     "positional_encoding",
     "encoder_attention",
@@ -91,6 +99,22 @@ def classify_parameter(name: str) -> str:
     """
     if name.startswith("encoder_embedding"):
         return "encoder_embedding"
+
+    # -- NACT V2 front end -------------------------------------------------- #
+    if name.startswith("front_end."):
+        if "digit_embedding" in name:
+            return "encoder_digit_embeddings"
+        if "special_embedding" in name:
+            return "encoder_special_embeddings"
+        if "numerical_projection" in name:
+            return "numerical_projection"
+        if "coordinate_embedding" in name:
+            return "coordinate_embedding"
+        if "zero_vector" in name:
+            return "zero_coordinate_vector"
+    if "sparse_attention_bias" in name:
+        return "sparse_attention_bias"
+
     if name.startswith("decoder_embedding"):
         return "decoder_embedding"
     if name.startswith("output_projection"):
@@ -149,6 +173,57 @@ def unclassified_parameters(model: nn.Module) -> List[str]:
 # --------------------------------------------------------------------------- #
 # Analytical counts
 # --------------------------------------------------------------------------- #
+def _nact_analytical_breakdown(spec) -> Dict[str, int]:
+    """Parameter breakdown for a :class:`~salsa.models.nact.NactSpec`.
+
+    Formulas (V = vocab, d_e / d_d = widths, L = parameter sets, m = FFN
+    multiplier, W = digit width, B = digit base, F = numerical features,
+    N = max coordinates, H_e = encoder heads)::
+
+        encoder_digit_embeddings    W * B * d_e
+        encoder_special_embeddings  4 * d_e
+        numerical_projection        F * d_e + d_e
+        coordinate_embedding        N * d_e
+        zero_coordinate_vector      d_e
+        sparse_attention_bias       L_e * H_e
+        encoder_attention           L_e * 4 * d_e^2
+        encoder_ffn                 L_e * 2 * d_e * (m * d_e)
+        encoder_copy_gate           L_e * (2 * d_e^2 + d_e)            if gated
+        encoder_normalization       L_e * 2 * d_e + d_e
+        decoder_*                   identical to V1
+
+    As in V1, no term depends on the loop counts or on the lattice dimension n:
+    the coordinate table is sized by ``max_coordinates``, not by ``n``, so one
+    checkpoint covers every n up to that bound.
+    """
+    v = spec.vocab_size
+    de, dd = spec.encoder_dim, spec.decoder_dim
+    le, ld = spec.encoder_layers, spec.decoder_layers
+    fe, fd = spec.encoder_ffn_dim, spec.decoder_ffn_dim
+
+    counts: Dict[str, int] = {name: 0 for name in COMPONENTS}
+    counts["encoder_digit_embeddings"] = spec.digit_width * spec.base * de
+    counts["encoder_special_embeddings"] = 4 * de
+    counts["numerical_projection"] = spec.num_numerical_features * de + de
+    counts["coordinate_embedding"] = spec.max_coordinates * de
+    counts["zero_coordinate_vector"] = de
+    counts["sparse_attention_bias"] = le * spec.encoder_heads
+
+    counts["encoder_attention"] = le * 4 * de * de
+    counts["encoder_ffn"] = le * 2 * de * fe
+    counts["encoder_copy_gate"] = le * (2 * de * de + de) if spec.gated else 0
+    counts["encoder_normalization"] = le * 2 * de + de
+
+    counts["decoder_embedding"] = v * dd
+    counts["decoder_self_attention"] = ld * 4 * dd * dd
+    counts["decoder_cross_attention"] = ld * (2 * dd * dd + 2 * de * dd)
+    counts["decoder_ffn"] = ld * 2 * dd * fd
+    counts["decoder_copy_gate"] = ld * (2 * dd * dd + dd) if spec.gated else 0
+    counts["decoder_normalization"] = ld * 3 * dd + dd
+    counts["output_projection"] = 0 if spec.tie_embeddings else dd * v
+    return counts
+
+
 def analytical_breakdown(spec: ModelSpec) -> Dict[str, int]:
     """Compute the parameter breakdown from the architecture formulas alone.
 
@@ -181,6 +256,11 @@ def analytical_breakdown(spec: ModelSpec) -> Dict[str, int]:
     Returns:
         A dictionary keyed by :data:`COMPONENTS`.
     """
+    from .nact import NactSpec
+
+    if isinstance(spec, NactSpec):
+        return _nact_analytical_breakdown(spec)
+
     v = spec.vocab_size
     de, dd = spec.encoder_dim, spec.decoder_dim
     le, ld = spec.encoder_layers, spec.decoder_layers

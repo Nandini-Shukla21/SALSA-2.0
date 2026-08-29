@@ -1,0 +1,40 @@
+# =============================================================================
+# V1 vs V2: Salsa2-NACT at n=12, h=2
+# =============================================================================
+# This is the CONTROLLED comparison for phase 15. It inherits control_a_n12_h2
+# in full, so the LWE instance (n, h, q, sigma, RLWE structure, secret index),
+# the encoding, the seed, the optimiser, the learning rate, the schedule, the
+# batch size, the validation split, the sample budget and tau are all the same
+# objects the V1 run used -- not re-declared copies of them.
+#
+# EXACTLY ONE INTENDED CHANGE:
+#
+#   model.arch:  gated_universal_transformer  ->  nact
+#
+# encoder_loops rises 2 -> 4 because that is part of the approved phase-14
+# architecture, and it is FREE: loops reuse the single shared parameter set, so
+# the parameter count does not depend on them. It is recorded here rather than
+# hidden, because it is a real difference in effective depth between the two
+# runs and any comparison has to state it.
+#
+#   V1 Salsa2-GatedUT : 4,131,200 parameters, encoder sequence 2n+2 = 26
+#   V2 Salsa2-NACT    : 4,241,288 parameters, encoder sequence n+2  = 14
+#
+# The +110,088 difference is the input front end, itemised in
+# results/nact_v2/architecture_report.md. No padding parameters.
+# =============================================================================
+extends: control_a_n12_h2.yaml
+
+experiment:
+  name: nact_n12_h2
+  notes: >-
+    Salsa2-NACT V2 under the V1 n=12,h=2 training protocol. Only the model
+    changes; every training and data setting is inherited from
+    control_a_n12_h2.yaml. Diagnostic control, not a cryptographic result.
+  tags: [nact, v2, n12, h2, representation-r, controlled-comparison]
+
+model:
+  arch: nact
+  encoder_loops: 4      # free: 1 shared parameter set reused 4 times
+  min_parameters: 4000000
+  max_parameters: 5000000
