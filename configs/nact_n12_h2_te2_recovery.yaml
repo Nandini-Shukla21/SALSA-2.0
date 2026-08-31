@@ -1,0 +1,48 @@
+# =============================================================================
+# PHASE 19: direct secret recovery against the equal-depth NACT checkpoint
+# =============================================================================
+# Attacks results/equal_depth_ablation/v2_te2/nact_n12_h2_te2/seed_123, the
+# checkpoint selected by the phase-18 audit on valid_loss alone. No training.
+#
+# Two things differ from nact_n12_h2_te2.yaml, and both are required:
+#
+# 1. experiment.seed: 0 -> 123
+#    The selected checkpoint was trained under seed 123, so the secret it was
+#    trained against is the seed-123 secret. Evaluating it against the seed-0
+#    secret would be scoring it on a problem it never saw. The recovery itself
+#    is secret-free either way; the seed only determines which secret the
+#    EVALUATION stage compares against, after recovery has finished.
+#
+# 2. The recovery block restates the phase-10 K sweep verbatim.
+#    The default sweep is [1, 2, 3, 71, 101, 193, 241, 250]; phase 10 used
+#    the ten values below and this phase must use the same ones to be a
+#    comparison rather than a new experiment.
+#
+#   K:          1    31    63    94   125   126   157   188   220   250
+#   separation: 1    31    63    94   125   125    94    63    31     1
+#
+# K=1 and K=250 are NEGATIVE CONTROLS: their ring separation is 1, so the two
+# hypotheses b~0 and b~K are almost the same target and they SHOULD fail. If
+# they succeed, the measurement is wrong rather than the model being good.
+#
+# Nothing about the model, the codec, the data generator or the recovery
+# algorithm is changed by this file.
+# =============================================================================
+extends: nact_n12_h2_te2.yaml
+
+experiment:
+  name: nact_n12_h2_te2_recovery
+  seed: 123                    # matches the selected checkpoint's training seed
+  notes: >-
+    Direct secret recovery (SALSA Algorithm 1) against the equal-depth
+    Salsa2-NACT checkpoint from phase 17 seed 123. No training is performed.
+    The recovery procedure never sees the secret; the secret enters only in the
+    evaluation stage, after a candidate has been produced.
+  tags: [recovery, direct, nact, v2, n12, h2, equal-depth]
+
+recovery:
+  enable_direct: true
+  enable_distinguisher: false   # out of scope for this phase
+  direct_k_values: [1, 31, 63, 94, 125, 126, 157, 188, 220, 250]
+  direct_k_random_count: 0
+  binarization_methods: [mean, median, mode]
