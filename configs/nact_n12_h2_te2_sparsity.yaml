@@ -1,0 +1,39 @@
+# =============================================================================
+# PHASE 17 PART 8: phase-12 sparsity evaluation of the equal-depth NACT
+# =============================================================================
+# This config exists for ONE reason: to make the V2 sparsity evaluation use the
+# IDENTICAL K sweep that V1's phase-12 run used. It changes nothing else.
+#
+# The trained checkpoint's own config (nact_n12_h2_te2.yaml) inherits the
+# DEFAULT recovery block, whose K values are [1, 2, 3, 71, 101, 193, 241, 250].
+# V1's phase-12 evaluation ran under recovery_n12_h2.yaml, whose sweep is
+# [1, 31, 63, 94, 125, 126, 157, 188, 220, 250]. Evaluating V2 on a different
+# sweep would not be the same measurement, so the V1 sweep is restated here
+# verbatim.
+#
+#   K:          1    31    63    94   125   126   157   188   220   250
+#   separation: 1    31    63    94   125   125    94    63    31     1
+#
+# Everything the measurement depends on is inherited unchanged: n, h, q, sigma,
+# structure, encoding, tau, and experiment.seed = 0 -- which is what the
+# phase-12 script derives its test vectors from, so V2 sees byte-identical
+# sparse inputs to the ones V1 saw.
+#
+# The model is NOT retrained and NOT modified by this file. It only selects the
+# checkpoint to load and the K values to probe.
+# =============================================================================
+extends: nact_n12_h2_te2.yaml
+
+experiment:
+  name: nact_n12_h2_te2_sparsity
+  notes: >-
+    Phase-12 sparsity generalization evaluation of the equal-depth (T_e=2)
+    Salsa2-NACT checkpoint, under the exact K sweep used for V1. No training.
+  tags: [nact, v2, equal-depth, sparsity, phase12, evaluation]
+
+recovery:
+  enable_direct: true
+  enable_distinguisher: false
+  direct_k_values: [1, 31, 63, 94, 125, 126, 157, 188, 220, 250]
+  direct_k_random_count: 0
+  binarization_methods: [mean, median, mode]
