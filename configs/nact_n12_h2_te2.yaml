@@ -1,0 +1,44 @@
+# =============================================================================
+# PHASE 17: Salsa2-NACT at EQUAL ENCODER DEPTH (T_e = 2)
+# =============================================================================
+# The phase-16 comparison found a large V2 advantage, but V2 ran with
+# encoder_loops = 4 against V1's 2. That confounds the architecture with the
+# effective depth: NACT's shared encoder layer was applied twice as many times.
+#
+# This config removes the confound. It inherits nact_n12_h2.yaml -- and through
+# it control_a_n12_h2.yaml -- so the LWE instance, encoding, seed, optimiser,
+# schedule, batch size, validation set, sample budget and tau are the same
+# objects the V1 run used, not re-declared copies.
+#
+# THE ONLY CHANGE FROM nact_n12_h2.yaml:
+#
+#   model.encoder_loops:  4  ->  2
+#
+# Against V1 this leaves exactly one architectural difference:
+#
+#   model.arch:  gated_universal_transformer  ->  nact
+#
+# with matched effective depth T_e = 2, T_d = 2 on both sides.
+#
+# Loops reuse the single shared encoder parameter set, so the parameter count is
+# unchanged and remains EXACTLY 4,241,288. The +110,088 over V1 is the input
+# front end (digit embeddings, numerical projection, coordinate embedding, zero
+# vector, sparse attention bias), itemised in results/nact_v2/. No padding.
+#
+# What this experiment can and cannot decide:
+#   CAN  -- whether the NACT front end helps when depth is held equal.
+#   CANNOT -- anything cryptographic. n=12, h=2 has C(12,2) = 66 secrets and is
+#             a diagnostic positive control, exactly as in phases 7 and 16.
+# =============================================================================
+extends: nact_n12_h2.yaml
+
+experiment:
+  name: nact_n12_h2_te2
+  notes: >-
+    Salsa2-NACT at equal encoder depth (T_e=2) under the V1 n=12,h=2 protocol.
+    Isolates the architectural effect of the numerical front end from the
+    effect of doubled Universal-Transformer depth used in phase 16.
+  tags: [nact, v2, n12, h2, representation-r, equal-depth, ablation]
+
+model:
+  encoder_loops: 2      # matched to V1; parameter count unchanged at 4,241,288
