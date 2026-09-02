@@ -1,0 +1,55 @@
+# =============================================================================
+# PHASE 25 - NACT-F PILOT AT n=20, h=2
+# =============================================================================
+# First larger-dimension test of the simplified NACT-F architecture, which
+# recovered the secret at n=12,h=2 in phase 24.
+#
+# It inherits nact_n12_h2_te2_F.yaml, so the model, its three ablation switches,
+# the encoding, the optimiser, the learning rate, the scheduler, the batch size,
+# the validation protocol, tau, the loss and the seed are the same objects the
+# phase-23/24 run used.
+#
+# THE ONLY CHANGE:
+#
+#   lwe.n:  12  ->  20
+#
+# The secret is a CONSEQUENCE of that change, not a separate setting: it is
+# derived deterministically from derive_seed(seed, "secret", secret_index) at
+# dimension n, so n=20 yields a fresh 20-coordinate secret that shares nothing
+# with the n=12 one. It is recorded in the report.
+#
+# The parameter count is UNCHANGED at 4,238,208. The coordinate embedding is a
+# fixed 128 x 512 table, so dimension does not enter the parameter count; only
+# the encoder sequence length changes, from n+2 = 14 to n+2 = 22.
+#
+# BUDGET: 100,000 configured -> 100,032 seen. This is a PILOT and the budget is
+# a ceiling, not a target to be raised if the result is disappointing.
+#
+# CONTEXT, NOT A PREDICTION: V1 GatedUT at n=20,h=2 reached valid_loss 1.8233,
+# acc_tau 0.2344 and exact accuracy 0.0034 after 200,000 samples -- twice this
+# pilot's budget -- with exact accuracy still BELOW its 0.00398 chance level.
+# Nothing here assumes NACT-F will do better.
+#
+# PRE-REGISTERED THRESHOLDS, fixed before this run and not to be revised after
+# seeing results (chance + 3 sigma on 2048 validation sequences):
+#
+#   acc_tau  > 0.21903      (chance 0.19287)
+#   exact    > 0.00816      (chance 0.00398)
+#   loss     < 1.86498      (marginals-only baseline, the real zero point)
+#
+#   A strong learning   : acc_tau above its bar AND loss below the marginal baseline
+#   B weak / ambiguous  : one but not both
+#   C no learning       : neither
+# =============================================================================
+extends: nact_n12_h2_te2_F.yaml
+
+experiment:
+  name: nact_n20_h2_te2_F
+  notes: >-
+    NACT-F pilot at n=20, h=2 on a 100,032-sample budget. Tests whether the
+    simplified one-token architecture LEARNS at a larger dimension. No secret
+    recovery, no n=30, single seed.
+  tags: [nact, variant-f, n20, h2, pilot, representation-r]
+
+lwe:
+  n: 20
