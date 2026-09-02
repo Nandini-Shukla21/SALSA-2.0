@@ -1,0 +1,29 @@
+# =============================================================================
+# PHASE 23: phase-12 sparsity evaluation of the NACT-F checkpoint
+# =============================================================================
+# Exists only to give the evaluation the SAME K sweep that V1's phase-12 run and
+# full NACT's phase-17 run used. It changes nothing else, trains nothing, and
+# does not touch the recovery algorithm.
+#
+#   K:          1    31    63    94   125   126   157   188   220   250
+#   separation: 1    31    63    94   125   125    94    63    31     1
+#
+# experiment.seed stays 0, which is what the phase-12 script derives its test
+# vectors from, so NACT-F sees byte-identical sparse inputs to the ones V1 and
+# full NACT saw.
+# =============================================================================
+extends: nact_n12_h2_te2_F.yaml
+
+experiment:
+  name: nact_n12_h2_te2_F_sparsity
+  notes: >-
+    Phase-12 sparsity generalization evaluation of the NACT-F checkpoint under
+    the exact K sweep used for V1 and full NACT. No training, no recovery.
+  tags: [nact, ablation, variant-f, sparsity, phase12, evaluation]
+
+recovery:
+  enable_direct: true
+  enable_distinguisher: false
+  direct_k_values: [1, 31, 63, 94, 125, 126, 157, 188, 220, 250]
+  direct_k_random_count: 0
+  binarization_methods: [mean, median, mode]
