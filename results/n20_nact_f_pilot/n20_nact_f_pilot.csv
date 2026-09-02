@@ -1,0 +1,33 @@
+section,metric,v1_n20,nact_f_n12,nact_f_n20,gate,passed,epoch,samples_seen,train_loss,valid_loss,valid_acc_tau,valid_exact_accuracy
+comparison,Validation loss (nats),1.823288,0.989069,0.976393,,,,,,,,
+comparison,SALSA acc_tau,0.234375,0.983887,0.986328,,,,,,,,
+comparison,Exact integer accuracy,0.003418,0.091309,0.103516,,,,,,,,
+comparison,Token accuracy,0.458984,0.693359,0.699544,,,,,,,,
+comparison,Greedy token accuracy,0.439128,0.677083,0.685059,,,,,,,,
+comparison,Perfect accuracy,0.003418,0.091309,0.103516,,,,,,,,
+comparison,Decode failure rate,0.0,0.0,0.0,,,,,,,,
+comparison,Mean |b - b_hat|,76.9692,7.1465,6.5093,,,,,,,,
+comparison,Median |b - b_hat|,61.0,3.0,3.0,,,,,,,,
+gate,,,,,acc_tau_above_bar,True,,,,,,
+gate,,,,,exact_above_bar,True,,,,,,
+gate,,,,,loss_below_marginal,True,,,,,,
+learning_curve_nact_f_n20,,,,,,,0,5056,2.804144,2.075436,0.024902,0.000977
+learning_curve_nact_f_n20,,,,,,,1,10112,1.94901,1.877381,0.107422,0.003906
+learning_curve_nact_f_n20,,,,,,,2,15168,1.876775,1.868254,0.19873,0.004883
+learning_curve_nact_f_n20,,,,,,,3,20224,1.859083,1.840359,0.282227,0.004883
+learning_curve_nact_f_n20,,,,,,,4,25280,1.752487,1.619037,0.505859,0.012695
+learning_curve_nact_f_n20,,,,,,,5,30336,1.540263,1.51205,0.520508,0.010742
+learning_curve_nact_f_n20,,,,,,,6,35392,1.504684,1.488185,0.580078,0.012695
+learning_curve_nact_f_n20,,,,,,,7,40448,1.489765,1.488608,0.606445,0.015625
+learning_curve_nact_f_n20,,,,,,,8,45504,1.485706,1.478602,0.586426,0.013672
+learning_curve_nact_f_n20,,,,,,,9,50560,1.461053,1.448937,0.714355,0.012695
+learning_curve_nact_f_n20,,,,,,,10,55616,1.395941,1.334447,0.954102,0.042969
+learning_curve_nact_f_n20,,,,,,,11,60672,1.264058,1.192613,0.968262,0.051758
+learning_curve_nact_f_n20,,,,,,,12,65728,1.144076,1.115977,0.982422,0.07373
+learning_curve_nact_f_n20,,,,,,,13,70784,1.092141,1.067077,0.991211,0.071777
+learning_curve_nact_f_n20,,,,,,,14,75840,1.049654,1.03728,0.988281,0.093262
+learning_curve_nact_f_n20,,,,,,,15,80896,1.019259,1.01412,0.987305,0.097656
+learning_curve_nact_f_n20,,,,,,,16,85952,1.001562,0.99761,0.992676,0.095703
+learning_curve_nact_f_n20,,,,,,,17,91008,0.979848,0.98175,0.987305,0.097656
+learning_curve_nact_f_n20,,,,,,,18,96064,0.97665,0.977375,0.985352,0.104004
+learning_curve_nact_f_n20,,,,,,,19,100032,0.975074,0.976393,0.986328,0.103516

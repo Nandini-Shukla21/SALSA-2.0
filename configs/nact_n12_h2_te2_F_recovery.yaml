@@ -1,0 +1,38 @@
+# =============================================================================
+# PHASE 24 - direct secret recovery against the NACT-F checkpoint
+# =============================================================================
+# Attacks the phase-23 ablation-F run (one-token representation only, seed 0).
+# No training. The model is frozen and the recovery algorithm is the one already
+# validated in phases 19 and 21 -- salsa.recovery.DirectRecovery, unchanged.
+#
+# The only thing this file adds to nact_n12_h2_te2_F.yaml is the phase-19 K
+# sweep, because the default sweep differs and using it would make this a new
+# experiment rather than a comparison:
+#
+#   K:          1    31    63    94   125   126   157   188   220   250
+#   separation: 1    31    63    94   125   125    94    63    31     1
+#
+# K=1 and K=250 are NEGATIVE CONTROLS. Their ring separation is 1, so the two
+# hypotheses b~0 and b~K are nearly the same target and they SHOULD fail. A
+# sparse-looking candidate from either is not a recovery.
+#
+# experiment.seed stays 0, matching the checkpoint's training seed, so the
+# secret consulted in the evaluation stage is the one this model was trained
+# against. Recovery itself never sees it.
+# =============================================================================
+extends: nact_n12_h2_te2_F.yaml
+
+experiment:
+  name: nact_n12_h2_te2_F_recovery
+  notes: >-
+    Direct secret recovery (SALSA Algorithm 1) against the frozen NACT-F
+    checkpoint from phase 23. No training. The recovery procedure never sees
+    the secret; the secret enters only in the evaluation stage.
+  tags: [recovery, direct, nact, ablation, variant-f, n12, h2]
+
+recovery:
+  enable_direct: true
+  enable_distinguisher: false
+  direct_k_values: [1, 31, 63, 94, 125, 126, 157, 188, 220, 250]
+  direct_k_random_count: 0
+  binarization_methods: [mean, median, mode]

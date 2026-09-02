@@ -1,0 +1,40 @@
+# =============================================================================
+# PHASE 26 - direct secret recovery against the NACT-F n=20 checkpoint
+# =============================================================================
+# Attacks the phase-25 pilot (NACT-F, one-token representation only, n=20, h=2,
+# seed 0). No training. The recovery algorithm is the one validated in phases
+# 19, 21 and 24 -- salsa.recovery.DirectRecovery -- unchanged.
+#
+# The only addition to nact_n20_h2_te2_F.yaml is the K sweep, restated so this
+# is the same measurement as at n=12 rather than a new experiment:
+#
+#   K:          1    31    63    94   125   126   157   188   220   250
+#   separation: 1    31    63    94   125   125    94    63    31     1
+#
+# K=1 and K=250 are NEGATIVE CONTROLS with ring separation 1. They should fail.
+#
+# A WARNING SPECIFIC TO n=20: the secret has weight 2 over 20 coordinates, so an
+# all-zeros candidate scores 18/20 = 0.9000 coordinate accuracy for free -- even
+# higher than the 0.8333 trap at n=12. Coordinate accuracy alone is therefore
+# NOT evidence of recovery here; only exact recovery is, and the all-zeros and
+# all-ones baselines are reported alongside every result.
+#
+# experiment.seed stays 0, matching the checkpoint, so the evaluation stage
+# consults the secret this model was trained against. Recovery never sees it.
+# =============================================================================
+extends: nact_n20_h2_te2_F.yaml
+
+experiment:
+  name: nact_n20_h2_te2_F_recovery
+  notes: >-
+    Direct secret recovery (SALSA Algorithm 1) against the frozen NACT-F n=20
+    checkpoint from phase 25. No training. The recovery procedure never sees the
+    secret; the secret enters only in the evaluation stage.
+  tags: [recovery, direct, nact, variant-f, n20, h2]
+
+recovery:
+  enable_direct: true
+  enable_distinguisher: false
+  direct_k_values: [1, 31, 63, 94, 125, 126, 157, 188, 220, 250]
+  direct_k_random_count: 0
+  binarization_methods: [mean, median, mode]

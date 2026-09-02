@@ -71,7 +71,8 @@ from .attention import MultiHeadAttention, build_causal_mask, build_key_padding_
 from .embeddings import TokenEmbedding
 from .transformer import CopyGate, DecoderLayer, FeedForward, RMSNorm
 
-__all__ = ["NactSpec", "NactFrontEnd", "NactEncoderLayer", "SalsaNact", "build_nact"]
+__all__ = ["NactSpec", "NactFrontEnd", "NactEncoderLayer", "SalsaNact",
+           "build_nact", "VARIANTS"]
 
 #: Order of the numerical scalars fed to the projection.  Fixed, because the
 #: parameter count and every report depend on it.
@@ -81,6 +82,24 @@ NUMERICAL_FEATURES: Tuple[str, ...] = (
     "cos_2pi_x_over_q",
     "sin_2pi_x_over_q",
 )
+
+
+#: Ablation variants.  ``full`` is the phase-14 architecture; ``one_token_only``
+#: is phase-22 variant F, which keeps the coordinate-token layout and the digit
+#: and coordinate embeddings and removes every additional numerical feature.
+VARIANTS: Dict[str, Dict[str, bool]] = {
+    "full": {"use_numerical_features": True, "use_zero_vector": True,
+             "use_sparse_attention_bias": True},
+    "one_token_only": {"use_numerical_features": False, "use_zero_vector": False,
+                       "use_sparse_attention_bias": False},
+}
+
+
+def _variant_flags(name: str) -> Dict[str, bool]:
+    """Return the component switches for a named variant."""
+    if name not in VARIANTS:
+        raise ValueError(f"unknown nact_variant {name!r}; expected {list(VARIANTS)}")
+    return dict(VARIANTS[name])
 
 
 @dataclass
@@ -148,6 +167,11 @@ class NactSpec:
     separator: bool = False
     max_coordinates: int = 128
     include_bos_eos: bool = True
+    # -- ablation switches.  Every default is the FULL NACT behaviour, so an
+    #    existing spec, config or checkpoint is unaffected by their existence. --
+    use_numerical_features: bool = True
+    use_zero_vector: bool = True
+    use_sparse_attention_bias: bool = True
 
     def __post_init__(self) -> None:
         """Validate eagerly, with the same strictness as V1."""
@@ -203,7 +227,18 @@ class NactSpec:
     @property
     def num_numerical_features(self) -> int:
         """How many numerical scalars are projected per coordinate."""
-        return len(NUMERICAL_FEATURES)
+        return len(NUMERICAL_FEATURES) if self.use_numerical_features else 0
+
+    @property
+    def variant(self) -> str:
+        """Which ablation this spec describes."""
+        if (self.use_numerical_features and self.use_zero_vector
+                and self.use_sparse_attention_bias):
+            return "full"
+        if not (self.use_numerical_features or self.use_zero_vector
+                or self.use_sparse_attention_bias):
+            return "one_token_only"
+        return "custom"
 
     def coordinates_for(self, source_length: int) -> int:
         """Recover ``n`` from a V1-layout input length.
@@ -280,6 +315,7 @@ class NactSpec:
             separator=bool(codec.separator),
             max_coordinates=int(max(128, config.lwe.n)),
             include_bos_eos=bool(codec.include_bos_eos),
+            **_variant_flags(getattr(model, "nact_variant", "full")),
         )
 
     def to_dict(self) -> Dict[str, Any]:
@@ -315,10 +351,13 @@ class NactFrontEnd(nn.Module):
         self.digit_embedding = nn.Parameter(
             torch.empty(spec.digit_width, spec.base, dim))
         self.special_embedding = nn.Parameter(torch.empty(4, dim))
-        self.numerical_projection = nn.Linear(spec.num_numerical_features, dim, bias=True)
+        self.numerical_projection: Optional[nn.Linear] = (
+            nn.Linear(spec.num_numerical_features, dim, bias=True)
+            if spec.use_numerical_features else None)
         self.coordinate_embedding = nn.Parameter(
             torch.empty(spec.max_coordinates, dim))
-        self.zero_vector = nn.Parameter(torch.zeros(dim))
+        self.zero_vector: Optional[nn.Parameter] = (
+            nn.Parameter(torch.zeros(dim)) if spec.use_zero_vector else None)
 
         # Digit value for each vocabulary id, -1 where the id is not a digit.
         # Buffer, not a parameter: it is a property of the codec, not learned.
@@ -346,9 +385,11 @@ class NactFrontEnd(nn.Module):
         nn.init.normal_(self.digit_embedding, mean=0.0, std=0.02)
         nn.init.normal_(self.special_embedding, mean=0.0, std=0.02)
         nn.init.normal_(self.coordinate_embedding, mean=0.0, std=0.02)
-        nn.init.xavier_uniform_(self.numerical_projection.weight)
-        nn.init.zeros_(self.numerical_projection.bias)
-        nn.init.zeros_(self.zero_vector)
+        if self.numerical_projection is not None:
+            nn.init.xavier_uniform_(self.numerical_projection.weight)
+            nn.init.zeros_(self.numerical_projection.bias)
+        if self.zero_vector is not None:
+            nn.init.zeros_(self.zero_vector)
 
     def digit_columns(self, n: int) -> Tensor:
         """Column indices of the digit tokens in the V1 layout, shape ``(n, width)``."""
@@ -428,11 +469,16 @@ class NactFrontEnd(nn.Module):
         for slot in range(spec.digit_width):
             embedded = embedded + self.digit_embedding[slot][digits[:, :, slot]]
 
+        # The zero indicator is always computed -- it costs nothing and the
+        # encoder needs its shape -- but it only ENTERS the representation when
+        # the corresponding component is enabled.
         features = self.numerical_features(values)
-        embedded = embedded + self.numerical_projection(features)
-        embedded = embedded + self.coordinate_embedding[:n].unsqueeze(0)
         zero = features[..., 0]
-        embedded = embedded + zero.unsqueeze(-1) * self.zero_vector
+        if self.numerical_projection is not None:
+            embedded = embedded + self.numerical_projection(features)
+        embedded = embedded + self.coordinate_embedding[:n].unsqueeze(0)
+        if self.zero_vector is not None:
+            embedded = embedded + zero.unsqueeze(-1) * self.zero_vector
 
         if not spec.include_bos_eos:
             return embedded, zero
@@ -477,11 +523,13 @@ class NactEncoderLayer(nn.Module):
         self.dropout = nn.Dropout(spec.dropout)
         self.gate: Optional[CopyGate] = CopyGate(dim) if spec.gated else None
         # Deterministic zero init: at step 0 this is exactly the unbiased layer.
-        self.sparse_attention_bias = nn.Parameter(torch.zeros(spec.encoder_heads))
+        self.sparse_attention_bias: Optional[nn.Parameter] = (
+            nn.Parameter(torch.zeros(spec.encoder_heads))
+            if spec.use_sparse_attention_bias else None)
 
     def key_bias(self, zero_indicator: Optional[Tensor]) -> Optional[Tensor]:
         """Additive attention bias of shape ``(batch, heads, 1, seq)``."""
-        if zero_indicator is None:
+        if zero_indicator is None or self.sparse_attention_bias is None:
             return None
         return (self.sparse_attention_bias.view(1, -1, 1, 1)
                 * zero_indicator[:, None, None, :])

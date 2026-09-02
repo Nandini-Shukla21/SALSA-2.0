@@ -1,0 +1,566 @@
+{
+  "phase": "22 - NACT component attribution study DESIGN",
+  "status": "DESIGN ONLY. NO TRAINING PERFORMED. No checkpoint created or modified, no recovery run, no architecture change. The only file access was reading trained weights for the zero-cost diagnostic.",
+  "reference_models": {
+    "V1_GatedUT": 4131200,
+    "V2_NACT": 4241288,
+    "shared_body_identical_in_every_variant": 4087680
+  },
+  "components": [
+    {
+      "id": 1,
+      "name": "one token per coordinate",
+      "parameters": 0,
+      "note": "a sequence-layout change, not a parameter: L_in goes 2n+2 -> n+2"
+    },
+    {
+      "id": 2,
+      "name": "base-81 digit embeddings",
+      "parameters": 82944,
+      "note": "replaces V1's 85 x 512 token embedding (43,520)"
+    },
+    {
+      "id": 3,
+      "name": "centered numerical residue",
+      "parameters": 512,
+      "note": "one column of the numerical projection"
+    },
+    {
+      "id": 4,
+      "name": "zero / nonzero indicator",
+      "parameters": 512,
+      "note": "one column of the numerical projection"
+    },
+    {
+      "id": 5,
+      "name": "Fourier cos/sin features",
+      "parameters": 1024,
+      "note": "two columns of the numerical projection"
+    },
+    {
+      "id": 6,
+      "name": "absolute coordinate embedding",
+      "parameters": 65536,
+      "note": "the only component with a parameter cost above 0.1% of the model"
+    },
+    {
+      "id": 7,
+      "name": "learned zero-coordinate feature",
+      "parameters": 512,
+      "note": "a single learned vector added when a_i == 0"
+    },
+    {
+      "id": 8,
+      "name": "sparse attention key bias",
+      "parameters": 8,
+      "note": "one learned scalar per encoder head, zero-initialised"
+    }
+  ],
+  "variants": [
+    {
+      "key": "A",
+      "name": "Full NACT (reference)",
+      "features": [
+        "zero",
+        "centered",
+        "cos",
+        "sin"
+      ],
+      "coordinate_embedding": true,
+      "zero_vector": true,
+      "sparse_bias": true,
+      "already_trained": true,
+      "isolates": "nothing - this is the reference arm",
+      "question": "the established V2 result",
+      "num_features": 4,
+      "parameters": 4241288,
+      "delta_vs_full_nact": 0,
+      "percent_of_full_nact": 0.0,
+      "within_budget": true,
+      "delta_vs_v1": 110088,
+      "confound_risk": "negligible: below 0.1% of the model"
+    },
+    {
+      "key": "B",
+      "name": "no numerical features (keep zero indicator)",
+      "features": [
+        "zero"
+      ],
+      "coordinate_embedding": true,
+      "zero_vector": true,
+      "sparse_bias": true,
+      "already_trained": false,
+      "isolates": "centered residue + Fourier pair, jointly",
+      "question": "do the continuous value features matter once zero-awareness is present?",
+      "num_features": 1,
+      "parameters": 4239752,
+      "delta_vs_full_nact": -1536,
+      "percent_of_full_nact": -0.03621541380825825,
+      "within_budget": true,
+      "delta_vs_v1": 108552,
+      "confound_risk": "negligible: below 0.1% of the model"
+    },
+    {
+      "key": "C",
+      "name": "no zero-aware features",
+      "features": [
+        "centered",
+        "cos",
+        "sin"
+      ],
+      "coordinate_embedding": true,
+      "zero_vector": false,
+      "sparse_bias": false,
+      "already_trained": false,
+      "isolates": "zero indicator + zero vector + sparse bias, jointly",
+      "question": "is zero-awareness what fixes the phase-12 sparse collapse?",
+      "num_features": 3,
+      "parameters": 4240256,
+      "delta_vs_full_nact": -1032,
+      "percent_of_full_nact": -0.02433223115242351,
+      "within_budget": true,
+      "delta_vs_v1": 109056,
+      "confound_risk": "negligible: below 0.1% of the model"
+    },
+    {
+      "key": "D",
+      "name": "no Fourier features",
+      "features": [
+        "zero",
+        "centered"
+      ],
+      "coordinate_embedding": true,
+      "zero_vector": true,
+      "sparse_bias": true,
+      "already_trained": false,
+      "isolates": "the k=1 character pair",
+      "question": "does the modular-arithmetic feature matter?",
+      "num_features": 2,
+      "parameters": 4240264,
+      "delta_vs_full_nact": -1024,
+      "percent_of_full_nact": -0.024143609205505498,
+      "within_budget": true,
+      "delta_vs_v1": 109064,
+      "confound_risk": "negligible: below 0.1% of the model"
+    },
+    {
+      "key": "E",
+      "name": "no absolute coordinate embedding",
+      "features": [
+        "zero",
+        "centered",
+        "cos",
+        "sin"
+      ],
+      "coordinate_embedding": false,
+      "zero_vector": true,
+      "sparse_bias": true,
+      "already_trained": false,
+      "isolates": "absolute coordinate identity",
+      "question": "is RoPE's relative position insufficient for b = sum a_i s_i?",
+      "num_features": 4,
+      "parameters": 4175752,
+      "delta_vs_full_nact": -65536,
+      "percent_of_full_nact": -1.5451909891523519,
+      "within_budget": true,
+      "delta_vs_v1": 44552,
+      "confound_risk": "small but non-zero: state it when reporting"
+    },
+    {
+      "key": "F",
+      "name": "one-token coordinate representation only",
+      "features": [],
+      "coordinate_embedding": true,
+      "zero_vector": false,
+      "sparse_bias": false,
+      "already_trained": false,
+      "isolates": "ALL numerical/zero features at once",
+      "question": "THE KEY SPLIT: is the gain the tokenisation, or the features?",
+      "num_features": 0,
+      "parameters": 4238208,
+      "delta_vs_full_nact": -3080,
+      "percent_of_full_nact": -0.07261944956343451,
+      "within_budget": true,
+      "delta_vs_v1": 107008,
+      "confound_risk": "negligible: below 0.1% of the model"
+    },
+    {
+      "key": "G",
+      "name": "no sparse attention bias",
+      "features": [
+        "zero",
+        "centered",
+        "cos",
+        "sin"
+      ],
+      "coordinate_embedding": true,
+      "zero_vector": true,
+      "sparse_bias": false,
+      "already_trained": false,
+      "isolates": "the per-head zero-key bias (8 parameters)",
+      "question": "does the learned zero-suppression mechanism do anything?",
+      "num_features": 4,
+      "parameters": 4241280,
+      "delta_vs_full_nact": -8,
+      "percent_of_full_nact": -0.0001886219469180117,
+      "within_budget": true,
+      "delta_vs_v1": 110080,
+      "confound_risk": "negligible: below 0.1% of the model"
+    }
+  ],
+  "redundancy_analysis": {
+    "nested_ladder": {
+      "chain": "F (0 features) < B (1) < D (2) < A (4)",
+      "reading": "A ladder of single-feature additions: F->B isolates the zero indicator, B->D the centered residue, D->A the Fourier pair. Four arms give three clean single-feature contrasts."
+    },
+    "leave_one_out": {
+      "chain": "A minus one of {zero-aware, Fourier, coordinate, sparse bias} = C, D, E, G",
+      "reading": "Every contrast is against the same reference A, which is what attribution needs. Preferred over the ladder for that reason."
+    },
+    "overlaps": [
+      {
+        "pair": "B and F",
+        "overlap": "differ only by the zero-indicator scalar",
+        "verdict": "keep both only if F->B is the specific question; otherwise F alone"
+      },
+      {
+        "pair": "B and D",
+        "overlap": "differ only by the centered-residue scalar",
+        "verdict": "B is redundant once F, D and A are run - the ladder is covered"
+      },
+      {
+        "pair": "C and G",
+        "overlap": "C removes the sparse bias as part of zero-awareness, G removes it alone",
+        "verdict": "G is subsumed by C for the sparsity question, and is separately predicted a no-op by the weight diagnostic"
+      }
+    ],
+    "safe_to_drop": [
+      "G",
+      "B"
+    ],
+    "drop_rationale": {
+      "G": "predicted from trained weights: the bias never moved off zero, so removing 8 parameters that do nothing cannot change the outcome",
+      "B": "its two contrasts, F->B and B->D, are both recoverable from the F/D/A arms; it adds a run without adding a distinct question"
+    }
+  },
+  "learned_weight_diagnostic": {
+    "note": "read-only inspection of trained weights; no forward pass, no training",
+    "rows": [
+      {
+        "seed": 0,
+        "sparse_attention_bias_max_abs": 0.01187369879335165,
+        "sparse_attention_bias": [
+          -0.0077,
+          0.0034,
+          0.0042,
+          0.0002,
+          -0.006,
+          0.0119,
+          0.0072,
+          0.0057
+        ],
+        "numerical_projection_column_norms": {
+          "zero_indicator": 1.3379,
+          "centered_residue": 1.3354,
+          "cos": 1.3494,
+          "sin": 1.4287
+        },
+        "zero_vector_norm": 0.2436,
+        "coordinate_embedding_norm": 5.4003,
+        "digit_embedding_norm": 5.9006
+      },
+      {
+        "seed": 42,
+        "sparse_attention_bias_max_abs": 0.02011159621179104,
+        "sparse_attention_bias": [
+          0.0174,
+          0.0001,
+          0.0143,
+          -0.0045,
+          0.0201,
+          -0.0023,
+          0.0021,
+          -0.007
+        ],
+        "numerical_projection_column_norms": {
+          "zero_indicator": 1.3029,
+          "centered_residue": 1.2967,
+          "cos": 1.413,
+          "sin": 1.4816
+        },
+        "zero_vector_norm": 0.2517,
+        "coordinate_embedding_norm": 5.3571,
+        "digit_embedding_norm": 5.8883
+      },
+      {
+        "seed": 123,
+        "sparse_attention_bias_max_abs": 0.014444501139223576,
+        "sparse_attention_bias": [
+          -0.0055,
+          0.0111,
+          0.0054,
+          -0.0108,
+          0.0035,
+          0.0036,
+          0.0123,
+          -0.0144
+        ],
+        "numerical_projection_column_norms": {
+          "zero_indicator": 1.3348,
+          "centered_residue": 1.3592,
+          "cos": 1.4339,
+          "sin": 1.4926
+        },
+        "zero_vector_norm": 0.2018,
+        "coordinate_embedding_norm": 5.3888,
+        "digit_embedding_norm": 5.8681
+      }
+    ],
+    "sparse_bias_max_abs_across_seeds": 0.02011159621179104,
+    "sparse_bias_initialised_at": 0.0,
+    "inference_sparse_bias": "The per-head bias was initialised at exactly 0 and reached at most 0.0201 after 100,032 samples, on all three seeds. Attention logits are O(1-10), so a bias of this size shifts the softmax negligibly. Variant G is therefore PREDICTED to be indistinguishable from A, and can be dropped from the paid matrix in favour of this zero-cost diagnostic.",
+    "inference_numerical_features": "All four numerical columns carry comparable weight norm (~1.30-1.49) on every seed, with the Fourier pair marginally highest. No feature is ignored, so none of B, C or D can be predicted away and each needs a run. Weight norm is a weak proxy for importance and is used here only to rule OUT a component, never to rule one in.",
+    "inference_coordinate_embedding": "The coordinate table reaches a norm comparable to the digit embeddings (~5.4 vs ~5.9), so it is carrying real signal and variant E is worth paying for."
+  },
+  "controlled_variables": [
+    "lwe.n = 12",
+    "lwe.hamming_weight = 2",
+    "lwe.q = 251",
+    "lwe.sigma = 3.0",
+    "lwe.structure = rlwe",
+    "lwe.rlwe_variant = circulant",
+    "lwe.secret_index",
+    "lwe.num_train_samples = 100000 (100,032 seen)",
+    "lwe.num_valid_samples = 2048",
+    "lwe.sample_reuse = 1",
+    "encoding.base = 81",
+    "encoding.digit_order = lsb_first",
+    "encoding.separator = False",
+    "encoding.fixed_width = True",
+    "experiment.seed",
+    "training.optimizer = adamw",
+    "training.learning_rate",
+    "training.scheduler",
+    "training.batch_size = 64",
+    "training.warmup_steps = 200",
+    "training.max_epochs = 20",
+    "training.weight_decay",
+    "training.grad_clip",
+    "training.monitor_metric = valid_loss",
+    "evaluation.tolerance = 0.1",
+    "model.encoder_dim = 512",
+    "model.decoder_dim = 128",
+    "model.encoder_heads = 8",
+    "model.decoder_heads = 4",
+    "model.encoder_loops = 2",
+    "model.decoder_loops = 2",
+    "model.gated = True",
+    "model.ffn_multiplier = 4.0",
+    "model.dropout = 0.0"
+  ],
+  "primary_metrics": [
+    "SALSA acc_tau",
+    "exact integer accuracy",
+    "validation loss",
+    "sparse-input lift",
+    "direct secret recovery"
+  ],
+  "secondary_metrics": [
+    "token accuracy",
+    "decode validity",
+    "CPU throughput",
+    "memory"
+  ],
+  "sparsity_levels": [
+    12,
+    8,
+    6,
+    4,
+    2,
+    1
+  ],
+  "measured_basis": {
+    "source": "three phase-17 NACT T_e=2 runs, same machine, 100,032 samples each",
+    "mean_elapsed_seconds": 1200.8049782911937,
+    "min_elapsed_seconds": 1074.8543629646301,
+    "max_elapsed_seconds": 1294.1961479187012,
+    "mean_compute_seconds": 930.7906666666667,
+    "validation_and_overhead_seconds": 270.01431162452707,
+    "validation_overhead_fraction": 0.22486108610972877,
+    "sparsity_eval_seconds": 240,
+    "recovery_plus_verification_seconds": 120,
+    "seed_variance": {
+      "valid_acc_tau": {
+        "mean": 0.9863283333333334,
+        "stdev": 0.0021282897672388213,
+        "three_sigma_band": 0.006384869301716464
+      },
+      "valid_loss": {
+        "mean": 0.913606,
+        "stdev": 0.023194681998251237,
+        "three_sigma_band": 0.06958404599475371
+      },
+      "valid_exact_accuracy": {
+        "mean": 0.11100266666666665,
+        "stdev": 0.009165592852256385,
+        "three_sigma_band": 0.027496778556769158
+      }
+    }
+  },
+  "staged_plan": {
+    "principle": "Each stage is paid for only by the variants that survived the previous one, and the gates are fixed before any run.",
+    "stages": [
+      {
+        "stage": 1,
+        "name": "learning metrics",
+        "applies_to": "every variant",
+        "cost_seconds_per_variant": 1200.8049782911937,
+        "measures": [
+          "valid_loss",
+          "valid_acc_tau",
+          "valid_exact_accuracy",
+          "token accuracy",
+          "decode validity",
+          "throughput",
+          "memory"
+        ],
+        "gate": "advance a variant to stage 2 if its acc_tau is within 0.05 of full NACT, OR if it drops by more than 0.05 - both outcomes are informative. Only variants that land in neither case (impossible by construction) are dropped.",
+        "note": "no variant is dropped at stage 1; the gate orders stage 2, not membership"
+      },
+      {
+        "stage": 2,
+        "name": "sparsity generalization",
+        "applies_to": "every variant that trained successfully",
+        "cost_seconds_per_variant": 240,
+        "measures": [
+          "lift at nnz=12",
+          "lift at nnz=8",
+          "lift at nnz=6",
+          "lift at nnz=4",
+          "lift at nnz=2",
+          "lift at nnz=1",
+          "K*e_i probe lift"
+        ],
+        "gate": "advance to stage 3 only if lift stays positive through nnz=1, the property that distinguishes V2 from V1",
+        "note": "cheap enough (4 min) to run on all arms regardless"
+      },
+      {
+        "stage": 3,
+        "name": "direct secret recovery",
+        "applies_to": "only variants passing the stage-2 gate",
+        "cost_seconds_per_variant": 120,
+        "measures": [
+          "exact recovery",
+          "coordinate accuracy",
+          "successful K count",
+          "phase-20 residual verification"
+        ],
+        "gate": "terminal",
+        "note": "recovery is nearly free (2 min) but is only INTERPRETABLE for variants that kept sparse-probe competence; running it on a variant that collapsed on probes measures nothing new"
+      }
+    ],
+    "why_not_recovery_everywhere": "Recovery is cheap, so the reason to stage it is not cost but meaning. Phase 12 established that probe behaviour is the mechanism; a variant that fails stage 2 will fail recovery for a reason already measured, and reporting it as an independent finding would double-count one cause."
+  },
+  "seed_design": {
+    "recommendation": "seed 0 screening for all variants; extra seeds only where needed",
+    "measured_seed_variance_full_nact": {
+      "valid_acc_tau": {
+        "mean": 0.9863283333333334,
+        "stdev": 0.0021282897672388213,
+        "three_sigma_band": 0.006384869301716464
+      },
+      "valid_loss": {
+        "mean": 0.913606,
+        "stdev": 0.023194681998251237,
+        "three_sigma_band": 0.06958404599475371
+      },
+      "valid_exact_accuracy": {
+        "mean": 0.11100266666666665,
+        "stdev": 0.009165592852256385,
+        "three_sigma_band": 0.027496778556769158
+      }
+    },
+    "argument": "The three phase-17 NACT runs give acc_tau sd = 0.0021 and loss sd = 0.0232. A single seed therefore resolves any acc_tau difference larger than about 0.0064 (3 sd). The effect this study is chasing is the V1-vs-V2 gap of roughly 0.76 in acc_tau - two orders of magnitude larger than the seed noise. Spending 5 seeds per variant to resolve an effect that one seed resolves is wasted compute.",
+    "when_to_add_seeds": [
+      "a variant lands within 3 sd of full NACT and the claim is 'no effect' - absence of an effect needs more evidence than presence of one",
+      "two variants land within 3 sd of each other and their ORDER matters",
+      "the single decisive contrast in the final write-up, which should carry 3 seeds so the headline is not a one-run claim"
+    ],
+    "caveat": "The measured sd is full NACT's. A variant that degrades toward V1-like behaviour may also inherit V1's much larger seed spread - V1's acc_tau ranged 0.10 to 0.36 across seeds. Any variant whose seed-0 result is clearly degraded must therefore get 3 seeds before its magnitude is quoted, even though its DIRECTION is safe from one run."
+  },
+  "recommendation": {
+    "ranked": [
+      {
+        "rank": 1,
+        "variant": "F",
+        "name": "one-token only",
+        "scientific_value": "highest",
+        "why": "It splits the two competing explanations in one run. If F matches A, every numerical feature is decoration and the gain is the tokenisation plus coordinate identity. If F falls back toward V1, the features are doing the work. No other single experiment separates these.",
+        "distinguishes": "representation change vs information change"
+      },
+      {
+        "rank": 2,
+        "variant": "C",
+        "name": "no zero-aware features",
+        "scientific_value": "high",
+        "why": "Phase 14 predicted the zero indicator repairs a measured two-position conjunction, and phase 12 measured the sparse collapse it was meant to fix. C is the direct test of the project's own stated hypothesis H2, and it is the one most likely to move the sparsity endpoint.",
+        "distinguishes": "zero-awareness vs continuous value information"
+      },
+      {
+        "rank": 3,
+        "variant": "E",
+        "name": "no coordinate embedding",
+        "scientific_value": "high",
+        "why": "b = sum_i a_i s_i binds coordinate i to bit s_i, so absolute identity is theoretically required and RoPE supplies only relative position. The trained coordinate table has a norm comparable to the digit embeddings, so it is carrying signal. This is also the only variant with a parameter delta worth stating.",
+        "distinguishes": "absolute vs relative position"
+      },
+      {
+        "rank": 4,
+        "variant": "D",
+        "name": "no Fourier",
+        "scientific_value": "medium",
+        "why": "Tests the modular-arithmetic claim specifically. Lower priority only because F and C already bracket it: if F matches A, D is moot.",
+        "distinguishes": "ring structure vs plain magnitude"
+      },
+      {
+        "rank": 5,
+        "variant": "G",
+        "name": "no sparse bias",
+        "scientific_value": "predicted, do not pay for it",
+        "why": "The trained bias never left its zero initialisation on any seed. Run it only if the prediction itself is to be checked.",
+        "distinguishes": "nothing measurable"
+      }
+    ],
+    "minimum_viable_single_experiment": {
+      "variant": "F",
+      "cost_seconds": 1560.8049782911937,
+      "answers": "is the gain the tokenisation or the numerical features?"
+    },
+    "recommended_set": [
+      "F",
+      "C",
+      "E"
+    ],
+    "recommended_rationale": "F, C and E are the three arms that map onto three genuinely different explanations - representation, zero-awareness, positional identity. A is already trained on three seeds and costs nothing. D is held in reserve and only run if F shows the features matter but C does not explain why. G is predicted from weights already on disk.",
+    "cost_estimate_seconds": {
+      "stage_1_training_3_variants": 3602.414934873581,
+      "stage_2_sparsity_3_variants": 720,
+      "stage_3_recovery_top_2": 240,
+      "confirmation_seeds_for_the_decisive_contrast": 2401.6099565823874,
+      "total_recommended": 6964.024891455969,
+      "total_if_all_six_variants_were_run_once": 9364.829869747162,
+      "total_if_all_six_at_five_seeds": 38184.14934873581
+    },
+    "cost_estimate_hours": {
+      "total_recommended": 1.9344513587377692,
+      "total_if_all_six_variants_were_run_once": 2.6013416304853227,
+      "total_if_all_six_at_five_seeds": 10.606708152426613
+    }
+  },
+  "budget": {
+    "min": 4000000,
+    "max": 5000000,
+    "all_variants_within_budget": true,
+    "no_padding_parameters": true
+  }
+}

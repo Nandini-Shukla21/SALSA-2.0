@@ -1,0 +1,811 @@
+{
+  "audit": "V1 Salsa2-GatedUT vs V2 Salsa2-NACT",
+  "status": "READ-ONLY. No training, no checkpoints written, no evaluation rerun, no model/data/evaluation code modified.",
+  "checkpoint_location": {
+    "seed_0/V1": {
+      "run": "results/nact_v2/phase16_part_b/v1_control/control_a_n12_h2/phase16_part_b_v1",
+      "monitor_metric": "valid_loss (min)",
+      "best_epoch_from_metadata": 19,
+      "best_metric_from_metadata": 1.741287,
+      "checkpoint_dir_exists": false,
+      "checkpoint_files": [],
+      "best_checkpoint_available": false
+    },
+    "seed_0/V2": {
+      "run": "results/nact_v2/phase16_part_b/nact_training/nact_n12_h2/phase16_part_b_nact",
+      "monitor_metric": "valid_loss (min)",
+      "best_epoch_from_metadata": 19,
+      "best_metric_from_metadata": 0.955208,
+      "checkpoint_dir_exists": false,
+      "checkpoint_files": [],
+      "best_checkpoint_available": false
+    },
+    "seed_42/V1": {
+      "run": "results/nact_v2/phase16_part_c/seed_42/v1/control_a_n12_h2/phase16_part_c_v1_seed_42",
+      "monitor_metric": "valid_loss (min)",
+      "best_epoch_from_metadata": 19,
+      "best_metric_from_metadata": 1.843136,
+      "checkpoint_dir_exists": false,
+      "checkpoint_files": [],
+      "best_checkpoint_available": false
+    },
+    "seed_42/V2": {
+      "run": "results/nact_v2/phase16_part_c/seed_42/nact/nact_n12_h2/phase16_part_c_nact_seed_42",
+      "monitor_metric": "valid_loss (min)",
+      "best_epoch_from_metadata": 19,
+      "best_metric_from_metadata": 1.08272,
+      "checkpoint_dir_exists": false,
+      "checkpoint_files": [],
+      "best_checkpoint_available": false
+    },
+    "seed_123/V1": {
+      "run": "results/nact_v2/phase16_part_c/seed_123/v1/control_a_n12_h2/phase16_part_c_v1_seed_123",
+      "monitor_metric": "valid_loss (min)",
+      "best_epoch_from_metadata": 18,
+      "best_metric_from_metadata": 1.842178,
+      "checkpoint_dir_exists": false,
+      "checkpoint_files": [],
+      "best_checkpoint_available": false
+    },
+    "seed_123/V2": {
+      "run": "results/nact_v2/phase16_part_c/seed_123/nact/nact_n12_h2/phase16_part_c_nact_seed_123",
+      "monitor_metric": "valid_loss (min)",
+      "best_epoch_from_metadata": 19,
+      "best_metric_from_metadata": 0.905749,
+      "checkpoint_dir_exists": false,
+      "checkpoint_files": [],
+      "best_checkpoint_available": false
+    },
+    "seed_456/V1": {
+      "run": "results/nact_v2/phase16_part_c/seed_456/v1/control_a_n12_h2/phase16_part_c_v1_seed_456",
+      "monitor_metric": "valid_loss (min)",
+      "best_epoch_from_metadata": 19,
+      "best_metric_from_metadata": 1.779645,
+      "checkpoint_dir_exists": false,
+      "checkpoint_files": [],
+      "best_checkpoint_available": false
+    },
+    "seed_456/V2": {
+      "run": "results/nact_v2/phase16_part_c/seed_456/nact/nact_n12_h2/phase16_part_c_nact_seed_456",
+      "monitor_metric": "valid_loss (min)",
+      "best_epoch_from_metadata": 19,
+      "best_metric_from_metadata": 0.892352,
+      "checkpoint_dir_exists": false,
+      "checkpoint_files": [],
+      "best_checkpoint_available": false
+    },
+    "seed_789/V1": {
+      "run": "results/nact_v2/phase16_part_c/seed_789/v1/control_a_n12_h2/phase16_part_c_v1_seed_789",
+      "monitor_metric": "valid_loss (min)",
+      "best_epoch_from_metadata": 17,
+      "best_metric_from_metadata": 1.841781,
+      "checkpoint_dir_exists": false,
+      "checkpoint_files": [],
+      "best_checkpoint_available": false
+    },
+    "seed_789/V2": {
+      "run": "results/nact_v2/phase16_part_c/seed_789/nact/nact_n12_h2/phase16_part_c_nact_seed_789",
+      "monitor_metric": "valid_loss (min)",
+      "best_epoch_from_metadata": 19,
+      "best_metric_from_metadata": 0.967736,
+      "checkpoint_dir_exists": false,
+      "checkpoint_files": [],
+      "best_checkpoint_available": false
+    }
+  },
+  "checkpoints_unavailable": [
+    "seed_0/V1",
+    "seed_0/V2",
+    "seed_42/V1",
+    "seed_42/V2",
+    "seed_123/V1",
+    "seed_123/V2",
+    "seed_456/V1",
+    "seed_456/V2",
+    "seed_789/V1",
+    "seed_789/V2"
+  ],
+  "protocol_differences": [
+    {
+      "setting": "model.arch",
+      "V1": "gated_universal_transformer",
+      "V2": "nact"
+    },
+    {
+      "setting": "model.encoder_loops",
+      "V1": 2,
+      "V2": 4
+    }
+  ],
+  "cosmetic_differences": [
+    {
+      "setting": "experiment.name",
+      "V1": "control_a_n12_h2",
+      "V2": "nact_n12_h2"
+    },
+    {
+      "setting": "experiment.output_root",
+      "V1": "results/nact_v2/phase16_part_b/v1_control",
+      "V2": "results/nact_v2/phase16_part_b/nact_training"
+    },
+    {
+      "setting": "experiment.notes",
+      "V1": "Positive control at n=12, h=2. Diagnostic for whether the training pipeline can learn secret-related structure at all. Not a cryptographic result.",
+      "V2": "Salsa2-NACT V2 under the V1 n=12,h=2 training protocol. Only the model changes; every training and data setting is inherited from control_a_n12_h2.yaml. Diagnostic control, not a cryptographic result."
+    },
+    {
+      "setting": "experiment.tags",
+      "V1": "['positive-control', 'diagnostic', 'n12', 'h2', 'representation-r']",
+      "V2": "['nact', 'v2', 'n12', 'h2', 'representation-r', 'controlled-comparison']"
+    }
+  ],
+  "protocol_note": "Only model.arch and model.encoder_loops differ. Every data, encoding, optimiser, schedule, batch, validation and tau setting is identical, and both arms share seed and secret.",
+  "chance_baselines": {
+    "token_accuracy": 0.44621,
+    "exact_accuracy": 0.00398,
+    "acc_tau": 0.19287
+  },
+  "loss_reference_points": {
+    "marginal_only_nats": 1.86498,
+    "irreducible_floor_nats": 0.8392
+  },
+  "per_seed": {
+    "seed_0": {
+      "V1": {
+        "model_name": "Salsa2-GatedUT",
+        "architecture": "gated_universal_transformer",
+        "config_fingerprint": "1b3f32584dadf4b7",
+        "seed": 0,
+        "parameter_count": 4131200,
+        "best_epoch": 19,
+        "samples_seen": 100032,
+        "elapsed_seconds": 344.6953458786011,
+        "samples_per_second": 369.079,
+        "tokens_per_second": 1107.2,
+        "rss_mb": 766.046875,
+        "peak_rss_mb_UNRELIABLE": 403047.859375,
+        "valid_loss": 1.741287,
+        "valid_token_accuracy": 0.532389,
+        "valid_perfect_accuracy": 0.007812,
+        "valid_greedy_token_accuracy": 0.453125,
+        "valid_exact_accuracy": 0.007812,
+        "valid_acc_tau": 0.35498,
+        "valid_tolerance": 0.1,
+        "valid_mean_distance": 63.4736,
+        "valid_median_distance": 38.0,
+        "valid_acc_tau_circular_DIAGNOSTIC": 0.401367,
+        "valid_mean_circular_distance_DIAGNOSTIC": 41.4717,
+        "valid_median_circular_distance_DIAGNOSTIC": 33.0,
+        "valid_decode_failure_rate": 0.0,
+        "valid_sequences": 2048,
+        "valid_tokens": 6144
+      },
+      "V2": {
+        "model_name": "Salsa2-NACT",
+        "architecture": "nact",
+        "config_fingerprint": "3c29b9ed3806bffa",
+        "seed": 0,
+        "parameter_count": 4241288,
+        "best_epoch": 19,
+        "samples_seen": 100032,
+        "elapsed_seconds": 470.60233998298645,
+        "samples_per_second": 259.822,
+        "tokens_per_second": 779.5,
+        "rss_mb": 609.640625,
+        "peak_rss_mb_UNRELIABLE": 402959.859375,
+        "valid_loss": 0.955208,
+        "valid_token_accuracy": 0.698893,
+        "valid_perfect_accuracy": 0.10498,
+        "valid_greedy_token_accuracy": 0.68278,
+        "valid_exact_accuracy": 0.10498,
+        "valid_acc_tau": 0.984863,
+        "valid_tolerance": 0.1,
+        "valid_mean_distance": 6.5244,
+        "valid_median_distance": 2.0,
+        "valid_acc_tau_circular_DIAGNOSTIC": 1.0,
+        "valid_mean_circular_distance_DIAGNOSTIC": 2.9165,
+        "valid_median_circular_distance_DIAGNOSTIC": 2.0,
+        "valid_decode_failure_rate": 0.0,
+        "valid_sequences": 2048,
+        "valid_tokens": 6144
+      }
+    },
+    "seed_42": {
+      "V1": {
+        "model_name": "Salsa2-GatedUT",
+        "architecture": "gated_universal_transformer",
+        "config_fingerprint": "abff8b08e0ef79c1",
+        "seed": 42,
+        "parameter_count": 4131200,
+        "best_epoch": 19,
+        "samples_seen": 100032,
+        "elapsed_seconds": 370.4971249103546,
+        "samples_per_second": 344.001,
+        "tokens_per_second": 1032.0,
+        "rss_mb": 836.671875,
+        "peak_rss_mb_UNRELIABLE": 402920.859375,
+        "valid_loss": 1.843136,
+        "valid_token_accuracy": 0.44515,
+        "valid_perfect_accuracy": 0.003418,
+        "valid_greedy_token_accuracy": 0.443197,
+        "valid_exact_accuracy": 0.003418,
+        "valid_acc_tau": 0.189453,
+        "valid_tolerance": 0.1,
+        "valid_mean_distance": 71.0361,
+        "valid_median_distance": 66.0,
+        "valid_acc_tau_circular_DIAGNOSTIC": 0.189453,
+        "valid_mean_circular_distance_DIAGNOSTIC": 64.3032,
+        "valid_median_circular_distance_DIAGNOSTIC": 66.0,
+        "valid_decode_failure_rate": 0.0,
+        "valid_sequences": 2048,
+        "valid_tokens": 6144
+      },
+      "V2": {
+        "model_name": "Salsa2-NACT",
+        "architecture": "nact",
+        "config_fingerprint": "2ffe9010dd8ae329",
+        "seed": 42,
+        "parameter_count": 4241288,
+        "best_epoch": 19,
+        "samples_seen": 100032,
+        "elapsed_seconds": 491.43791675567627,
+        "samples_per_second": 248.653,
+        "tokens_per_second": 746.0,
+        "rss_mb": 637.5,
+        "peak_rss_mb_UNRELIABLE": 402959.859375,
+        "valid_loss": 1.08272,
+        "valid_token_accuracy": 0.688965,
+        "valid_perfect_accuracy": 0.072754,
+        "valid_greedy_token_accuracy": 0.669271,
+        "valid_exact_accuracy": 0.072754,
+        "valid_acc_tau": 0.984375,
+        "valid_tolerance": 0.1,
+        "valid_mean_distance": 7.6665,
+        "valid_median_distance": 3.0,
+        "valid_acc_tau_circular_DIAGNOSTIC": 1.0,
+        "valid_mean_circular_distance_DIAGNOSTIC": 3.8931,
+        "valid_median_circular_distance_DIAGNOSTIC": 3.0,
+        "valid_decode_failure_rate": 0.0,
+        "valid_sequences": 2048,
+        "valid_tokens": 6144
+      }
+    },
+    "seed_123": {
+      "V1": {
+        "model_name": "Salsa2-GatedUT",
+        "architecture": "gated_universal_transformer",
+        "config_fingerprint": "84d93dddce03abcd",
+        "seed": 123,
+        "parameter_count": 4131200,
+        "best_epoch": 18,
+        "samples_seen": 100032,
+        "elapsed_seconds": 369.3485789299011,
+        "samples_per_second": 344.041,
+        "tokens_per_second": 1032.1,
+        "rss_mb": 601.171875,
+        "peak_rss_mb_UNRELIABLE": 402919.859375,
+        "valid_loss": 1.842193,
+        "valid_token_accuracy": 0.446777,
+        "valid_perfect_accuracy": 0.001953,
+        "valid_greedy_token_accuracy": 0.44222,
+        "valid_exact_accuracy": 0.001953,
+        "valid_acc_tau": 0.124023,
+        "valid_tolerance": 0.1,
+        "valid_mean_distance": 119.7432,
+        "valid_median_distance": 119.0,
+        "valid_acc_tau_circular_DIAGNOSTIC": 0.202148,
+        "valid_mean_circular_distance_DIAGNOSTIC": 63.0068,
+        "valid_median_circular_distance_DIAGNOSTIC": 63.0,
+        "valid_decode_failure_rate": 0.0,
+        "valid_sequences": 2048,
+        "valid_tokens": 6144
+      },
+      "V2": {
+        "model_name": "Salsa2-NACT",
+        "architecture": "nact",
+        "config_fingerprint": "f90f3dd643c2450d",
+        "seed": 123,
+        "parameter_count": 4241288,
+        "best_epoch": 19,
+        "samples_seen": 100032,
+        "elapsed_seconds": 464.8210279941559,
+        "samples_per_second": 261.991,
+        "tokens_per_second": 786.0,
+        "rss_mb": 701.96875,
+        "peak_rss_mb_UNRELIABLE": 402958.859375,
+        "valid_loss": 0.905749,
+        "valid_token_accuracy": 0.703451,
+        "valid_perfect_accuracy": 0.115234,
+        "valid_greedy_token_accuracy": 0.691243,
+        "valid_exact_accuracy": 0.115234,
+        "valid_acc_tau": 0.988281,
+        "valid_tolerance": 0.1,
+        "valid_mean_distance": 5.4888,
+        "valid_median_distance": 2.0,
+        "valid_acc_tau_circular_DIAGNOSTIC": 1.0,
+        "valid_mean_circular_distance_DIAGNOSTIC": 2.7007,
+        "valid_median_circular_distance_DIAGNOSTIC": 2.0,
+        "valid_decode_failure_rate": 0.0,
+        "valid_sequences": 2048,
+        "valid_tokens": 6144
+      }
+    },
+    "seed_456": {
+      "V1": {
+        "model_name": "Salsa2-GatedUT",
+        "architecture": "gated_universal_transformer",
+        "config_fingerprint": "1656ecbb30df6d1b",
+        "seed": 456,
+        "parameter_count": 4131200,
+        "best_epoch": 19,
+        "samples_seen": 100032,
+        "elapsed_seconds": 338.26287627220154,
+        "samples_per_second": 375.706,
+        "tokens_per_second": 1127.1,
+        "rss_mb": 612.59375,
+        "peak_rss_mb_UNRELIABLE": 402920.859375,
+        "valid_loss": 1.779645,
+        "valid_token_accuracy": 0.511719,
+        "valid_perfect_accuracy": 0.010742,
+        "valid_greedy_token_accuracy": 0.475749,
+        "valid_exact_accuracy": 0.010742,
+        "valid_acc_tau": 0.344238,
+        "valid_tolerance": 0.1,
+        "valid_mean_distance": 65.6011,
+        "valid_median_distance": 41.0,
+        "valid_acc_tau_circular_DIAGNOSTIC": 0.399414,
+        "valid_mean_circular_distance_DIAGNOSTIC": 40.4419,
+        "valid_median_circular_distance_DIAGNOSTIC": 34.0,
+        "valid_decode_failure_rate": 0.0,
+        "valid_sequences": 2048,
+        "valid_tokens": 6144
+      },
+      "V2": {
+        "model_name": "Salsa2-NACT",
+        "architecture": "nact",
+        "config_fingerprint": "e82134590fd5802c",
+        "seed": 456,
+        "parameter_count": 4241288,
+        "best_epoch": 19,
+        "samples_seen": 100032,
+        "elapsed_seconds": 449.92896604537964,
+        "samples_per_second": 271.351,
+        "tokens_per_second": 814.1,
+        "rss_mb": 573.8125,
+        "peak_rss_mb_UNRELIABLE": 402958.859375,
+        "valid_loss": 0.892352,
+        "valid_token_accuracy": 0.704264,
+        "valid_perfect_accuracy": 0.114258,
+        "valid_greedy_token_accuracy": 0.692057,
+        "valid_exact_accuracy": 0.114258,
+        "valid_acc_tau": 0.984863,
+        "valid_tolerance": 0.1,
+        "valid_mean_distance": 6.1616,
+        "valid_median_distance": 2.0,
+        "valid_acc_tau_circular_DIAGNOSTIC": 0.999023,
+        "valid_mean_circular_distance_DIAGNOSTIC": 2.7559,
+        "valid_median_circular_distance_DIAGNOSTIC": 2.0,
+        "valid_decode_failure_rate": 0.0,
+        "valid_sequences": 2048,
+        "valid_tokens": 6144
+      }
+    },
+    "seed_789": {
+      "V1": {
+        "model_name": "Salsa2-GatedUT",
+        "architecture": "gated_universal_transformer",
+        "config_fingerprint": "83a5a250b0388a96",
+        "seed": 789,
+        "parameter_count": 4131200,
+        "best_epoch": 17,
+        "samples_seen": 100032,
+        "elapsed_seconds": 342.63511323928833,
+        "samples_per_second": 369.946,
+        "tokens_per_second": 1109.8,
+        "rss_mb": 745.3125,
+        "peak_rss_mb_UNRELIABLE": 402920.859375,
+        "valid_loss": 1.84195,
+        "valid_token_accuracy": 0.455729,
+        "valid_perfect_accuracy": 0.005859,
+        "valid_greedy_token_accuracy": 0.444336,
+        "valid_exact_accuracy": 0.005859,
+        "valid_acc_tau": 0.103516,
+        "valid_tolerance": 0.1,
+        "valid_mean_distance": 116.6636,
+        "valid_median_distance": 111.5,
+        "valid_acc_tau_circular_DIAGNOSTIC": 0.181641,
+        "valid_mean_circular_distance_DIAGNOSTIC": 63.5122,
+        "valid_median_circular_distance_DIAGNOSTIC": 62.0,
+        "valid_decode_failure_rate": 0.0,
+        "valid_sequences": 2048,
+        "valid_tokens": 6144
+      },
+      "V2": {
+        "model_name": "Salsa2-NACT",
+        "architecture": "nact",
+        "config_fingerprint": "cc20238f521fa642",
+        "seed": 789,
+        "parameter_count": 4241288,
+        "best_epoch": 19,
+        "samples_seen": 100032,
+        "elapsed_seconds": 443.07118105888367,
+        "samples_per_second": 274.632,
+        "tokens_per_second": 823.9,
+        "rss_mb": 606.203125,
+        "peak_rss_mb_UNRELIABLE": 402967.859375,
+        "valid_loss": 0.967736,
+        "valid_token_accuracy": 0.698893,
+        "valid_perfect_accuracy": 0.099121,
+        "valid_greedy_token_accuracy": 0.683757,
+        "valid_exact_accuracy": 0.099121,
+        "valid_acc_tau": 0.992188,
+        "valid_tolerance": 0.1,
+        "valid_mean_distance": 4.8418,
+        "valid_median_distance": 3.0,
+        "valid_acc_tau_circular_DIAGNOSTIC": 0.999512,
+        "valid_mean_circular_distance_DIAGNOSTIC": 3.0786,
+        "valid_median_circular_distance_DIAGNOSTIC": 3.0,
+        "valid_decode_failure_rate": 0.0,
+        "valid_sequences": 2048,
+        "valid_tokens": 6144
+      }
+    }
+  },
+  "head_to_head_seed_0": [
+    {
+      "metric": "Trainable parameters",
+      "key": "parameter_count",
+      "V1": 4131200,
+      "V2": 4241288,
+      "winner": "V1",
+      "absolute_difference_v2_minus_v1": 110088,
+      "percent_difference": 2.66,
+      "better_direction": "lower",
+      "chance_level": null
+    },
+    {
+      "metric": "Best epoch",
+      "key": "best_epoch",
+      "V1": 19,
+      "V2": 19,
+      "winner": "n/a",
+      "absolute_difference_v2_minus_v1": 0,
+      "percent_difference": 0.0,
+      "better_direction": "none",
+      "chance_level": null
+    },
+    {
+      "metric": "Samples trained",
+      "key": "samples_seen",
+      "V1": 100032,
+      "V2": 100032,
+      "winner": "n/a",
+      "absolute_difference_v2_minus_v1": 0,
+      "percent_difference": 0.0,
+      "better_direction": "none",
+      "chance_level": null
+    },
+    {
+      "metric": "Validation loss (nats)",
+      "key": "valid_loss",
+      "V1": 1.741287,
+      "V2": 0.955208,
+      "winner": "V2",
+      "absolute_difference_v2_minus_v1": -0.786079,
+      "percent_difference": -45.14,
+      "better_direction": "lower",
+      "chance_level": null
+    },
+    {
+      "metric": "Teacher-forced token accuracy",
+      "key": "valid_token_accuracy",
+      "V1": 0.532389,
+      "V2": 0.698893,
+      "winner": "V2",
+      "absolute_difference_v2_minus_v1": 0.166504,
+      "percent_difference": 31.27,
+      "better_direction": "higher",
+      "chance_level": 0.44621
+    },
+    {
+      "metric": "Teacher-forced perfect accuracy",
+      "key": "valid_perfect_accuracy",
+      "V1": 0.007812,
+      "V2": 0.10498,
+      "winner": "V2",
+      "absolute_difference_v2_minus_v1": 0.097168,
+      "percent_difference": 1243.83,
+      "better_direction": "higher",
+      "chance_level": null
+    },
+    {
+      "metric": "Greedy token accuracy",
+      "key": "valid_greedy_token_accuracy",
+      "V1": 0.453125,
+      "V2": 0.68278,
+      "winner": "V2",
+      "absolute_difference_v2_minus_v1": 0.229655,
+      "percent_difference": 50.68,
+      "better_direction": "higher",
+      "chance_level": null
+    },
+    {
+      "metric": "Exact integer accuracy",
+      "key": "valid_exact_accuracy",
+      "V1": 0.007812,
+      "V2": 0.10498,
+      "winner": "V2",
+      "absolute_difference_v2_minus_v1": 0.097168,
+      "percent_difference": 1243.83,
+      "better_direction": "higher",
+      "chance_level": 0.00398
+    },
+    {
+      "metric": "SALSA acc_tau",
+      "key": "valid_acc_tau",
+      "V1": 0.35498,
+      "V2": 0.984863,
+      "winner": "V2",
+      "absolute_difference_v2_minus_v1": 0.629883,
+      "percent_difference": 177.44,
+      "better_direction": "higher",
+      "chance_level": 0.19287
+    },
+    {
+      "metric": "Decode failure rate",
+      "key": "valid_decode_failure_rate",
+      "V1": 0.0,
+      "V2": 0.0,
+      "winner": "TIE",
+      "absolute_difference_v2_minus_v1": 0.0,
+      "percent_difference": null,
+      "better_direction": "lower",
+      "chance_level": null
+    },
+    {
+      "metric": "Mean |b - b_hat|",
+      "key": "valid_mean_distance",
+      "V1": 63.4736,
+      "V2": 6.5244,
+      "winner": "V2",
+      "absolute_difference_v2_minus_v1": -56.9492,
+      "percent_difference": -89.72,
+      "better_direction": "lower",
+      "chance_level": null
+    },
+    {
+      "metric": "Median |b - b_hat|",
+      "key": "valid_median_distance",
+      "V1": 38.0,
+      "V2": 2.0,
+      "winner": "V2",
+      "absolute_difference_v2_minus_v1": -36.0,
+      "percent_difference": -94.74,
+      "better_direction": "lower",
+      "chance_level": null
+    },
+    {
+      "metric": "Samples/sec",
+      "key": "samples_per_second",
+      "V1": 369.079,
+      "V2": 259.822,
+      "winner": "V1",
+      "absolute_difference_v2_minus_v1": -109.257,
+      "percent_difference": -29.6,
+      "better_direction": "higher",
+      "chance_level": null
+    },
+    {
+      "metric": "Tokens/sec",
+      "key": "tokens_per_second",
+      "V1": 1107.2,
+      "V2": 779.5,
+      "winner": "V1",
+      "absolute_difference_v2_minus_v1": -327.7,
+      "percent_difference": -29.6,
+      "better_direction": "higher",
+      "chance_level": null
+    },
+    {
+      "metric": "Wall-clock training (s)",
+      "key": "elapsed_seconds",
+      "V1": 344.6953458786011,
+      "V2": 470.60233998298645,
+      "winner": "V1",
+      "absolute_difference_v2_minus_v1": 125.906994,
+      "percent_difference": 36.53,
+      "better_direction": "lower",
+      "chance_level": null
+    },
+    {
+      "metric": "CPU RSS (MiB)",
+      "key": "rss_mb",
+      "V1": 766.046875,
+      "V2": 609.640625,
+      "winner": "V2",
+      "absolute_difference_v2_minus_v1": -156.40625,
+      "percent_difference": -20.42,
+      "better_direction": "lower",
+      "chance_level": null
+    }
+  ],
+  "across_seeds": {
+    "valid_loss": {
+      "V1": {
+        "mean": 1.809642,
+        "min": 1.741287,
+        "max": 1.843136,
+        "stdev": 0.046897,
+        "n_seeds": 5
+      },
+      "V2": {
+        "mean": 0.960753,
+        "min": 0.892352,
+        "max": 1.08272,
+        "stdev": 0.075266,
+        "n_seeds": 5
+      },
+      "ranges_overlap": false
+    },
+    "valid_acc_tau": {
+      "V1": {
+        "mean": 0.223242,
+        "min": 0.103516,
+        "max": 0.35498,
+        "stdev": 0.119703,
+        "n_seeds": 5
+      },
+      "V2": {
+        "mean": 0.986914,
+        "min": 0.984375,
+        "max": 0.992188,
+        "stdev": 0.003337,
+        "n_seeds": 5
+      },
+      "ranges_overlap": false
+    },
+    "valid_exact_accuracy": {
+      "V1": {
+        "mean": 0.005957,
+        "min": 0.001953,
+        "max": 0.010742,
+        "stdev": 0.003494,
+        "n_seeds": 5
+      },
+      "V2": {
+        "mean": 0.101269,
+        "min": 0.072754,
+        "max": 0.115234,
+        "stdev": 0.017286,
+        "n_seeds": 5
+      },
+      "ranges_overlap": false
+    },
+    "valid_token_accuracy": {
+      "V1": {
+        "mean": 0.478353,
+        "min": 0.44515,
+        "max": 0.532389,
+        "stdev": 0.040757,
+        "n_seeds": 5
+      },
+      "V2": {
+        "mean": 0.698893,
+        "min": 0.688965,
+        "max": 0.704264,
+        "stdev": 0.006087,
+        "n_seeds": 5
+      },
+      "ranges_overlap": false
+    },
+    "valid_perfect_accuracy": {
+      "V1": {
+        "mean": 0.005957,
+        "min": 0.001953,
+        "max": 0.010742,
+        "stdev": 0.003494,
+        "n_seeds": 5
+      },
+      "V2": {
+        "mean": 0.101269,
+        "min": 0.072754,
+        "max": 0.115234,
+        "stdev": 0.017286,
+        "n_seeds": 5
+      },
+      "ranges_overlap": false
+    },
+    "valid_greedy_token_accuracy": {
+      "V1": {
+        "mean": 0.451725,
+        "min": 0.44222,
+        "max": 0.475749,
+        "stdev": 0.014114,
+        "n_seeds": 5
+      },
+      "V2": {
+        "mean": 0.683822,
+        "min": 0.669271,
+        "max": 0.692057,
+        "stdev": 0.009161,
+        "n_seeds": 5
+      },
+      "ranges_overlap": false
+    },
+    "valid_mean_distance": {
+      "V1": {
+        "mean": 87.30352,
+        "min": 63.4736,
+        "max": 119.7432,
+        "stdev": 28.362987,
+        "n_seeds": 5
+      },
+      "V2": {
+        "mean": 6.13662,
+        "min": 4.8418,
+        "max": 7.6665,
+        "stdev": 1.070953,
+        "n_seeds": 5
+      },
+      "ranges_overlap": false
+    },
+    "samples_per_second": {
+      "V1": {
+        "mean": 360.5546,
+        "min": 344.001,
+        "max": 375.706,
+        "stdev": 15.306448,
+        "n_seeds": 5
+      },
+      "V2": {
+        "mean": 263.2898,
+        "min": 248.653,
+        "max": 274.632,
+        "stdev": 10.266169,
+        "n_seeds": 5
+      },
+      "ranges_overlap": false
+    },
+    "elapsed_seconds": {
+      "V1": {
+        "mean": 353.087808,
+        "min": 338.262876,
+        "max": 370.497125,
+        "stdev": 15.548053,
+        "n_seeds": 5
+      },
+      "V2": {
+        "mean": 463.972286,
+        "min": 443.071181,
+        "max": 491.437917,
+        "stdev": 18.928219,
+        "n_seeds": 5
+      },
+      "ranges_overlap": false
+    },
+    "rss_mb": {
+      "V1": {
+        "mean": 712.359375,
+        "min": 601.171875,
+        "max": 836.671875,
+        "stdev": 102.149026,
+        "n_seeds": 5
+      },
+      "V2": {
+        "mean": 625.825,
+        "min": 573.8125,
+        "max": 701.96875,
+        "stdev": 48.183058,
+        "n_seeds": 5
+      },
+      "ranges_overlap": true
+    }
+  },
+  "v1_seeds_at_or_below_acc_tau_chance": [
+    42,
+    123,
+    789
+  ],
+  "v2_seeds_at_or_below_acc_tau_chance": [],
+  "sparsity_comparison": "not available in existing artifacts"
+}

@@ -59,16 +59,30 @@ def locate_checkpoint(run_dir: Path) -> Path:
     raise FileNotFoundError(f"no checkpoint under {checkpoints}")
 
 
-def verify(checkpoint: Dict[str, Any], config, codec: LatticeCodec) -> List[str]:
+def verify(
+    checkpoint: Dict[str, Any],
+    config,
+    codec: LatticeCodec,
+    expect_parameters: int = 4_131_200,
+    expect_arch: str = "gated_universal_transformer",
+) -> List[str]:
     """Check the checkpoint against the configuration.
+
+    ``expect_parameters`` and ``expect_arch`` say WHICH model this script is
+    permitted to load.  They default to the V1 GatedUT, so every existing
+    invocation behaves exactly as before; phase 19 passes the NACT values so the
+    same attack can be run against V2.
+
+    This is an identity gate ONLY.  Nothing in the recovery algorithm
+    (:mod:`salsa.recovery.direct`) depends on it, and that module is unchanged.
 
     Returns:
         A list of mismatch descriptions; empty means everything agrees.
     """
     saved, spec = checkpoint["config"], checkpoint["spec"]
     expectations = [
-        ("parameter count", 4_131_200, checkpoint["parameter_count"]),
-        ("architecture", "gated_universal_transformer", spec["arch"]),
+        ("parameter count", int(expect_parameters), checkpoint["parameter_count"]),
+        ("architecture", str(expect_arch), spec["arch"]),
         ("n", config.lwe.n, saved["lwe"]["n"]),
         ("h", config.lwe.resolved_hamming_weight, saved["lwe"]["hamming_weight"]),
         ("q", config.lwe.q, saved["lwe"]["q"]),
@@ -95,6 +109,12 @@ def main(argv: Optional[List[str]] = None) -> int:
     parser.add_argument("--run-dir", type=Path,
                         default=REPO_ROOT / "results" / "control_a_n12_h2" / "control")
     parser.add_argument("--method", type=str, default="anchor")
+    parser.add_argument("--expect-parameters", type=int, default=4_131_200,
+                        help="parameter count the checkpoint must report "
+                             "(identity gate only; default V1 GatedUT)")
+    parser.add_argument("--expect-arch", type=str, default="gated_universal_transformer",
+                        help="architecture the checkpoint must report "
+                             "(identity gate only; default V1 GatedUT)")
     parser.add_argument("--out", type=Path,
                         default=REPO_ROOT / "results" / "direct_recovery")
     args = parser.parse_args(argv)
@@ -113,7 +133,9 @@ def main(argv: Optional[List[str]] = None) -> int:
     print(f"  checkpoint : {checkpoint_path.name}  "
           f"(epoch {checkpoint['state']['epoch']}, "
           f"{checkpoint['state']['samples_seen']:,} samples)")
-    mismatches = verify(checkpoint, config, codec)
+    mismatches = verify(checkpoint, config, codec,
+                        expect_parameters=args.expect_parameters,
+                        expect_arch=args.expect_arch)
     if mismatches:
         print("  MISMATCHES FOUND - STOPPING:")
         for line in mismatches:

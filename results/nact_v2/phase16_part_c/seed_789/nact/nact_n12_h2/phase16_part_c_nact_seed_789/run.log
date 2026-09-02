@@ -1,0 +1,114 @@
+2026-08-29 16:45:40 | INFO    | salsa | Run directory: results/nact_v2/phase16_part_c/seed_789/nact/nact_n12_h2/phase16_part_c_nact_seed_789
+2026-08-29 16:45:40 | INFO    | salsa | Config fingerprint: cc20238f521fa642
+2026-08-29 16:45:40 | INFO    | salsa | ========================================================================
+2026-08-29 16:45:40 | INFO    | salsa | Model: Salsa2-NACT (nact)
+2026-08-29 16:45:40 | INFO    | salsa | Trainable parameters: 4241288
+2026-08-29 16:45:40 | INFO    | salsa | LWE: n=12 q=251 sigma=3.0 h=2 structure=rlwe
+2026-08-29 16:45:40 | INFO    | salsa | Encoding: base=81 order=lsb_first separator=False -> 26 input tokens, 4 output
+2026-08-29 16:45:40 | INFO    | salsa | Plan: {'sample_budget': 100000, 'batch_size': 64, 'total_steps': 1563, 'steps_per_epoch': 79, 'epochs': 20, 'warmup_steps': 200, 'valid_samples': 2048}
+2026-08-29 16:45:40 | INFO    | salsa | Device: cpu | threads: {'threads': 4, 'interop_threads': 10}
+2026-08-29 16:45:40 | INFO    | salsa | Chance baselines: {'uniform_loss_nats': 4.442651256490317, 'marginal_loss_nats': 1.8649843130825523, 'chance_token_accuracy': 0.44621513944223107, 'chance_perfect_accuracy': 0.005142775511499817, 'chance_digit_accuracy': [0.015936, 0.322709], 'chance_exact_accuracy': 0.00398406374501992, 'chance_acc_tau': 0.19286995444516752, 'chance_acc_tau_circular_DIAGNOSTIC': 0.20318725099601595, 'tolerance': 0.1, 'tolerance_absolute': 25.1}
+2026-08-29 16:45:40 | INFO    | salsa | ========================================================================
+2026-08-29 16:45:40 | INFO    | salsa | Alignment verified: {'src_ids': (64, 26), 'tgt_ids': (64, 4), 'decoder_input': (64, 3), 'target': (64, 3), 'logits': (64, 3, 85), 'vocab_size': 85, 'pad_id': 0}
+2026-08-29 16:45:46 | INFO    | salsa | epoch 0 | step 25/1563 | loss 2.8679 | lr 6.50e-05 | 279.5 samples/s
+2026-08-29 16:45:52 | INFO    | salsa | epoch 0 | step 50/1563 | loss 2.2948 | lr 1.28e-04 | 281.7 samples/s
+2026-08-29 16:45:57 | INFO    | salsa | epoch 0 | step 75/1563 | loss 2.1143 | lr 1.90e-04 | 281.3 samples/s
+2026-08-29 16:46:02 | INFO    | salsa | epoch 0 | train 2.8643 | valid 2.0629 | token 0.446 | acc_tau 0.000 | exact 0.0000 | 281.6 samples/s
+2026-08-29 16:46:02 | INFO    | salsa | New best valid_loss: 2.062901
+2026-08-29 16:46:07 | INFO    | salsa | epoch 1 | step 100/1563 | loss 1.9733 | lr 2.53e-04 | 279.5 samples/s
+2026-08-29 16:46:13 | INFO    | salsa | epoch 1 | step 125/1563 | loss 1.9434 | lr 3.15e-04 | 276.0 samples/s
+2026-08-29 16:46:19 | INFO    | salsa | epoch 1 | step 150/1563 | loss 1.8620 | lr 3.78e-04 | 277.2 samples/s
+2026-08-29 16:46:25 | INFO    | salsa | epoch 1 | train 1.9426 | valid 1.8794 | token 0.448 | acc_tau 0.198 | exact 0.0044 | 279.5 samples/s
+2026-08-29 16:46:25 | INFO    | salsa | New best valid_loss: 1.879446
+2026-08-29 16:46:29 | INFO    | salsa | epoch 2 | step 175/1563 | loss 1.8846 | lr 4.40e-04 | 272.2 samples/s
+2026-08-29 16:46:35 | INFO    | salsa | epoch 2 | step 200/1563 | loss 1.8850 | lr 5.00e-04 | 274.6 samples/s
+2026-08-29 16:46:41 | INFO    | salsa | epoch 2 | step 225/1563 | loss 1.8734 | lr 5.00e-04 | 274.6 samples/s
+2026-08-29 16:46:48 | INFO    | salsa | epoch 2 | train 1.8795 | valid 1.8653 | token 0.442 | acc_tau 0.198 | exact 0.0039 | 278.0 samples/s
+2026-08-29 16:46:48 | INFO    | salsa | New best valid_loss: 1.865311
+2026-08-29 16:46:51 | INFO    | salsa | epoch 3 | step 250/1563 | loss 1.8642 | lr 4.98e-04 | 276.8 samples/s
+2026-08-29 16:46:57 | INFO    | salsa | epoch 3 | step 275/1563 | loss 1.8550 | lr 4.96e-04 | 271.6 samples/s
+2026-08-29 16:47:02 | INFO    | salsa | epoch 3 | step 300/1563 | loss 1.8419 | lr 4.93e-04 | 272.2 samples/s
+2026-08-29 16:47:10 | INFO    | salsa | epoch 3 | train 1.8650 | valid 1.8543 | token 0.449 | acc_tau 0.110 | exact 0.0024 | 276.7 samples/s
+2026-08-29 16:47:10 | INFO    | salsa | New best valid_loss: 1.854279
+2026-08-29 16:47:12 | INFO    | salsa | epoch 4 | step 325/1563 | loss 1.8533 | lr 4.90e-04 | 273.1 samples/s
+2026-08-29 16:47:18 | INFO    | salsa | epoch 4 | step 350/1563 | loss 1.8378 | lr 4.85e-04 | 274.8 samples/s
+2026-08-29 16:47:24 | INFO    | salsa | epoch 4 | step 375/1563 | loss 1.8525 | lr 4.80e-04 | 274.3 samples/s
+2026-08-29 16:47:33 | INFO    | salsa | epoch 4 | train 1.8592 | valid 1.8541 | token 0.449 | acc_tau 0.204 | exact 0.0044 | 276.3 samples/s
+2026-08-29 16:47:33 | INFO    | salsa | New best valid_loss: 1.854069
+2026-08-29 16:47:34 | INFO    | salsa | epoch 5 | step 400/1563 | loss 1.8490 | lr 4.74e-04 | 275.5 samples/s
+2026-08-29 16:47:40 | INFO    | salsa | epoch 5 | step 425/1563 | loss 1.8554 | lr 4.67e-04 | 273.5 samples/s
+2026-08-29 16:47:46 | INFO    | salsa | epoch 5 | step 450/1563 | loss 1.8679 | lr 4.60e-04 | 273.2 samples/s
+2026-08-29 16:47:55 | INFO    | salsa | epoch 5 | train 1.8567 | valid 1.8758 | token 0.454 | acc_tau 0.197 | exact 0.0044 | 275.1 samples/s
+2026-08-29 16:47:56 | INFO    | salsa | epoch 6 | step 475/1563 | loss 1.8932 | lr 4.52e-04 | 279.9 samples/s
+2026-08-29 16:48:01 | INFO    | salsa | epoch 6 | step 500/1563 | loss 1.8162 | lr 4.43e-04 | 278.4 samples/s
+2026-08-29 16:48:07 | INFO    | salsa | epoch 6 | step 525/1563 | loss 1.7760 | lr 4.33e-04 | 278.1 samples/s
+2026-08-29 16:48:13 | INFO    | salsa | epoch 6 | step 550/1563 | loss 1.6481 | lr 4.23e-04 | 277.6 samples/s
+2026-08-29 16:48:18 | INFO    | salsa | epoch 6 | train 1.7751 | valid 1.6724 | token 0.597 | acc_tau 0.356 | exact 0.0098 | 275.5 samples/s
+2026-08-29 16:48:18 | INFO    | salsa | New best valid_loss: 1.672435
+2026-08-29 16:48:23 | INFO    | salsa | epoch 7 | step 575/1563 | loss 1.6798 | lr 4.12e-04 | 273.2 samples/s
+2026-08-29 16:48:29 | INFO    | salsa | epoch 7 | step 600/1563 | loss 1.5742 | lr 4.01e-04 | 274.9 samples/s
+2026-08-29 16:48:35 | INFO    | salsa | epoch 7 | step 625/1563 | loss 1.5607 | lr 3.90e-04 | 274.5 samples/s
+2026-08-29 16:48:40 | INFO    | salsa | epoch 7 | train 1.6113 | valid 1.5713 | token 0.645 | acc_tau 0.479 | exact 0.0098 | 275.3 samples/s
+2026-08-29 16:48:40 | INFO    | salsa | New best valid_loss: 1.571265
+2026-08-29 16:48:45 | INFO    | salsa | epoch 8 | step 650/1563 | loss 1.5364 | lr 3.77e-04 | 276.9 samples/s
+2026-08-29 16:48:50 | INFO    | salsa | epoch 8 | step 675/1563 | loss 1.4993 | lr 3.65e-04 | 276.8 samples/s
+2026-08-29 16:48:56 | INFO    | salsa | epoch 8 | step 700/1563 | loss 1.5109 | lr 3.52e-04 | 276.2 samples/s
+2026-08-29 16:49:03 | INFO    | salsa | epoch 8 | train 1.5219 | valid 1.4958 | token 0.659 | acc_tau 0.459 | exact 0.0088 | 275.4 samples/s
+2026-08-29 16:49:03 | INFO    | salsa | New best valid_loss: 1.495759
+2026-08-29 16:49:06 | INFO    | salsa | epoch 9 | step 725/1563 | loss 1.4766 | lr 3.39e-04 | 262.3 samples/s
+2026-08-29 16:49:12 | INFO    | salsa | epoch 9 | step 750/1563 | loss 1.5088 | lr 3.25e-04 | 268.9 samples/s
+2026-08-29 16:49:18 | INFO    | salsa | epoch 9 | step 775/1563 | loss 1.4557 | lr 3.11e-04 | 271.5 samples/s
+2026-08-29 16:49:25 | INFO    | salsa | epoch 9 | train 1.4848 | valid 1.4676 | token 0.667 | acc_tau 0.668 | exact 0.0171 | 275.1 samples/s
+2026-08-29 16:49:25 | INFO    | salsa | New best valid_loss: 1.467559
+2026-08-29 16:49:28 | INFO    | salsa | epoch 10 | step 800/1563 | loss 1.4532 | lr 2.97e-04 | 272.6 samples/s
+2026-08-29 16:49:34 | INFO    | salsa | epoch 10 | step 825/1563 | loss 1.4655 | lr 2.83e-04 | 275.2 samples/s
+2026-08-29 16:49:39 | INFO    | salsa | epoch 10 | step 850/1563 | loss 1.4222 | lr 2.69e-04 | 275.4 samples/s
+2026-08-29 16:49:48 | INFO    | salsa | epoch 10 | train 1.4499 | valid 1.4155 | token 0.671 | acc_tau 0.878 | exact 0.0293 | 275.1 samples/s
+2026-08-29 16:49:48 | INFO    | salsa | New best valid_loss: 1.415526
+2026-08-29 16:49:50 | INFO    | salsa | epoch 11 | step 875/1563 | loss 1.3896 | lr 2.54e-04 | 274.5 samples/s
+2026-08-29 16:49:55 | INFO    | salsa | epoch 11 | step 900/1563 | loss 1.3576 | lr 2.40e-04 | 270.8 samples/s
+2026-08-29 16:50:01 | INFO    | salsa | epoch 11 | step 925/1563 | loss 1.3257 | lr 2.26e-04 | 273.2 samples/s
+2026-08-29 16:50:11 | INFO    | salsa | epoch 11 | train 1.3399 | valid 1.2534 | token 0.679 | acc_tau 0.969 | exact 0.0542 | 275.0 samples/s
+2026-08-29 16:50:11 | INFO    | salsa | New best valid_loss: 1.253367
+2026-08-29 16:50:11 | INFO    | salsa | epoch 12 | step 950/1563 | loss 1.2920 | lr 2.11e-04 | 276.5 samples/s
+2026-08-29 16:50:17 | INFO    | salsa | epoch 12 | step 975/1563 | loss 1.3018 | lr 1.97e-04 | 274.6 samples/s
+2026-08-29 16:50:23 | INFO    | salsa | epoch 12 | step 1000/1563 | loss 1.1668 | lr 1.83e-04 | 273.7 samples/s
+2026-08-29 16:50:29 | INFO    | salsa | epoch 12 | step 1025/1563 | loss 1.1419 | lr 1.69e-04 | 272.8 samples/s
+2026-08-29 16:50:33 | INFO    | salsa | epoch 12 | train 1.2095 | valid 1.1618 | token 0.682 | acc_tau 0.980 | exact 0.0591 | 274.9 samples/s
+2026-08-29 16:50:33 | INFO    | salsa | New best valid_loss: 1.161803
+2026-08-29 16:50:39 | INFO    | salsa | epoch 13 | step 1050/1563 | loss 1.1188 | lr 1.56e-04 | 271.3 samples/s
+2026-08-29 16:50:45 | INFO    | salsa | epoch 13 | step 1075/1563 | loss 1.0903 | lr 1.43e-04 | 273.6 samples/s
+2026-08-29 16:50:50 | INFO    | salsa | epoch 13 | step 1100/1563 | loss 1.0712 | lr 1.30e-04 | 275.1 samples/s
+2026-08-29 16:50:56 | INFO    | salsa | epoch 13 | train 1.1072 | valid 1.0745 | token 0.690 | acc_tau 0.986 | exact 0.0752 | 274.9 samples/s
+2026-08-29 16:50:56 | INFO    | salsa | New best valid_loss: 1.074453
+2026-08-29 16:51:00 | INFO    | salsa | epoch 14 | step 1125/1563 | loss 1.0727 | lr 1.18e-04 | 276.2 samples/s
+2026-08-29 16:51:06 | INFO    | salsa | epoch 14 | step 1150/1563 | loss 1.0487 | lr 1.06e-04 | 274.8 samples/s
+2026-08-29 16:51:12 | INFO    | salsa | epoch 14 | step 1175/1563 | loss 1.0547 | lr 9.43e-05 | 274.8 samples/s
+2026-08-29 16:51:18 | INFO    | salsa | epoch 14 | train 1.0541 | valid 1.0330 | token 0.693 | acc_tau 0.988 | exact 0.0845 | 274.9 samples/s
+2026-08-29 16:51:18 | INFO    | salsa | New best valid_loss: 1.033036
+2026-08-29 16:51:22 | INFO    | salsa | epoch 15 | step 1200/1563 | loss 1.0310 | lr 8.34e-05 | 276.0 samples/s
+2026-08-29 16:51:28 | INFO    | salsa | epoch 15 | step 1225/1563 | loss 1.0402 | lr 7.30e-05 | 271.9 samples/s
+2026-08-29 16:51:34 | INFO    | salsa | epoch 15 | step 1250/1563 | loss 1.0054 | lr 6.32e-05 | 270.6 samples/s
+2026-08-29 16:51:41 | INFO    | salsa | epoch 15 | train 1.0147 | valid 1.0152 | token 0.693 | acc_tau 0.993 | exact 0.0830 | 274.6 samples/s
+2026-08-29 16:51:41 | INFO    | salsa | New best valid_loss: 1.015219
+2026-08-29 16:51:44 | INFO    | salsa | epoch 16 | step 1275/1563 | loss 0.9886 | lr 5.40e-05 | 273.9 samples/s
+2026-08-29 16:51:49 | INFO    | salsa | epoch 16 | step 1300/1563 | loss 1.0106 | lr 4.55e-05 | 275.8 samples/s
+2026-08-29 16:51:55 | INFO    | salsa | epoch 16 | step 1325/1563 | loss 0.9774 | lr 3.76e-05 | 275.7 samples/s
+2026-08-29 16:52:03 | INFO    | salsa | epoch 16 | train 0.9952 | valid 0.9890 | token 0.697 | acc_tau 0.992 | exact 0.0923 | 274.7 samples/s
+2026-08-29 16:52:04 | INFO    | salsa | New best valid_loss: 0.988999
+2026-08-29 16:52:05 | INFO    | salsa | epoch 17 | step 1350/1563 | loss 0.9746 | lr 3.05e-05 | 277.1 samples/s
+2026-08-29 16:52:11 | INFO    | salsa | epoch 17 | step 1375/1563 | loss 0.9696 | lr 2.41e-05 | 277.4 samples/s
+2026-08-29 16:52:17 | INFO    | salsa | epoch 17 | step 1400/1563 | loss 0.9801 | lr 1.84e-05 | 277.1 samples/s
+2026-08-29 16:52:26 | INFO    | salsa | epoch 17 | train 0.9806 | valid 0.9736 | token 0.700 | acc_tau 0.991 | exact 0.1030 | 274.8 samples/s
+2026-08-29 16:52:26 | INFO    | salsa | New best valid_loss: 0.973631
+2026-08-29 16:52:27 | INFO    | salsa | epoch 18 | step 1425/1563 | loss 0.9401 | lr 1.35e-05 | 274.2 samples/s
+2026-08-29 16:52:33 | INFO    | salsa | epoch 18 | step 1450/1563 | loss 0.9828 | lr 9.41e-06 | 275.1 samples/s
+2026-08-29 16:52:38 | INFO    | salsa | epoch 18 | step 1475/1563 | loss 0.9955 | lr 6.11e-06 | 274.8 samples/s
+2026-08-29 16:52:44 | INFO    | salsa | epoch 18 | step 1500/1563 | loss 0.9466 | lr 3.63e-06 | 274.5 samples/s
+2026-08-29 16:52:49 | INFO    | salsa | epoch 18 | train 0.9687 | valid 0.9687 | token 0.700 | acc_tau 0.992 | exact 0.1030 | 274.7 samples/s
+2026-08-29 16:52:49 | INFO    | salsa | New best valid_loss: 0.968717
+2026-08-29 16:52:54 | INFO    | salsa | epoch 19 | step 1525/1563 | loss 0.9854 | lr 1.96e-06 | 271.6 samples/s
+2026-08-29 16:53:00 | INFO    | salsa | epoch 19 | step 1550/1563 | loss 0.9376 | lr 1.11e-06 | 271.4 samples/s
+2026-08-29 16:53:08 | INFO    | salsa | epoch 19 | train 0.9651 | valid 0.9677 | token 0.699 | acc_tau 0.992 | exact 0.0991 | 274.6 samples/s
+2026-08-29 16:53:08 | INFO    | salsa | New best valid_loss: 0.967736
+2026-08-29 16:53:12 | INFO    | salsa | Training finished: planned epochs completed

@@ -1,0 +1,51 @@
+# =============================================================================
+# PHASE 23 - ABLATION F: one-token coordinate representation only
+# =============================================================================
+# Phase 22 ranked this the highest-value single ablation because it splits the
+# two competing explanations for NACT's advantage in ONE run:
+#
+#   if F ~ full NACT  -> the gain is the coordinate-token layout (and the
+#                        absolute coordinate identity it makes expressible)
+#   if F falls toward V1 -> the numerical features are doing the work
+#
+# It inherits nact_n12_h2_te2.yaml, so the LWE instance, encoding, seed,
+# optimiser, learning rate, schedule, batch size, validation set, sample budget,
+# tau and BOTH loop counts are the same objects the full-NACT run used.
+#
+# THE ONLY CHANGE:
+#
+#   model.nact_variant:  full  ->  one_token_only
+#
+# which removes, and removes nothing else:
+#   - the centered residue feature
+#   - the cos and sin Fourier features
+#   - the zero-indicator numerical feature
+#   - the learned zero-coordinate vector
+#   - the sparse attention key bias
+#
+# and retains:
+#   - one coordinate token per a_i (encoder sequence n+2 = 14)
+#   - the base-81 digit embeddings the token is built from
+#   - the absolute coordinate embedding, which is the identity mechanism the
+#     one-token representation requires and is NOT a numerical feature
+#   - the entire transformer backbone, decoder, gating, RMSNorm and RoPE
+#
+#   full NACT : 4,241,288 parameters
+#   NACT-F    : 4,238,208 parameters   (-3,080, -0.073%)
+#
+# The gap is 0.073% of the model, far too small to explain any difference in
+# outcome, so a result either way is attributable to the components and not to
+# capacity. No padding parameters are added.
+# =============================================================================
+extends: nact_n12_h2_te2.yaml
+
+experiment:
+  name: nact_n12_h2_te2_F
+  notes: >-
+    Phase-23 ablation F. One token per coordinate with digit and coordinate
+    embeddings only; every additional numerical, zero-aware and sparse-bias
+    component removed. Attribution experiment, not a cryptanalytic test.
+  tags: [nact, ablation, variant-f, one-token-only, n12, h2, equal-depth]
+
+model:
+  nact_variant: one_token_only
