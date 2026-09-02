@@ -204,10 +204,14 @@ def _nact_analytical_breakdown(spec) -> Dict[str, int]:
     counts: Dict[str, int] = {name: 0 for name in COMPONENTS}
     counts["encoder_digit_embeddings"] = spec.digit_width * spec.base * de
     counts["encoder_special_embeddings"] = 4 * de
-    counts["numerical_projection"] = spec.num_numerical_features * de + de
+    # Each front-end component contributes only when the spec enables it, so an
+    # ablation's analytical count matches its actual count exactly.
+    counts["numerical_projection"] = (
+        spec.num_numerical_features * de + de if spec.use_numerical_features else 0)
     counts["coordinate_embedding"] = spec.max_coordinates * de
-    counts["zero_coordinate_vector"] = de
-    counts["sparse_attention_bias"] = le * spec.encoder_heads
+    counts["zero_coordinate_vector"] = de if spec.use_zero_vector else 0
+    counts["sparse_attention_bias"] = (
+        le * spec.encoder_heads if spec.use_sparse_attention_bias else 0)
 
     counts["encoder_attention"] = le * 4 * de * de
     counts["encoder_ffn"] = le * 2 * de * fe

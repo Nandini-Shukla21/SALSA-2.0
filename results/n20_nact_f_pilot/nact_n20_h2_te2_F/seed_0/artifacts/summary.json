@@ -1,0 +1,71 @@
+{
+  "model_name": "Salsa2-NACT",
+  "architecture": "nact",
+  "parameter_count": 4238208,
+  "config_fingerprint": "bbf51d2d5d8182c5",
+  "seed": 0,
+  "experiment": "nact_n20_h2_te2_F",
+  "plan": {
+    "sample_budget": 100000,
+    "batch_size": 64,
+    "total_steps": 1563,
+    "steps_per_epoch": 79,
+    "epochs": 20,
+    "warmup_steps": 200,
+    "valid_samples": 2048
+  },
+  "state": {
+    "epoch": 20,
+    "global_step": 1563,
+    "samples_seen": 100032,
+    "tokens_seen": 300096,
+    "best_metric": 0.976393,
+    "best_epoch": 19,
+    "epochs_without_improvement": 0,
+    "elapsed_seconds": 1424.2417767047882,
+    "stop_reason": "planned epochs completed"
+  },
+  "final_validation": {
+    "valid_loss": 0.976393,
+    "valid_token_accuracy": 0.699544,
+    "valid_perfect_accuracy": 0.103516,
+    "valid_greedy_token_accuracy": 0.685059,
+    "valid_exact_accuracy": 0.103516,
+    "valid_acc_tau": 0.986328,
+    "valid_tolerance": 0.1,
+    "valid_mean_distance": 6.5093,
+    "valid_median_distance": 3.0,
+    "valid_percentiles": "[0.9863, 0.9863, 0.9863, 0.9863, 0.9863, 0.9863, 0.9863, 0.9863, 0.9863, 1.0]",
+    "valid_acc_tau_circular_DIAGNOSTIC": 1.0,
+    "valid_mean_circular_distance_DIAGNOSTIC": 3.2075,
+    "valid_median_circular_distance_DIAGNOSTIC": 3.0,
+    "valid_decode_failure_rate": 0.0,
+    "valid_sequences": 2048,
+    "valid_tokens": 6144
+  },
+  "throughput": {
+    "samples_per_second": 87.428,
+    "tokens_per_second": 262.3,
+    "compute_seconds": 1144.168
+  },
+  "chance_baselines": {
+    "uniform_loss_nats": 4.442651256490317,
+    "marginal_loss_nats": 1.8649843130825523,
+    "chance_token_accuracy": 0.44621513944223107,
+    "chance_perfect_accuracy": 0.005142775511499817,
+    "chance_digit_accuracy": [
+      0.015936,
+      0.322709
+    ],
+    "chance_exact_accuracy": 0.00398406374501992,
+    "chance_acc_tau": 0.19286995444516752,
+    "chance_acc_tau_circular_DIAGNOSTIC": 0.20318725099601595,
+    "tolerance": 0.1,
+    "tolerance_absolute": 25.1
+  },
+  "cpu_memory_mb": {
+    "rss_mb": 411.26171875,
+    "peak_rss_mb": 503.65625
+  },
+  "run_dir": "results\\n20_nact_f_pilot\\nact_n20_h2_te2_F\\seed_0"
+}

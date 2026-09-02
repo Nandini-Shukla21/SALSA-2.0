@@ -78,12 +78,25 @@ def locate_checkpoint(run_dir: Path) -> Path:
     raise FileNotFoundError(f"no checkpoint under {checkpoints}")
 
 
-def verify(checkpoint: Dict[str, Any], config, codec: LatticeCodec) -> List[str]:
-    """Return a list of mismatches between checkpoint and config; empty is good."""
+def verify(
+    checkpoint: Dict[str, Any],
+    config,
+    codec: LatticeCodec,
+    expect_parameters: int = 4_131_200,
+    expect_arch: str = "gated_universal_transformer",
+) -> List[str]:
+    """Return a list of mismatches between checkpoint and config; empty is good.
+
+    ``expect_parameters`` and ``expect_arch`` identify WHICH model the script is
+    permitted to load.  They default to the V1 GatedUT, so every existing
+    invocation behaves exactly as before.  Phase 17 passes the NACT values so
+    the same measurement can be run against V2.  **No measurement, test vector,
+    seed, K value, sparsity level, metric or decoding path depends on these.**
+    """
     saved, spec = checkpoint["config"], checkpoint["spec"]
     expectations = [
-        ("parameter count", 4_131_200, checkpoint["parameter_count"]),
-        ("architecture", "gated_universal_transformer", spec["arch"]),
+        ("parameter count", int(expect_parameters), checkpoint["parameter_count"]),
+        ("architecture", str(expect_arch), spec["arch"]),
         ("n", config.lwe.n, saved["lwe"]["n"]),
         ("h", config.lwe.resolved_hamming_weight, saved["lwe"]["hamming_weight"]),
         ("q", config.lwe.q, saved["lwe"]["q"]),
@@ -850,6 +863,12 @@ def main(argv: Optional[List[str]] = None) -> int:
                         default=REPO_ROOT / "configs" / "recovery_n12_h2.yaml")
     parser.add_argument("--run-dir", type=Path,
                         default=REPO_ROOT / "results" / "control_a_n12_h2" / "control")
+    parser.add_argument("--expect-parameters", type=int, default=4_131_200,
+                        help="parameter count the checkpoint must report "
+                             "(identity check only; default V1 GatedUT)")
+    parser.add_argument("--expect-arch", type=str, default="gated_universal_transformer",
+                        help="architecture the checkpoint must report "
+                             "(identity check only; default V1 GatedUT)")
     parser.add_argument("--samples", type=int, default=2048,
                         help="evaluation vectors per sparsity level")
     parser.add_argument("--out", type=Path,
@@ -870,7 +889,9 @@ def main(argv: Optional[List[str]] = None) -> int:
     print("=" * 88)
     print(f"  checkpoint : {checkpoint_path.name}  epoch {checkpoint['state']['epoch']}, "
           f"{checkpoint['state']['samples_seen']:,} samples")
-    mismatches = verify(checkpoint, config, codec)
+    mismatches = verify(checkpoint, config, codec,
+                        expect_parameters=args.expect_parameters,
+                        expect_arch=args.expect_arch)
     if mismatches:
         print("  MISMATCHES - STOPPING:")
         for line in mismatches:

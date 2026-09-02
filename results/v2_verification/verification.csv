@@ -1,0 +1,25 @@
+section,split,candidate,samples,mean,std,median,mean_abs,median_abs,max_abs,p50,p75,p90,p95,p99,fraction_within_1_sigma,fraction_within_2_sigma,fraction_within_3_sigma,criterion,passed,field,value
+residuals,phase20_verify_a,recovered_candidate,2048,-0.00146484375,2.987925187315932,0.0,2.35791015625,2.0,10,2.0,3.0,5.0,6.0,7.0,0.76513671875,0.970703125,0.99951171875,,,,
+residuals,phase20_verify_a,all_zeros,2048,1.08935546875,72.21391392191973,-1.0,62.72119140625,61.0,125,61.0,93.0,113.0,119.0,124.0,0.02490234375,0.05029296875,0.0712890625,,,,
+residuals,phase20_verify_a,all_ones,2048,-0.53759765625,72.80547760714525,1.5,63.03369140625,62.0,125,62.0,95.0,114.0,120.0,124.52999999999997,0.02783203125,0.04248046875,0.0693359375,,,,
+residuals,phase20_verify_a,random_weight_2,2048,0.919921875,73.36620697524368,2.5,63.896484375,65.0,125,65.0,95.0,113.29999999999995,119.0,124.0,0.0302734375,0.04736328125,0.068359375,,,,
+residuals,phase20_verify_b,recovered_candidate,2048,0.068359375,2.966383029750045,0.0,2.35546875,2.0,11,2.0,3.0,5.0,6.0,7.0,0.76171875,0.96875,0.99755859375,,,,
+residuals,phase20_verify_b,all_zeros,2048,-0.39013671875,72.19026887168623,0.0,62.47021484375,62.0,125,62.0,94.0,112.0,120.0,124.0,0.0263671875,0.05419921875,0.07861328125,,,,
+residuals,phase20_verify_b,all_ones,2048,0.21435546875,71.22100331444632,2.5,61.59521484375,61.0,125,61.0,92.0,112.0,119.0,124.0,0.02685546875,0.04833984375,0.07666015625,,,,
+residuals,phase20_verify_b,random_weight_2,2048,0.8583984375,71.51112640410044,1.0,61.845703125,62.0,125,62.0,92.0,112.0,118.0,124.0,0.02294921875,0.04248046875,0.060546875,,,,
+criteria,phase20_verify_a,,,,,,,,,,,,,,,,,c1_std_close_to_sigma,True,,
+criteria,phase20_verify_a,,,,,,,,,,,,,,,,,c2_mean_abs_small,True,,
+criteria,phase20_verify_a,,,,,,,,,,,,,,,,,c3_beats_baselines,True,,
+criteria,phase20_verify_a,,,,,,,,,,,,,,,,,c4_within_three_sigma,True,,
+criteria,phase20_verify_b,,,,,,,,,,,,,,,,,c1_std_close_to_sigma,True,,
+criteria,phase20_verify_b,,,,,,,,,,,,,,,,,c2_mean_abs_small,True,,
+criteria,phase20_verify_b,,,,,,,,,,,,,,,,,c3_beats_baselines,True,,
+criteria,phase20_verify_b,,,,,,,,,,,,,,,,,c4_within_three_sigma,True,,
+ground_truth,,,,,,,,,,,,,,,,,,,,note,"EVALUATION ONLY. Loaded after the verification decision was made; it influenced no threshold, no sample, and no candidate."
+ground_truth,,,,,,,,,,,,,,,,,,,,true_secret,"[0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0]"
+ground_truth,,,,,,,,,,,,,,,,,,,,candidate,"[0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0]"
+ground_truth,,,,,,,,,,,,,,,,,,,,candidate_equals_true_secret,True
+ground_truth,,,,,,,,,,,,,,,,,,,,hamming_distance,0
+ground_truth,,,,,,,,,,,,,,,,,,,,coordinate_accuracy,1.0
+ground_truth,,,,,,,,,,,,,,,,,,,,candidate_hamming_weight,2
+ground_truth,,,,,,,,,,,,,,,,,,,,true_hamming_weight,2

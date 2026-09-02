@@ -354,3 +354,109 @@ def test_v1_config_still_builds_v1():
     model = build_model(config)
     assert isinstance(model, SalsaTransformer)
     assert count_trainable_parameters(model) == V1_PARAMETERS
+
+
+# --------------------------------------------------------------------------- #
+# 5. Phase-22 ablation variants
+# --------------------------------------------------------------------------- #
+NACT_F_PARAMETERS = 4_238_208
+
+
+def _flags(name):
+    from salsa.models.nact import _variant_flags
+
+    return _variant_flags(name)
+
+
+def test_variant_f_parameter_count_matches_the_phase22_prediction():
+    from salsa.models.nact import SalsaNact as _Nact
+
+    model = _Nact(NactSpec(encoder_loops=2, **_flags("one_token_only")))
+    assert count_trainable_parameters(model) == NACT_F_PARAMETERS
+
+
+def test_variant_f_three_counting_methods_agree():
+    spec = NactSpec(encoder_loops=2, **_flags("one_token_only"))
+    model = SalsaNact(spec)
+    measured, analytical = parameter_breakdown(model), analytical_breakdown(spec)
+    assert (count_trainable_parameters(model) == sum(measured.values())
+            == sum(analytical.values()) == NACT_F_PARAMETERS)
+    assert unclassified_parameters(model) == []
+
+
+def test_variant_f_removes_exactly_the_intended_components():
+    breakdown = parameter_breakdown(SalsaNact(NactSpec(encoder_loops=2,
+                                                       **_flags("one_token_only"))))
+    # removed
+    assert breakdown["numerical_projection"] == 0
+    assert breakdown["zero_coordinate_vector"] == 0
+    assert breakdown["sparse_attention_bias"] == 0
+    # retained: the one-token representation and coordinate identity
+    assert breakdown["encoder_digit_embeddings"] == 2 * 81 * 512
+    assert breakdown["coordinate_embedding"] == 128 * 512
+    assert breakdown["encoder_special_embeddings"] == 4 * 512
+
+
+def test_variant_f_has_no_numerical_modules_at_all():
+    """No stray parameter may sneak a numerical feature back in."""
+    model = SalsaNact(NactSpec(encoder_loops=2, **_flags("one_token_only")))
+    assert model.front_end.numerical_projection is None
+    assert model.front_end.zero_vector is None
+    for layer in model.encoder_layers:
+        assert layer.sparse_attention_bias is None
+    names = [n for n, _ in model.named_parameters()]
+    for forbidden in ("numerical_projection", "zero_vector", "sparse_attention_bias"):
+        assert not any(forbidden in n for n in names), forbidden
+
+
+def test_variant_f_still_encodes_and_decodes():
+    torch.manual_seed(0)
+    codec = codec_for(12, separator=False)
+    model = SalsaNact(NactSpec(vocab_size=codec.vocabulary.size, q=codec.q,
+                               base=codec.input_encoder.base,
+                               digit_width=codec.input_encoder.width,
+                               separator=codec.separator, encoder_loops=2,
+                               **_flags("one_token_only"))).eval()
+    matrix = np.zeros((4, 12), dtype=np.int64)
+    matrix[:, :5] = np.arange(1, 6)
+    src, target = codec.encode_batch(matrix, np.arange(4, dtype=np.int64))
+    logits = model(torch.from_numpy(src), torch.from_numpy(target))
+    assert logits.shape == (4, codec.output_length, 85)
+    assert torch.isfinite(logits).all()
+    assert model.encode(torch.from_numpy(src)).shape == (4, 14, 512)
+
+
+def test_full_nact_is_unchanged_by_the_ablation_switches():
+    """The defaults must reproduce the shipped full NACT exactly."""
+    spec = NactSpec(encoder_loops=2)
+    assert spec.variant == "full"
+    assert spec.use_numerical_features and spec.use_zero_vector
+    assert spec.use_sparse_attention_bias
+    model = SalsaNact(spec)
+    assert count_trainable_parameters(model) == NACT_PARAMETERS
+    assert model.front_end.numerical_projection is not None
+    assert model.front_end.zero_vector is not None
+    assert model.encoder_layers[0].sparse_attention_bias is not None
+
+
+def test_existing_full_nact_checkpoints_still_load_strictly():
+    """The switches must not have changed the full-NACT state_dict shape."""
+    from pathlib import Path as _Path
+
+    root = _Path("results/equal_depth_ablation/v2_te2/nact_n12_h2_te2")
+    checkpoint_path = root / "seed_123" / "checkpoints" / "best.pt"
+    if not checkpoint_path.is_file():
+        pytest.skip("phase-17 checkpoint not present")
+    config = load_config("configs/nact_n12_h2_te2_recovery.yaml")
+    config.validate()
+    model = build_model(config)
+    state = torch.load(checkpoint_path, map_location="cpu", weights_only=False)
+    model.load_state_dict(state["model"], strict=True)
+    assert count_trainable_parameters(model) == NACT_PARAMETERS
+
+
+def test_unknown_variant_is_rejected():
+    from salsa.models.nact import _variant_flags as flags
+
+    with pytest.raises(ValueError, match="unknown nact_variant"):
+        flags("nonsense")

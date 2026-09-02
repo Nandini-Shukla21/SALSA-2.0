@@ -210,6 +210,8 @@ class ModelConfig:
     """
 
     arch: str = "compact_transformer"
+    #: NACT ablation variant; ignored unless arch == "nact".
+    nact_variant: str = "full"
     encoder_dim: int = 256
     decoder_dim: int = 128
     encoder_layers: int = 2
@@ -562,6 +564,11 @@ class Config:
             raise ConfigError(
                 "model.arch must be 'compact_transformer', "
                 "'gated_universal_transformer' or 'nact'."
+            )
+        if mdl.nact_variant not in ("full", "one_token_only"):
+            raise ConfigError(
+                "model.nact_variant must be 'full' or 'one_token_only', "
+                f"got {mdl.nact_variant!r}."
             )
         for loop_name, layer_name in (
             ("encoder_loops", "encoder_layers"),
