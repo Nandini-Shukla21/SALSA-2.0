@@ -1,0 +1,41 @@
+# =============================================================================
+# END-TO-END PIPELINE: NACT-F at n=20, h=2
+# =============================================================================
+# Runs the whole workflow from one file:
+#
+#   public RLWE data -> encoding -> NACT-F -> predict b
+#                    -> direct secret recovery -> candidate
+#                    -> independent residual verification -> result
+#
+# It inherits the phase-24 recovery config, so the instance, encoding, K sweep
+# and seed are the same objects that produced the established result. What this
+# file adds is only plumbing: where the checkpoint lives, where output goes, and
+# the hardened recovery/verification settings.
+# =============================================================================
+extends: nact_n20_h2_te2_F_recovery.yaml
+
+experiment:
+  name: pipeline_n20
+  notes: >-
+    End-to-end Salsa 2.0 pipeline replay at n=20, h=2 against the phase-25
+    NACT-F checkpoint. No training.
+  tags: [pipeline, nact, variant-f, n20, h2]
+
+pipeline:
+  label: nact_f_n20
+  run_dir: results/n20_nact_f_pilot/nact_n20_h2_te2_F/seed_0
+  expect_parameters: 4238208
+  expect_arch: nact
+  output_dir: results/final_pipeline
+
+recovery:
+  # The separation-weighted vote is the safe default. min_separation guards the
+  # diagnostic best_margin rule against the degeneracy phase 26 exposed; None
+  # derives it from sigma as floor(sigma) + 1 = 4, which excludes K=1 and K=250.
+  selection_rule: aggregate
+  min_separation: null
+
+verification:
+  enabled: true
+  num_samples: 2048
+  split_label: pipeline_verify_n20
