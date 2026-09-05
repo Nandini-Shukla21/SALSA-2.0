@@ -1,0 +1,125 @@
+{
+  "project": "SALSA 2.0 - Lightweight Neural Cryptanalysis of LWE/RLWE",
+  "final_model": "NACT-F",
+  "final_model_description": "Numerical-Aware Compact Transformer reduced by ablation to the one-token-per-coordinate representation only",
+  "parameter_count": 4238208,
+  "model_lineage": {
+    "V1 Salsa2-GatedUT": 4131200,
+    "V2 Salsa2-NACT (full)": 4241288,
+    "NACT-F (final)": 4238208
+  },
+  "demonstrated_dimensions": [
+    {
+      "n": 12,
+      "h": 2,
+      "search_space": 66
+    },
+    {
+      "n": 20,
+      "h": 2,
+      "search_space": 190
+    }
+  ],
+  "prediction_results": {
+    "n12": {
+      "valid_loss": 0.989069,
+      "acc_tau": 0.983887,
+      "exact_integer_accuracy": 0.091309,
+      "token_accuracy": 0.693359,
+      "greedy_token_accuracy": 0.677083,
+      "decode_failure_rate": 0.0,
+      "mean_absolute_error": 7.1465,
+      "sample_count": 100032
+    },
+    "n20": {
+      "valid_loss": 0.976393,
+      "acc_tau": 0.986328,
+      "exact_integer_accuracy": 0.103516,
+      "token_accuracy": 0.699544,
+      "greedy_token_accuracy": 0.685059,
+      "decode_failure_rate": 0.0,
+      "mean_absolute_error": 6.5093,
+      "sample_count": 100032
+    }
+  },
+  "recovery_results": {
+    "n12": {
+      "exact_recovery": true,
+      "coordinate_accuracy": 1.0,
+      "hamming_distance": 0,
+      "successful_k": 8,
+      "k_values_tested": 10,
+      "probe_decode_validity": 1.0
+    },
+    "n20": {
+      "exact_recovery": true,
+      "coordinate_accuracy": 1.0,
+      "hamming_distance": 0,
+      "successful_k": 8,
+      "k_values_tested": 10,
+      "probe_decode_validity": 1.0
+    }
+  },
+  "verification_results": {
+    "n12": {
+      "passed": true,
+      "residual_std": 2.9982762878363354,
+      "configured_sigma": 3.0,
+      "uniform_reference_std": 72.457
+    },
+    "n20": {
+      "passed": true,
+      "residual_std": 2.9414703971728886,
+      "configured_sigma": 3.0,
+      "uniform_reference_std": 72.457
+    }
+  },
+  "chance_baselines": {
+    "acc_tau": 0.19286995444516752,
+    "exact_integer_accuracy": 0.00398406374501992,
+    "token_accuracy": 0.44621513944223107,
+    "marginal_only_loss_nats": 1.8649843130825523,
+    "uniform_loss_nats": 4.442651256490317
+  },
+  "recovery_rule": {
+    "default": "aggregate (separation-weighted vote)",
+    "diagnostic": "best_margin (guarded by min_separation)",
+    "min_separation_default": "floor(sigma) + 1",
+    "min_separation_at_sigma_3": 4,
+    "secret_free": true
+  },
+  "tests": {
+    "passed": 687,
+    "skipped": 2,
+    "failed": 0
+  },
+  "limitations": [
+    "Only n=12,h=2 and n=20,h=2 were experimentally demonstrated.",
+    "n=30, n=50 and n=128 were never trained or tested.",
+    "One trained secret and checkpoint per demonstrated dimension (three secrets at n=12 via three seeds; one at n=20).",
+    "Diagnostic low-dimensional instances: C(12,2)=66 and C(20,2)=190 possible secrets.",
+    "Results do not establish a practical LWE/RLWE security break.",
+    "Two dimensions is not a scaling law.",
+    "The best_margin min_separation guard is validated at sigma=3 only."
+  ],
+  "future_work": [
+    "Larger dimensions: n=30, n=50, n=128.",
+    "Multi-seed validation so recovery rates carry uncertainty estimates.",
+    "Remaining controlled ablations (variants C, D, E).",
+    "Scalability analysis of sample requirement versus n and h."
+  ],
+  "provenance": {
+    "all_values_read_from": {
+      "n12_training": "results/nact_ablation_F/nact_n12_h2_te2_F/seed_0/artifacts/summary.json",
+      "n20_training": "results/n20_nact_f_pilot/nact_n20_h2_te2_F/seed_0/artifacts/summary.json",
+      "pipeline": "results/final_pipeline/pipeline_report.json",
+      "v1_n20": "results/control_b_n20_h2/control/artifacts/summary.json",
+      "v1_n12_recovery": "results/direct_recovery/direct_recovery_n12_h2.json",
+      "interim": "results/equal_depth_ablation/equal_depth_ablation_interim.json",
+      "v1_sparsity": "results/recovery_generalization/recovery_generalization.json",
+      "f_sparsity": "results/nact_ablation_F/sparsity/recovery_generalization.json",
+      "robustness": "results/v2_recovery_robustness/recovery_robustness.json"
+    },
+    "no_training_performed_in_this_phase": true
+  }
+}
