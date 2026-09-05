@@ -17,6 +17,7 @@ and happens after recovery has finished.
 """
 
 from .direct import (
+    SELECTION_RULES,
     BINARIZATION_METHODS,
     CoordinateOutcome,
     CoordinateProbe,
@@ -30,6 +31,7 @@ from .direct import (
 )
 
 __all__ = [
+    "SELECTION_RULES",
     "BINARIZATION_METHODS",
     "CoordinateOutcome",
     "CoordinateProbe",
