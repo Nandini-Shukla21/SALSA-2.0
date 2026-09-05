@@ -30,3 +30,11 @@ at this point.  Every other subpackage is an intentional placeholder.
 
 __version__ = "0.1.0.dev0"
 __all__ = ["__version__"]
+
+
+from .pipeline import PipelineResult, run_salsa2_pipeline  # noqa: E402
+
+__all__ = list(globals().get("__all__", [])) + [
+    "run_salsa2_pipeline",
+    "PipelineResult",
+]
