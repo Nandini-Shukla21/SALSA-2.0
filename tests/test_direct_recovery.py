@@ -16,7 +16,8 @@ torch = pytest.importorskip("torch")
 
 from salsa.data import LatticeCodec  # noqa: E402
 from salsa.models import SalsaTransformer, build_model  # noqa: E402
-from salsa.recovery import (  # noqa: E402
+from salsa.recovery import (
+    SELECTION_RULES,
     BINARIZATION_METHODS,
     DirectRecovery,
     build_probe_matrix,
@@ -270,12 +271,19 @@ def test_zero_separation_k_is_excluded_from_selection() -> None:
 
 
 def test_selection_uses_only_predictions() -> None:
-    """The chosen K maximises the mean margin, a secret-free quantity."""
+    """The chosen K maximises the mean margin, a secret-free quantity.
+
+    Phase 27 repurposed ``selection_rule`` to name the rule in force and moved
+    the descriptive text to ``selected_K_rule``; the assertion follows the
+    documentation to its new field rather than being dropped.
+    """
     codec = small_codec(12)
     report = DirectRecovery(small_model(codec), codec).recover([31, 94, 125])
-    usable = [r for r in report.per_k if r.separation > 0]
-    assert report.selected_K == max(usable, key=lambda r: r.mean_margin).K
-    assert "predictions only" in report.to_dict()["selection_rule"]
+    eligible = [r for r in report.per_k if r.separation >= report.min_separation]
+    assert report.selected_K == max(eligible, key=lambda r: r.mean_margin).K
+    payload = report.to_dict()
+    assert "predictions only" in payload["selected_K_rule"]
+    assert payload["selection_rule"] in SELECTION_RULES
 
 
 # --------------------------------------------------------------------------- #
