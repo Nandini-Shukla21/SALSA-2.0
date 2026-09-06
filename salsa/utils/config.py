@@ -338,6 +338,14 @@ class RecoveryConfig:
     binarization_methods: List[str] = field(
         default_factory=lambda: ["mean", "median", "mode"]
     )
+    #: How a single candidate is chosen from the K sweep. "aggregate" is the
+    #: separation-weighted vote and is the safe default; "best_margin" is the
+    #: single-K rule kept as a diagnostic (phase 26 showed it is degenerate at
+    #: low separation, so it is guarded by min_separation).
+    selection_rule: str = "aggregate"
+    #: Smallest ring separation a K may have and still be eligible for
+    #: best_margin selection. None derives it from lwe.sigma as floor(sigma)+1.
+    min_separation: Optional[int] = None
     distinguisher_min_accuracy: float = 25.0
     distinguisher_max_samples: int = 400
     distinguisher_tolerance: float = 0.1
@@ -361,6 +369,11 @@ class VerificationConfig:
     """
 
     num_samples: int = 1_000
+    #: Whether the pipeline runs verification at all.
+    enabled: bool = True
+    #: Split label the fresh verification stream is derived from. Must differ
+    #: from every training/validation split so the samples are genuinely fresh.
+    split_label: str = "pipeline_verify"
     std_tolerance_factor: float = 2.0
     use_centered_residuals: bool = True
     also_check_complement: bool = True
@@ -389,6 +402,34 @@ class DeviceConfig:
 
 
 @dataclass
+class PipelineConfig:
+    """Where the end-to-end pipeline finds its inputs and puts its outputs.
+
+    Nothing here changes the science; it is plumbing. The cryptographic
+    instance lives in ``lwe``, the encoding in ``encoding``, the K sweep in
+    ``recovery`` and the verification budget in ``verification``.
+
+    Attributes:
+        run_dir: Directory of a completed training run. The best checkpoint is
+            located from that run's own metadata; the filename is never assumed.
+        checkpoint: Explicit checkpoint path, overriding ``run_dir``. Normally
+            left unset.
+        expect_parameters: Parameter count the checkpoint must report. An
+            identity gate, not a tuning knob; None skips the check.
+        expect_arch: Architecture the checkpoint must report. None skips it.
+        output_dir: Where the pipeline writes its result artifacts.
+        label: Short name for this pipeline run, used in reports.
+    """
+
+    run_dir: Optional[str] = None
+    checkpoint: Optional[str] = None
+    expect_parameters: Optional[int] = None
+    expect_arch: Optional[str] = None
+    output_dir: str = "results/final_pipeline"
+    label: str = "salsa2"
+
+
+@dataclass
 class Config:
     """Root configuration object for one Lightweight SALSA experiment."""
 
@@ -400,6 +441,7 @@ class Config:
     evaluation: EvaluationConfig = field(default_factory=EvaluationConfig)
     recovery: RecoveryConfig = field(default_factory=RecoveryConfig)
     verification: VerificationConfig = field(default_factory=VerificationConfig)
+    pipeline: PipelineConfig = field(default_factory=PipelineConfig)
     device: DeviceConfig = field(default_factory=DeviceConfig)
 
     # -- serialisation ----------------------------------------------------- #
@@ -564,6 +606,22 @@ class Config:
             raise ConfigError(
                 "model.arch must be 'compact_transformer', "
                 "'gated_universal_transformer' or 'nact'."
+            )
+        if self.recovery.selection_rule not in ("aggregate", "best_margin"):
+            raise ConfigError(
+                "recovery.selection_rule must be 'aggregate' or 'best_margin', "
+                f"got {self.recovery.selection_rule!r}."
+            )
+        if (self.recovery.min_separation is not None
+                and self.recovery.min_separation < 1):
+            raise ConfigError(
+                "recovery.min_separation must be >= 1 when set, got "
+                f"{self.recovery.min_separation}."
+            )
+        if self.verification.num_samples < 1:
+            raise ConfigError(
+                "verification.num_samples must be >= 1, got "
+                f"{self.verification.num_samples}."
             )
         if mdl.nact_variant not in ("full", "one_token_only"):
             raise ConfigError(
