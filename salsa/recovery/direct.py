@@ -48,6 +48,7 @@ maximal at ``K ~ q/2`` and collapses to nothing as ``K`` approaches 0 or ``q``.
 A "large K" close to ``q`` is therefore a *bad* probe, not a good one.
 """
 
+import math
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Sequence
 
@@ -71,6 +72,27 @@ __all__ = [
 #: Decision rules.  ``anchor`` is the default and the only one free of polarity
 #: ambiguity; the rest reproduce the released code's thresholding.
 BINARIZATION_METHODS = ("anchor", "mean", "median", "mode")
+
+#: How a single candidate is chosen from the K sweep.  Both rules are
+#: secret-free; they differ in robustness.
+#:
+#: ``aggregate``    separation-weighted vote across every K.  Each K's per-
+#:                  coordinate score is weighted by its ring separation, so a
+#:                  probe carrying almost no information contributes almost
+#:                  nothing.  **This is the default.**
+#: ``best_margin``  the single K with the highest mean absolute decision
+#:                  margin.  Retained as a diagnostic.  See the warning on
+#:                  :func:`DirectRecovery.recover` -- this rule is degenerate at
+#:                  low separation and must be used with ``min_separation``.
+SELECTION_RULES = ("aggregate", "best_margin")
+
+#: Default guard for ``best_margin``.  A probe's two hypotheses are ``b ~ 0``
+#: and ``b ~ K``, separated by ``min(K mod q, q - K mod q)``.  When that
+#: separation is no larger than the error scale the two hypotheses sit inside
+#: the noise and the probe cannot discriminate, so such K are excluded from
+#: *selection* (they are still reported, and still vote with their tiny
+#: separation weight).  ``None`` means "derive from sigma": ``floor(sigma) + 1``.
+DEFAULT_MIN_SEPARATION = None
 
 
 def ring_distance(x: np.ndarray, y: int, q: int) -> np.ndarray:
@@ -273,6 +295,23 @@ class DirectRecoveryReport:
     aggregate_candidate: np.ndarray
     aggregate_scores: np.ndarray
     selected_K: Optional[int] = None
+    selection_rule: str = "aggregate"
+    min_separation: int = 1
+    excluded_k: List[int] = field(default_factory=list)
+
+    @property
+    def primary_candidate(self) -> np.ndarray:
+        """The candidate the configured rule actually proposes.
+
+        ``aggregate`` returns the separation-weighted vote; ``best_margin``
+        returns the winning single-K candidate.  Callers that want "the answer"
+        should read this rather than picking a field themselves.
+        """
+        if self.selection_rule == "best_margin" and self.selected_K is not None:
+            for result in self.per_k:
+                if result.K == self.selected_K:
+                    return result.candidate
+        return self.aggregate_candidate
 
     @property
     def candidates(self) -> List[np.ndarray]:
@@ -289,8 +328,13 @@ class DirectRecoveryReport:
             "n": self.n,
             "q": self.q,
             "method": self.method,
+            "selection_rule": self.selection_rule,
+            "primary_candidate": self.primary_candidate.tolist(),
+            "min_separation": self.min_separation,
+            "excluded_k_below_min_separation": self.excluded_k,
             "selected_K": self.selected_K,
-            "selection_rule": "highest mean decision margin (uses predictions only)",
+            "selected_K_rule": ("highest mean decision margin among K whose "
+                                "separation >= min_separation (predictions only)"),
             "aggregate_candidate": self.aggregate_candidate.tolist(),
             "aggregate_scores": [round(float(s), 6) for s in self.aggregate_scores],
             "distinct_candidates": len(self.candidates),
@@ -483,25 +527,63 @@ class DirectRecovery:
             decode_failure_rate=float((~decoded_ok).mean()),
         )
 
-    def recover(self, k_values: Sequence[int]) -> DirectRecoveryReport:
+    def recover(
+        self,
+        k_values: Sequence[int],
+        selection_rule: str = "aggregate",
+        min_separation: Optional[int] = None,
+        sigma: Optional[float] = None,
+    ) -> DirectRecoveryReport:
         """Run the full sweep and combine the results.
 
         Votes are weighted by each probe's separation, because a ``K`` close to
         0 or ``q`` carries almost no information and should not count equally
         with one near ``q/2``.  The weighting uses only public quantities.
 
+        Why ``best_margin`` needs a guard
+        ---------------------------------
+        Phase 26 exposed a real failure.  At ``K = 1`` the two hypotheses are
+        ``b ~ 0`` and ``b ~ 1``: adjacent.  A model that confidently answers a
+        constant ``0`` is then at distance 0 from one anchor and 1 from the
+        other, so ``|score| = 1`` for every coordinate and the mean margin is
+        the **maximum possible**.  The margin rule therefore rewards the least
+        informative probes precisely because they are least informative, and at
+        n=20 it selected a negative control.  ``min_separation`` excludes such
+        probes from *selection*; they are still measured and still vote, with
+        the negligible weight their separation earns them.
+
+        The guard is derived from the problem rather than picked: a probe can
+        only discriminate if its two hypotheses are further apart than the error
+        scale, so the default is ``floor(sigma) + 1``.
+
         Args:
             k_values: The multipliers to probe.
+            selection_rule: ``"aggregate"`` (default, robust) or
+                ``"best_margin"`` (diagnostic).
+            min_separation: Smallest ring separation a ``K`` may have and still
+                be eligible for ``best_margin`` selection.  ``None`` derives it
+                from ``sigma`` when given, else falls back to 1.
+            sigma: Configured error scale, used only to derive the default
+                guard.  Never used to decide a bit.
 
         Returns:
             A :class:`DirectRecoveryReport`.
 
         Raises:
-            ValueError: If ``k_values`` is empty.
+            ValueError: If ``k_values`` is empty or the rule is unknown.
         """
+        if selection_rule not in SELECTION_RULES:
+            raise ValueError(
+                f"selection_rule must be one of {list(SELECTION_RULES)}, "
+                f"got {selection_rule!r}.")
         values = [int(k) for k in k_values]
         if not values:
             raise ValueError("at least one K value is required.")
+
+        if min_separation is None:
+            min_separation = (int(math.floor(float(sigma))) + 1
+                              if sigma is not None else 1)
+        min_separation = max(1, int(min_separation))
 
         per_k = [self.recover_for_k(k) for k in values]
         aggregate = np.zeros(self.n, dtype=np.float64)
@@ -509,8 +591,9 @@ class DirectRecovery:
             weight = result.separation / max(self.q / 2.0, 1.0)
             aggregate += weight * np.array([o.score for o in result.outcomes])
 
-        usable = [r for r in per_k if r.separation > 0]
-        selected = max(usable, key=lambda r: r.mean_margin).K if usable else None
+        eligible = [r for r in per_k if r.separation >= min_separation]
+        excluded = [r.K for r in per_k if r.separation < min_separation]
+        selected = max(eligible, key=lambda r: r.mean_margin).K if eligible else None
 
         return DirectRecoveryReport(
             n=self.n,
@@ -520,4 +603,7 @@ class DirectRecovery:
             aggregate_candidate=(aggregate > 0).astype(np.int64),
             aggregate_scores=aggregate,
             selected_K=selected,
+            selection_rule=selection_rule,
+            min_separation=min_separation,
+            excluded_k=excluded,
         )
