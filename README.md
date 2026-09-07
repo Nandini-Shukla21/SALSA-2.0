@@ -6,7 +6,7 @@ Transformer** can learn secret-dependent structure from public samples and
 support **direct secret recovery**, at roughly one twelfth the scale of the
 published SALSA model, running entirely on a CPU.
 
-The final model, **NACT-F**, has **4,238,208 trainable parameters** and completes
+The final model, **Modified NACT**, has **4,238,208 trainable parameters** and completes
 the full attack — learn, recover, verify — at n=12 and n=20 with h=2.
 
 > ### ⚠ Important scientific boundary
@@ -20,6 +20,11 @@ the full attack — learn, recover, verify — at n=12 and n=20 with h=2.
 > exercised end to end on a laptop. Nothing here should be read as evidence about
 > deployed parameter sets.
 
+> **Naming.** The final model is **Modified NACT** — the simplified final form of
+> the NACT architecture. Historical experiment records, result directories and
+> configuration filenames call it `NACT-F` / `nact_f`; those identifiers are
+> retained only where renaming would damage provenance.
+
 ---
 
 ## Table of contents
@@ -30,7 +35,7 @@ the full attack — learn, recover, verify — at n=12 and n=20 with h=2.
 [5. Original SALSA](#5-original-salsa) ·
 [6. Limitations identified](#6-limitations-identified-in-original-salsa) ·
 [7. SALSA 2.0](#7-salsa-20) · [8. Architecture evolution](#8-architecture-evolution) ·
-[9. NACT-F](#9-final-nact-f-architecture) · [10. Data generation](#10-data-generation) ·
+[9. Modified NACT](#9-final-architecture--modified-nact) · [10. Data generation](#10-data-generation) ·
 [11. Secret representation](#11-secret-representation) ·
 [12. Integer encoding](#12-integer-encoding) · [13. Training](#13-training-pipeline) ·
 [14. Metrics](#14-prediction-and-evaluation-metrics) ·
@@ -40,7 +45,7 @@ the full attack — learn, recover, verify — at n=12 and n=20 with h=2.
 [18. Pipeline](#18-end-to-end-pipeline) ·
 [19. Ground-truth isolation](#19-ground-truth-isolation) ·
 [20. Configuration](#20-experimental-configuration) ·
-[21. Results](#21-experimental-results) · [22. V1 vs NACT-F](#22-v1-vs-nact-f) ·
+[21. Results](#21-experimental-results) · [22. V1 vs Modified NACT](#22-v1-vs-modified-nact) ·
 [23. Ablation](#23-nact-ablation-findings) ·
 [24. Reproducibility](#24-reproducibility-and-replay-validation) ·
 [25. Structure](#25-project-structure) · [26. Installation](#26-installation) ·
@@ -265,11 +270,26 @@ Project goals, all of which the repository addresses:
 
 ## 8. Architecture evolution
 
+```text
+Original SALSA
+      ↓
+Salsa2-GatedUT   (V1)
+      ↓
+NACT             (V2)
+      ↓
+Modified NACT    (final)
+```
+
+**Modified NACT is the simplified final form of NACT**: the same architecture
+with the additional numerical, zero-aware and sparse-attention features removed,
+keeping only the coordinate-level representation.
+
+
 | Version | Architecture | Parameters | Purpose |
 |---|---|---:|---|
 | **V1** | Salsa2-GatedUT | **4,131,200** | compact baseline — a faithful reduction of the original architecture |
 | **V2** | Salsa2-NACT | **4,241,288** | coordinate/numerical-aware architecture |
-| **Final** | **NACT-F** | **4,238,208** | simplified final architecture |
+| **Final** | **Modified NACT** | **4,238,208** | simplified final architecture |
 
 ### V1 — Salsa2-GatedUT
 
@@ -291,7 +311,7 @@ features at 1/12 the scale:
 Parameter count: **4,131,200**. It consumes the digit-token representation
 described in §5, giving `2n + 2` encoder positions.
 
-### V2 — Salsa2-NACT
+### V2 — NACT (Salsa2-NACT)
 
 The Numerical-Aware Coordinate Transformer. It keeps V1's encoder body, decoder
 and gating unchanged and replaces only the **input front end**, changing the
@@ -315,9 +335,9 @@ Parameter count: **4,241,288**.
 
 ---
 
-## 9. Final NACT-F architecture
+## 9. Final architecture — Modified NACT
 
-**NACT-F** is V2 with the additional numerical, zero-aware and sparse-attention
+**Modified NACT** is V2 with the additional numerical, zero-aware and sparse-attention
 features removed, retaining only the coordinate-level representation:
 
 **Retained** — one coordinate token per `aᵢ`; the base-81 digit embeddings it is
@@ -329,17 +349,17 @@ learned zero-coordinate vector, the sparse attention bias.
 
 Parameter count: **4,238,208**.
 
-### Why NACT-F became the final model
+### Why Modified NACT became the final model
 
 A controlled ablation at matched depth, seed and sample budget found that the
 **one-token coordinate representation and coordinate identity accounted for the
-dominant observed improvement**. NACT-F matched full NACT within one-seed noise
+dominant observed improvement**. Modified NACT matched NACT within one-seed noise
 on every primary metric, and completed secret recovery just as well.
 
 > **Careful statement.** The removed features were removable **without measurable
 > loss in the tested ablation setting** — one seed, n=12, h=2, 100,032 samples.
-> This is not a claim that they are universally useless. NACT-F's sparse-input
-> margin at the extreme end was roughly half full NACT's, which is recorded in
+> This is not a claim that they are universally useless. Modified NACT's sparse-input
+> margin at the extreme end was roughly half NACT's, which is recorded in
 > §23 rather than smoothed over.
 
 ### Model dimensions
@@ -432,7 +452,7 @@ released-code-compatible layout and produced **every demonstrated result**.
 
 ### Sequence lengths
 
-| | R, digit tokens | NACT-F, coordinate tokens |
+| | R, digit tokens | Modified NACT, coordinate tokens |
 |---|---:|---:|
 | n=12 | 26 | **14** |
 | n=20 | 42 | **22** |
@@ -448,7 +468,7 @@ coordinate 2 → digit 1 + digit 2
         longer sequence
 
 
-NACT / NACT-F
+NACT / Modified NACT
 
 coordinate 1 → one coordinate token
 coordinate 2 → one coordinate token
@@ -464,7 +484,7 @@ layout. Exactly: `2n + 2` becomes `n + 2`, so the reduction approaches one half
 as `n` grows and is slightly less at small `n` because both layouts carry the
 same two boundary tokens.
 
-NACT-F consumes the **same token layout the codec already produces** and folds it
+Modified NACT consumes the **same token layout the codec already produces** and folds it
 into coordinate positions internally, reconstructing each integer losslessly.
 This is asserted by test for every dimension from 12 to 128 and for both
 representations, so no change to the data pipeline was required.
@@ -722,7 +742,7 @@ public LWE/RLWE data
         ↓
      encoding
         ↓
-      NACT-F
+      Modified NACT
         ↓
      predict b
         ↓
@@ -820,7 +840,7 @@ feature, and it is covered by a test asserting the secret field stays empty.
 | Validation sequences | 2,048 |
 | Monitor metric | `valid_loss` (min) |
 | Encoder / decoder loops | `T_e = 2`, `T_d = 2` |
-| Final model | NACT-F |
+| Final model | Modified NACT |
 | Parameters | 4,238,208 |
 | Seeds | 0 (n=12 also validated at 42 and 123) |
 
@@ -876,11 +896,11 @@ PASS**. Only one secret has been tested at n=20.
 
 ---
 
-## 22. V1 vs NACT-F
+## 22. V1 vs Modified NACT
 
 Both at n=12, h=2, 100,032 samples, matched protocol and seed:
 
-| | V1 Salsa2-GatedUT | NACT-F |
+| | V1 Salsa2-GatedUT | Modified NACT |
 |---|---:|---:|
 | Parameters | 4,131,200 | 4,238,208 |
 | Validation loss | 1.7413 | **0.9891** |
@@ -907,32 +927,32 @@ multipliers.
 
 ## 23. NACT ablation findings
 
-The one-token representation was isolated directly by constructing **NACT-F**:
-full NACT with all six additional numerical, zero-aware and sparse-attention
+The one-token representation was isolated directly by constructing **Modified NACT**:
+NACT with all six additional numerical, zero-aware and sparse-attention
 components removed, keeping only the coordinate-level representation.
 
 At matched depth, seed and sample budget:
 
-| metric | full NACT | NACT-F | difference | 3σ seed band | resolvable at one seed? |
+| metric | NACT | Modified NACT | difference | 3σ seed band | resolvable at one seed? |
 |---|---:|---:|---:|---:|:---:|
 | validation loss | 0.9388 | 0.9891 | +0.0503 | 0.0696 | no |
 | `acc_tau` | 0.9839 | 0.9839 | +0.0000 | 0.0064 | no |
 | exact integer accuracy | 0.1011 | 0.0913 | −0.0098 | 0.0275 | no |
 
-Every difference falls inside full NACT's own measured seed-to-seed noise band.
-**NACT-F retained approximately all of the observed `acc_tau` gap relative to V1
+Every difference falls inside NACT's own measured seed-to-seed noise band.
+**Modified NACT retained approximately all of the observed `acc_tau` gap relative to V1
 in the tested seed** — the recorded retention figure is 1.000 for `acc_tau` and
 0.937 for loss.
 
 Summary of the ablation:
 
-- **full NACT → strong performance**
-- **NACT-F → strong performance**
+- **NACT → strong performance**
+- **Modified NACT → strong performance**
 - **the additional numerical and sparse-aware features were not necessary for the
   demonstrated recovery**
 
-One difference is recorded rather than smoothed over: NACT-F's sparse-input lift
-at the extreme end is roughly half full NACT's (+0.0500 versus +0.1167 on
+One difference is recorded rather than smoothed over: Modified NACT's sparse-input lift
+at the extreme end is roughly half NACT's (+0.0500 versus +0.1167 on
 probes). The margin narrowed; the recovery outcome did not change.
 
 > **Remaining C/D/E ablations were designed but not executed.** No individual
@@ -979,7 +999,7 @@ SALSA 2.0/
 │   │   └── encoding.py          LatticeCodec, vocabulary, integer encoder
 │   ├── models/                  architectures and parameter accounting
 │   │   ├── transformer.py       V1 Salsa2-GatedUT, shared blocks
-│   │   ├── nact.py              NACT / NACT-F front end and model
+│   │   ├── nact.py              NACT / Modified NACT front end and model
 │   │   ├── attention.py         multi-head attention, RoPE
 │   │   ├── embeddings.py        token and rotary embeddings
 │   │   └── parameter_count.py   three-way budget verification
@@ -992,13 +1012,17 @@ SALSA 2.0/
 ├── configs/                     31 YAML experiment definitions
 ├── scripts/                     26 entry points and analysis tools
 ├── tests/                       17 test modules
-├── results/                     recorded artifacts for every phase
-│   ├── final_pipeline/          final report, results, status, replay
+├── results/
+│   ├── README.md                index — what is authoritative, what is not
+│   ├── final_pipeline/          ← AUTHORITATIVE FINAL RESULTS
+│   ├── archive/                 historical artifacts nothing depends on
 │   ├── original_fidelity_audit/ comparison against the released SALSA source
 │   ├── recovery_generalization/ sparse-input study
-│   ├── nact_ablation_F/         the ablation that produced NACT-F
-│   ├── n20_nact_f_pilot/        n=20 training
-│   └── n20_nact_f_recovery/     n=20 recovery
+│   ├── nact_ablation_F/         the ablation that produced Modified NACT;
+│   │                            also holds the authoritative n=12 checkpoint
+│   ├── n20_nact_f_pilot/        n=20 training; authoritative n=20 checkpoint
+│   ├── n20_nact_f_recovery/     n=20 recovery
+│   └── ...                      further supporting evidence, indexed in README
 ├── pyproject.toml
 ├── requirements.txt
 └── README.md
@@ -1009,12 +1033,23 @@ SALSA 2.0/
 | `salsa/` | the library — everything importable |
 | `configs/` | every experiment is defined by a config; results are reproducible from config + seed |
 | `scripts/` | CLI entry points (`run_pipeline.py`, `train.py`) and per-phase analysis tools |
-| `tests/` | 687 tests covering mathematics, budgets, secret isolation and the pipeline |
-| `results/` | recorded artifacts. Nothing here is regenerated by documentation tasks |
+| `tests/` | 690 tests covering mathematics, budgets, secret isolation and the pipeline |
+| `results/` | recorded artifacts. **`final_pipeline/` is authoritative**; `archive/` is historical. See `results/README.md` |
 
-Key documents: `results/final_pipeline/SALSA2_Final_Report.md` (full technical
-report), `results/final_pipeline/project_status.md` (completion state),
+Key documents: `results/README.md` (index of what is authoritative),
+`results/final_pipeline/SALSA2_Final_Report.md` (full technical report),
+`results/final_pipeline/project_status.md` (completion state),
+`results/final_pipeline/final_structure.md` (structure and maintenance notes),
 `results/original_fidelity_audit/` (comparison against the released source).
+
+**Authoritative checkpoints**, loaded by the two pipeline configs, live inside
+the run directories that produced them so each stays beside its own config,
+metrics and logs:
+
+| dimension | run directory |
+|---|---|
+| n=12 | `results/nact_ablation_F/nact_n12_h2_te2_F/seed_0/` |
+| n=20 | `results/n20_nact_f_pilot/nact_n20_h2_te2_F/seed_0/` |
 
 ---
 
@@ -1109,7 +1144,7 @@ pytest -q
 ## 28. Tests
 
 ```text
-687 passed, 2 skipped
+690 passed, 2 skipped
 ```
 
 This status was unchanged by the final integration and documentation work.
@@ -1155,7 +1190,7 @@ Coverage, in the order the project built it:
    verified) using three independently seeded checkpoints.
 7. **Replay is reproducible**: 12/12 checks matched through the integrated
    pipeline, in about one second per configuration.
-8. The test suite stands at **687 passed, 2 skipped**, with secret isolation
+8. The test suite stands at **690 passed, 2 skipped**, with secret isolation
    enforced structurally rather than by convention.
 
 ---
@@ -1195,7 +1230,7 @@ None of the following has been performed.
 2. **Multi-seed validation**, so recovery is reported as a rate with an
    uncertainty estimate rather than a single outcome.
 3. **Remaining NACT ablations** (variants C, D and E), to attribute the residual
-   sparse-input margin that NACT-F narrowed without changing the outcome.
+   sparse-input margin that Modified NACT narrowed without changing the outcome.
 4. **Different `h` values**, since only `h = 2` has been demonstrated.
 5. **Different `q` and `sigma` configurations**, including validating the
    `min_separation` guard away from `sigma = 3`.
@@ -1216,13 +1251,13 @@ None of the following has been performed.
 
 The supporting evidence:
 
-- **Similar parameter scale.** V1 has 4,131,200 parameters and NACT-F has
+- **Similar parameter scale.** V1 has 4,131,200 parameters and Modified NACT has
   4,238,208 — a 2.6% difference. Capacity does not distinguish them.
 - **V1 failed recovery.** 0 of 10 multipliers, 58% of probe outputs undecodable,
   a single constant answer on 8 of 10 multipliers.
-- **NACT-F succeeded.** Exact recovery at both demonstrated dimensions, probe
+- **Modified NACT succeeded.** Exact recovery at both demonstrated dimensions, probe
   decode validity 1.0000, verification PASS.
-- **NACT-F retained nearly all of the observed primary-metric improvement.** The
+- **Modified NACT retained nearly all of the observed primary-metric improvement.** The
   recorded `acc_tau` gap retention relative to V1 is 1.000.
 - **The full numerical and sparse-aware feature set was not required** for the
   demonstrated recovery — removing all six components changed nothing resolvable
@@ -1288,7 +1323,7 @@ Larger-scale validation:    FUTURE WORK
 | Direct secret recovery | complete, secret-free, hardened |
 | Independent residual verification | complete |
 | End-to-end pipeline | complete, replay validated 12/12 |
-| Test suite | 687 passed, 2 skipped |
+| Test suite | 690 passed, 2 skipped |
 | n=12, h=2 | demonstrated: learning, exact recovery, verification |
 | n=20, h=2 | demonstrated: learning, exact recovery, verification |
 | n=30, n=50, n=128 | **not attempted** |
