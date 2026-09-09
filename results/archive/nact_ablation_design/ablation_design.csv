@@ -1,0 +1,31 @@
+section,key,name,num_features,parameters,delta_vs_full_nact,percent_of_full_nact,within_budget,already_trained,isolates,question,confound_risk,rank,variant,scientific_value,stage,applies_to,cost_seconds_per_variant,item,value
+variant,A,Full NACT (reference),4,4241288,0,0.0,True,True,nothing - this is the reference arm,the established V2 result,negligible: below 0.1% of the model,,,,,,,,
+variant,B,no numerical features (keep zero indicator),1,4239752,-1536,-0.03621541380825825,True,False,"centered residue + Fourier pair, jointly",do the continuous value features matter once zero-awareness is present?,negligible: below 0.1% of the model,,,,,,,,
+variant,C,no zero-aware features,3,4240256,-1032,-0.02433223115242351,True,False,"zero indicator + zero vector + sparse bias, jointly",is zero-awareness what fixes the phase-12 sparse collapse?,negligible: below 0.1% of the model,,,,,,,,
+variant,D,no Fourier features,2,4240264,-1024,-0.024143609205505498,True,False,the k=1 character pair,does the modular-arithmetic feature matter?,negligible: below 0.1% of the model,,,,,,,,
+variant,E,no absolute coordinate embedding,4,4175752,-65536,-1.5451909891523519,True,False,absolute coordinate identity,is RoPE's relative position insufficient for b = sum a_i s_i?,small but non-zero: state it when reporting,,,,,,,,
+variant,F,one-token coordinate representation only,0,4238208,-3080,-0.07261944956343451,True,False,ALL numerical/zero features at once,"THE KEY SPLIT: is the gain the tokenisation, or the features?",negligible: below 0.1% of the model,,,,,,,,
+variant,G,no sparse attention bias,4,4241280,-8,-0.0001886219469180117,True,False,the per-head zero-key bias (8 parameters),does the learned zero-suppression mechanism do anything?,negligible: below 0.1% of the model,,,,,,,,
+ranking,,one-token only,,,,,,,,,,1,F,highest,,,,,
+ranking,,no zero-aware features,,,,,,,,,,2,C,high,,,,,
+ranking,,no coordinate embedding,,,,,,,,,,3,E,high,,,,,
+ranking,,no Fourier,,,,,,,,,,4,D,medium,,,,,
+ranking,,no sparse bias,,,,,,,,,,5,G,"predicted, do not pay for it",,,,,
+stage,,learning metrics,,,,,,,,,,,,,1,every variant,1200.8049782911937,,
+stage,,sparsity generalization,,,,,,,,,,,,,2,every variant that trained successfully,240,,
+stage,,direct secret recovery,,,,,,,,,,,,,3,only variants passing the stage-2 gate,120,,
+cost_seconds,,,,,,,,,,,,,,,,,,stage_1_training_3_variants,3602.414934873581
+cost_seconds,,,,,,,,,,,,,,,,,,stage_2_sparsity_3_variants,720
+cost_seconds,,,,,,,,,,,,,,,,,,stage_3_recovery_top_2,240
+cost_seconds,,,,,,,,,,,,,,,,,,confirmation_seeds_for_the_decisive_contrast,2401.6099565823874
+cost_seconds,,,,,,,,,,,,,,,,,,total_recommended,6964.024891455969
+cost_seconds,,,,,,,,,,,,,,,,,,total_if_all_six_variants_were_run_once,9364.829869747162
+cost_seconds,,,,,,,,,,,,,,,,,,total_if_all_six_at_five_seeds,38184.14934873581
+component,1,one token per coordinate,,0,,,,,,,,,,,,,,,
+component,2,base-81 digit embeddings,,82944,,,,,,,,,,,,,,,
+component,3,centered numerical residue,,512,,,,,,,,,,,,,,,
+component,4,zero / nonzero indicator,,512,,,,,,,,,,,,,,,
+component,5,Fourier cos/sin features,,1024,,,,,,,,,,,,,,,
+component,6,absolute coordinate embedding,,65536,,,,,,,,,,,,,,,
+component,7,learned zero-coordinate feature,,512,,,,,,,,,,,,,,,
+component,8,sparse attention key bias,,8,,,,,,,,,,,,,,,
