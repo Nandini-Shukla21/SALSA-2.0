@@ -1,0 +1,541 @@
+{
+  "phase": "18 - V2 NACT T_e=2 checkpoint audit",
+  "status": "READ-ONLY. No training, no resume, no recovery, no distinguisher, no verification, no sparsity rerun, no benchmark. No checkpoint created or altered. No model, data or recovery code modified.",
+  "selection_rule": {
+    "metric": "valid_loss",
+    "mode": "min",
+    "source": "each run's own config.yaml training.monitor_metric",
+    "secret_consulted": false,
+    "recovery_result_consulted": false,
+    "note": "The true secret is never loaded by this script and no recovery outcome influences the choice; selecting an attack target using the answer would invalidate the attack."
+  },
+  "expected_values": {
+    "arch": "nact",
+    "parameter_count": 4241288,
+    "encoder_loops": 2,
+    "decoder_loops": 2,
+    "n": 12,
+    "hamming_weight": 2,
+    "q": 251,
+    "sigma": 3.0,
+    "structure": "rlwe",
+    "rlwe_variant": "circulant",
+    "base": 81,
+    "digit_order": "lsb_first",
+    "separator": false,
+    "fixed_width": true,
+    "vocab_size": 85,
+    "nact_encoder_length": 14,
+    "output_length": 4
+  },
+  "runs_discovered": 4,
+  "completed": [
+    {
+      "run_dir": "results/equal_depth_ablation/v2_te2/nact_n12_h2_te2/seed_0",
+      "complete": true,
+      "seed": 0,
+      "checkpoint_path": "results/equal_depth_ablation/v2_te2/nact_n12_h2_te2/seed_0/checkpoints/best.pt",
+      "checkpoint_bytes": 50945944,
+      "best_epoch": 19,
+      "final_epoch": 20,
+      "samples_seen": 100032,
+      "best_metric_recorded": 0.938798,
+      "stop_reason": "planned epochs completed",
+      "valid_loss": 0.938798,
+      "valid_token_accuracy": 0.69694,
+      "valid_greedy_token_accuracy": 0.682454,
+      "valid_exact_accuracy": 0.101074,
+      "valid_acc_tau": 0.983887,
+      "valid_perfect_accuracy": 0.101074,
+      "valid_decode_failure_rate": 0.0,
+      "valid_mean_distance": 6.6875,
+      "cpu_memory_rss_mb": 370.59375,
+      "cpu_memory_peak_rss_mb_UNRELIABLE": 447.078125,
+      "parameter_count_summary": 4241288,
+      "parameter_count_checkpoint": 4241288,
+      "architecture": "nact",
+      "encoder_loops": 2,
+      "decoder_loops": 2,
+      "config_fingerprint_summary": "be1c85196c6d267c",
+      "config_fingerprint_checkpoint": "be1c85196c6d267c",
+      "checkpoint_stores_weight_fingerprint": false,
+      "fingerprints_match": true,
+      "monitor_metric": "valid_loss",
+      "monitor_mode": "min",
+      "source": "results/equal_depth_ablation/v2_te2/nact_n12_h2_te2/seed_0/config.yaml",
+      "config_fidelity": {
+        "arch": {
+          "expected": "nact",
+          "actual": "nact",
+          "match": true
+        },
+        "encoder_loops": {
+          "expected": 2,
+          "actual": 2,
+          "match": true
+        },
+        "decoder_loops": {
+          "expected": 2,
+          "actual": 2,
+          "match": true
+        },
+        "parameter_count": {
+          "expected": 4241288,
+          "actual": 4241288,
+          "match": true
+        },
+        "n": {
+          "expected": 12,
+          "actual": 12,
+          "match": true
+        },
+        "hamming_weight": {
+          "expected": 2,
+          "actual": 2,
+          "match": true
+        },
+        "q": {
+          "expected": 251,
+          "actual": 251,
+          "match": true
+        },
+        "sigma": {
+          "expected": 3.0,
+          "actual": 3.0,
+          "match": true
+        },
+        "structure": {
+          "expected": "rlwe",
+          "actual": "rlwe",
+          "match": true
+        },
+        "rlwe_variant": {
+          "expected": "circulant",
+          "actual": "circulant",
+          "match": true
+        },
+        "base": {
+          "expected": 81,
+          "actual": 81,
+          "match": true
+        },
+        "digit_order": {
+          "expected": "lsb_first",
+          "actual": "lsb_first",
+          "match": true
+        },
+        "separator": {
+          "expected": false,
+          "actual": false,
+          "match": true
+        },
+        "fixed_width": {
+          "expected": true,
+          "actual": true,
+          "match": true
+        },
+        "vocab_size": {
+          "expected": 85,
+          "actual": 85,
+          "match": true
+        },
+        "codec_vocabulary": {
+          "expected": 85,
+          "actual": 85,
+          "match": true
+        },
+        "nact_encoder_length": {
+          "expected": 14,
+          "actual": 14,
+          "match": true
+        },
+        "codec_input_length_v1_layout": {
+          "expected": 26,
+          "actual": 26,
+          "match": true
+        },
+        "output_length": {
+          "expected": 4,
+          "actual": 4,
+          "match": true
+        },
+        "seed_recorded": {
+          "expected": 0,
+          "actual": 0,
+          "match": true
+        }
+      },
+      "config_fidelity_all_match": true
+    },
+    {
+      "run_dir": "results/equal_depth_ablation/v2_te2/nact_n12_h2_te2/seed_123",
+      "complete": true,
+      "seed": 123,
+      "checkpoint_path": "results/equal_depth_ablation/v2_te2/nact_n12_h2_te2/seed_123/checkpoints/best.pt",
+      "checkpoint_bytes": 50945944,
+      "best_epoch": 19,
+      "final_epoch": 20,
+      "samples_seen": 100032,
+      "best_metric_recorded": 0.893135,
+      "stop_reason": "planned epochs completed",
+      "valid_loss": 0.893135,
+      "valid_token_accuracy": 0.704427,
+      "valid_greedy_token_accuracy": 0.692057,
+      "valid_exact_accuracy": 0.119141,
+      "valid_acc_tau": 0.987305,
+      "valid_perfect_accuracy": 0.119141,
+      "valid_decode_failure_rate": 0.0,
+      "valid_mean_distance": 5.6323,
+      "cpu_memory_rss_mb": 391.22265625,
+      "cpu_memory_peak_rss_mb_UNRELIABLE": 446.84375,
+      "parameter_count_summary": 4241288,
+      "parameter_count_checkpoint": 4241288,
+      "architecture": "nact",
+      "encoder_loops": 2,
+      "decoder_loops": 2,
+      "config_fingerprint_summary": "a4cb9d0c870aec5e",
+      "config_fingerprint_checkpoint": "a4cb9d0c870aec5e",
+      "checkpoint_stores_weight_fingerprint": false,
+      "fingerprints_match": true,
+      "monitor_metric": "valid_loss",
+      "monitor_mode": "min",
+      "source": "results/equal_depth_ablation/v2_te2/nact_n12_h2_te2/seed_123/config.yaml",
+      "config_fidelity": {
+        "arch": {
+          "expected": "nact",
+          "actual": "nact",
+          "match": true
+        },
+        "encoder_loops": {
+          "expected": 2,
+          "actual": 2,
+          "match": true
+        },
+        "decoder_loops": {
+          "expected": 2,
+          "actual": 2,
+          "match": true
+        },
+        "parameter_count": {
+          "expected": 4241288,
+          "actual": 4241288,
+          "match": true
+        },
+        "n": {
+          "expected": 12,
+          "actual": 12,
+          "match": true
+        },
+        "hamming_weight": {
+          "expected": 2,
+          "actual": 2,
+          "match": true
+        },
+        "q": {
+          "expected": 251,
+          "actual": 251,
+          "match": true
+        },
+        "sigma": {
+          "expected": 3.0,
+          "actual": 3.0,
+          "match": true
+        },
+        "structure": {
+          "expected": "rlwe",
+          "actual": "rlwe",
+          "match": true
+        },
+        "rlwe_variant": {
+          "expected": "circulant",
+          "actual": "circulant",
+          "match": true
+        },
+        "base": {
+          "expected": 81,
+          "actual": 81,
+          "match": true
+        },
+        "digit_order": {
+          "expected": "lsb_first",
+          "actual": "lsb_first",
+          "match": true
+        },
+        "separator": {
+          "expected": false,
+          "actual": false,
+          "match": true
+        },
+        "fixed_width": {
+          "expected": true,
+          "actual": true,
+          "match": true
+        },
+        "vocab_size": {
+          "expected": 85,
+          "actual": 85,
+          "match": true
+        },
+        "codec_vocabulary": {
+          "expected": 85,
+          "actual": 85,
+          "match": true
+        },
+        "nact_encoder_length": {
+          "expected": 14,
+          "actual": 14,
+          "match": true
+        },
+        "codec_input_length_v1_layout": {
+          "expected": 26,
+          "actual": 26,
+          "match": true
+        },
+        "output_length": {
+          "expected": 4,
+          "actual": 4,
+          "match": true
+        },
+        "seed_recorded": {
+          "expected": 123,
+          "actual": 123,
+          "match": true
+        }
+      },
+      "config_fidelity_all_match": true
+    },
+    {
+      "run_dir": "results/equal_depth_ablation/v2_te2/nact_n12_h2_te2/seed_42",
+      "complete": true,
+      "seed": 42,
+      "checkpoint_path": "results/equal_depth_ablation/v2_te2/nact_n12_h2_te2/seed_42/checkpoints/best.pt",
+      "checkpoint_bytes": 50945944,
+      "best_epoch": 19,
+      "final_epoch": 20,
+      "samples_seen": 100032,
+      "best_metric_recorded": 0.908885,
+      "stop_reason": "planned epochs completed",
+      "valid_loss": 0.908885,
+      "valid_token_accuracy": 0.702799,
+      "valid_greedy_token_accuracy": 0.688314,
+      "valid_exact_accuracy": 0.112793,
+      "valid_acc_tau": 0.987793,
+      "valid_perfect_accuracy": 0.112793,
+      "valid_decode_failure_rate": 0.0,
+      "valid_mean_distance": 5.688,
+      "cpu_memory_rss_mb": 365.46484375,
+      "cpu_memory_peak_rss_mb_UNRELIABLE": 446.0703125,
+      "parameter_count_summary": 4241288,
+      "parameter_count_checkpoint": 4241288,
+      "architecture": "nact",
+      "encoder_loops": 2,
+      "decoder_loops": 2,
+      "config_fingerprint_summary": "431e51ed5d60f02c",
+      "config_fingerprint_checkpoint": "431e51ed5d60f02c",
+      "checkpoint_stores_weight_fingerprint": false,
+      "fingerprints_match": true,
+      "monitor_metric": "valid_loss",
+      "monitor_mode": "min",
+      "source": "results/equal_depth_ablation/v2_te2/nact_n12_h2_te2/seed_42/config.yaml",
+      "config_fidelity": {
+        "arch": {
+          "expected": "nact",
+          "actual": "nact",
+          "match": true
+        },
+        "encoder_loops": {
+          "expected": 2,
+          "actual": 2,
+          "match": true
+        },
+        "decoder_loops": {
+          "expected": 2,
+          "actual": 2,
+          "match": true
+        },
+        "parameter_count": {
+          "expected": 4241288,
+          "actual": 4241288,
+          "match": true
+        },
+        "n": {
+          "expected": 12,
+          "actual": 12,
+          "match": true
+        },
+        "hamming_weight": {
+          "expected": 2,
+          "actual": 2,
+          "match": true
+        },
+        "q": {
+          "expected": 251,
+          "actual": 251,
+          "match": true
+        },
+        "sigma": {
+          "expected": 3.0,
+          "actual": 3.0,
+          "match": true
+        },
+        "structure": {
+          "expected": "rlwe",
+          "actual": "rlwe",
+          "match": true
+        },
+        "rlwe_variant": {
+          "expected": "circulant",
+          "actual": "circulant",
+          "match": true
+        },
+        "base": {
+          "expected": 81,
+          "actual": 81,
+          "match": true
+        },
+        "digit_order": {
+          "expected": "lsb_first",
+          "actual": "lsb_first",
+          "match": true
+        },
+        "separator": {
+          "expected": false,
+          "actual": false,
+          "match": true
+        },
+        "fixed_width": {
+          "expected": true,
+          "actual": true,
+          "match": true
+        },
+        "vocab_size": {
+          "expected": 85,
+          "actual": 85,
+          "match": true
+        },
+        "codec_vocabulary": {
+          "expected": 85,
+          "actual": 85,
+          "match": true
+        },
+        "nact_encoder_length": {
+          "expected": 14,
+          "actual": 14,
+          "match": true
+        },
+        "codec_input_length_v1_layout": {
+          "expected": 26,
+          "actual": 26,
+          "match": true
+        },
+        "output_length": {
+          "expected": 4,
+          "actual": 4,
+          "match": true
+        },
+        "seed_recorded": {
+          "expected": 42,
+          "actual": 42,
+          "match": true
+        }
+      },
+      "config_fidelity_all_match": true
+    }
+  ],
+  "excluded": [
+    {
+      "run_dir": "results/equal_depth_ablation/v2_te2/nact_n12_h2_te2/seed_456",
+      "complete": false,
+      "reason_incomplete": "no artifacts/summary.json",
+      "checkpoint_files": [
+        "best.pt",
+        "last.pt"
+      ]
+    }
+  ],
+  "ranking": [
+    {
+      "seed": 123,
+      "valid_loss": 0.893135
+    },
+    {
+      "seed": 42,
+      "valid_loss": 0.908885
+    },
+    {
+      "seed": 0,
+      "valid_loss": 0.938798
+    }
+  ],
+  "best_checkpoint": {
+    "path": "results/equal_depth_ablation/v2_te2/nact_n12_h2_te2/seed_123/checkpoints/best.pt",
+    "seed": 123,
+    "best_epoch": 19,
+    "samples_seen": 100032,
+    "valid_loss": 0.893135,
+    "valid_acc_tau": 0.987305,
+    "valid_exact_accuracy": 0.119141,
+    "config_fingerprint": "a4cb9d0c870aec5e",
+    "parameter_count": 4241288
+  },
+  "integrity": {
+    "fresh_model_is_SalsaNact": true,
+    "state_dict_expected_tensors": 36,
+    "state_dict_saved_tensors": 36,
+    "missing_keys": [],
+    "unexpected_keys": [],
+    "all_expected_keys_present": true,
+    "loads_strict": true,
+    "load_missing": [],
+    "load_unexpected": [],
+    "parameter_count_after_load": 4241288,
+    "parameter_count_matches": true,
+    "all_parameters_on_cpu": true,
+    "all_parameters_finite": true,
+    "model_config_matches_checkpoint_spec": true,
+    "tiny_batch": {
+      "note": "shape and finiteness only; NO accuracy is computed or implied",
+      "batch_size": 2,
+      "source_shape": [
+        2,
+        26
+      ],
+      "encoder_memory_shape": [
+        2,
+        14,
+        512
+      ],
+      "encoder_length_is_n_plus_2": true,
+      "logits_shape": [
+        2,
+        4,
+        85
+      ],
+      "logits_shape_correct": true,
+      "logits_finite": true,
+      "logits_contain_nan": false,
+      "logit_abs_max": 16.6786,
+      "values_reconstructed_exactly": true
+    },
+    "integrity_all_pass": true
+  },
+  "v1_baseline_context": {
+    "available": true,
+    "note": "metadata inspection only; V1 was not reloaded or retrained",
+    "run_dir": "results/control_a_n12_h2/control",
+    "checkpoint_path": "results/control_a_n12_h2/control/checkpoints/best.pt",
+    "checkpoint_present": true,
+    "architecture": "gated_universal_transformer",
+    "model_name": "Salsa2-GatedUT",
+    "parameter_count": 4131200,
+    "n": 12,
+    "hamming_weight": 2,
+    "seed": 0,
+    "valid_loss": 1.729735,
+    "valid_acc_tau": 0.347168,
+    "valid_exact_accuracy": 0.008789,
+    "config_fingerprint": "98afa3f729f8607e",
+    "matches_phase10_expectations": true
+  },
+  "ready_for_direct_recovery": true
+}
