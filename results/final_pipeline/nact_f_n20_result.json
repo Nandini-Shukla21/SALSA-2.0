@@ -4,7 +4,7 @@
   "config_fingerprint": "dca6cdfbecfb1167",
   "checkpoint_fingerprint": "bbf51d2d5d8182c5",
   "architecture": "nact",
-  "model_name": "Salsa2-NACT",
+  "model_name": "Salsa2-Modified-NACT",
   "parameter_count": 4238208,
   "checkpoint": "results\\n20_nact_f_pilot\\nact_n20_h2_te2_F\\seed_0\\checkpoints\\best.pt",
   "best_epoch": 19,
@@ -753,12 +753,12 @@
     "all_ones_coordinate_accuracy": 0.1,
     "warning": "A weight-2 secret over 20 coordinates gives an all-zeros guess 0.9000 coordinate accuracy for free. Only exact recovery is evidence."
   },
-  "runtime_seconds": 1.4116,
+  "runtime_seconds": 1.5947,
   "stage_seconds": {
-    "load_checkpoint": 0.1636,
-    "recovery": 1.1274,
-    "verification": 0.0068,
-    "evaluation": 0.0003
+    "load_checkpoint": 0.2038,
+    "recovery": 1.2308,
+    "verification": 0.0148,
+    "evaluation": 0.0005
   },
   "notes": [
     "Recovery saw only public probes and model predictions; DirectRecovery has no parameter through which a secret could be passed.",
