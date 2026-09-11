@@ -1,12 +1,12 @@
 {
   "project": "SALSA 2.0 - Lightweight Neural Cryptanalysis of LWE/RLWE",
-  "final_model": "NACT-F",
-  "final_model_description": "Numerical-Aware Compact Transformer reduced by ablation to the one-token-per-coordinate representation only",
+  "final_model": "Modified NACT",
+  "final_model_description": "Modified NACT - the Numerical-Aware Coordinate Transformer reduced by ablation to the one-token-per-coordinate representation only. Historical experiment records and filenames call it NACT-F.",
   "parameter_count": 4238208,
   "model_lineage": {
     "V1 Salsa2-GatedUT": 4131200,
     "V2 Salsa2-NACT (full)": 4241288,
-    "NACT-F (final)": 4238208
+    "Modified NACT (final)": 4238208
   },
   "demonstrated_dimensions": [
     {
@@ -89,7 +89,7 @@
     "secret_free": true
   },
   "tests": {
-    "passed": 687,
+    "passed": 690,
     "skipped": 2,
     "failed": 0
   },
