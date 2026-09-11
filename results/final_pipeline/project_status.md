@@ -16,8 +16,8 @@ Engineering and methodology that is finished and tested.
 - **Encoding.** `LatticeCodec` at base 81, lsb-first, fixed width, with and
   without separators. Verified token-for-token against the original SALSA
   `encoders.py` by executing it.
-- **Models.** V1 Salsa2-GatedUT (4,131,200), V2 Salsa2-NACT (4,241,288) and
-  NACT-F (4,238,208). Every count verified three independent ways — actual,
+- **Models.** V1 Salsa2-GatedUT (4,131,200), NACT (4,241,288) and
+  **Modified NACT** (4,238,208). Every count verified three independent ways — actual,
   component breakdown, analytical formula — with nothing unclassified and no
   padding parameters.
 - **Training pipeline.** CPU-first trainer with alignment verification,
@@ -33,7 +33,7 @@ Engineering and methodology that is finished and tested.
   `(A, b, candidate, q, sigma)`.
 - **End-to-end pipeline.** One entry point, `run_salsa2_pipeline`, with the
   three stages held apart and the ground truth loaded last.
-- **Test suite.** 687 passed, 2 skipped.
+- **Test suite.** 690 passed, 2 skipped.
 - **Fidelity audit** against the released SALSA source, documenting every
   difference and classifying it.
 
@@ -60,13 +60,14 @@ Experimentally measured, with artifacts in `results/`.
 
 Additional demonstrated findings:
 
-- **V1 fails where NACT-F succeeds at n=12.** V1: acc_tau 0.3550, exact secret recovery NO, 0/10 successful K, probe decode validity 0.417.
+- **V1 fails where Modified NACT succeeds at n=12.** V1: acc_tau 0.3550, exact secret recovery NO, 0/10 successful K, probe decode validity 0.417.
 - **Sparse-input generalization.** V1's lift over the best input-blind
-  constant crosses zero between nnz=8 and nnz=6 and reaches -0.4417 on the probes; NACT-F stays positive throughout, at +0.0500.
+  constant crosses zero between nnz=8 and nnz=6 and reaches -0.4417 on the probes; Modified NACT stays positive throughout, at +0.0500.
 - **Recovery reproduces across secrets at n=12.** 3/3 secrets recovered exactly and verified, using three checkpoints trained under
   different seeds.
 - **Component attribution.** The one-token representation carries the
-  improvement; removing all six numerical/zero-aware features changed nothing
+  improvement; removing all six numerical/zero-aware features to give Modified
+  NACT changed nothing
   measurable at one seed.
 
 ---
@@ -94,7 +95,7 @@ Nothing below has been run. No partial evidence exists for any of it.
 
 Reasonable next experiments, none performed.
 
-1. **Dimension scaling.** Train NACT-F at n=30, then n=50, holding the
+1. **Dimension scaling.** Train Modified NACT at n=30, then n=50, holding the
    protocol fixed. The binding constraint is expected to be the sample
    requirement rather than the architecture, since the parameter count does
    not change with `n`.
@@ -102,7 +103,7 @@ Reasonable next experiments, none performed.
    can be reported as a rate with an uncertainty estimate instead of a single
    outcome.
 3. **Complete the ablation matrix.** Variants C, D and E would attribute the
-   residual sparse-input margin, which NACT-F narrowed to roughly half of full
+   residual sparse-input margin, which Modified NACT narrowed to roughly half of
    NACT's without changing the recovery outcome.
 4. **Scalability analysis.** Measure how the sample requirement grows with `n`
    and `h`, and whether the one-token representation's advantage holds as the
