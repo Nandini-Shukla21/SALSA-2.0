@@ -1,3 +1,3 @@
 n,h,model,parameter_count,sample_count,acc_tau,exact_integer_accuracy,coordinate_accuracy,hamming_distance,exact_recovery,successful_k,verification_passed
-12,2,NACT-F,4238208,100032,0.983887,0.091309,1.0,0,True,8,True
-20,2,NACT-F,4238208,100032,0.986328,0.103516,1.0,0,True,8,True
+12,2,Modified NACT,4238208,100032,0.983887,0.091309,1.0,0,True,8,True
+20,2,Modified NACT,4238208,100032,0.986328,0.103516,1.0,0,True,8,True
