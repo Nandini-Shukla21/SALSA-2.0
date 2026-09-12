@@ -5,6 +5,11 @@
 All figures in this report are read from recorded artifacts under `results/`.
 No measurement, comparison or citation has been invented.
 
+> **Naming.** The final model is **Modified NACT** — the simplified final form of
+> the NACT architecture. Historical experiment records, result directories and
+> configuration filenames call it `NACT-F` / `nact_f`; those identifiers are
+> retained only where renaming would damage provenance.
+
 ---
 
 ## 1. Abstract
@@ -19,7 +24,7 @@ reimplements the pipeline from scratch, CPU-first, under a hard 4–5M parameter
 budget, and adds two things the released source lacks: a secret-free recovery
 decision rule, and the paper's independent residual verification step.
 
-The final model, **NACT-F**, has **4,238,208 trainable parameters**. Its single
+The final model, **Modified NACT**, has **4,238,208 trainable parameters**. Its single
 architectural change from the baseline is the input representation: **one token
 per coordinate** instead of two digit tokens, which halves the encoder sequence
 and makes absolute coordinate identity expressible. A controlled ablation showed
@@ -27,7 +32,7 @@ this representation, not the numerical features originally proposed alongside it
 carries the improvement.
 
 On the diagnostic instances **n=12, h=2** and **n=20, h=2** with q=251 and
-sigma=3, NACT-F trained on 100,032 samples achieves exact secret recovery at both
+sigma=3, Modified NACT trained on 100,032 samples achieves exact secret recovery at both
 dimensions, with coordinate accuracy 1.0000, Hamming distance 0, 8 of 10 probe
 multipliers succeeding individually, and independent residual verification
 passing at both. The 4,131,200-parameter baseline recovers nothing at n=12.
@@ -174,11 +179,11 @@ Design constraints held fixed throughout:
 
 ---
 
-## 7. NACT and NACT-F
+## 7. NACT and Modified NACT
 
 ### The representation change
 
-| | V1 / original | NACT and NACT-F |
+| | V1 / original | NACT and Modified NACT |
 |---|---|---|
 | tokens per coordinate | 2 digit tokens | **1 coordinate token** |
 | encoder sequence | `2n + 2` | **`n + 2`** |
@@ -191,31 +196,31 @@ coordinate identity; rotary embeddings supply only relative offsets. With one
 token per coordinate, position *is* coordinate index. The coordinate table is a
 fixed `128 × 512` matrix, so **the parameter count does not vary with `n`**.
 
-### Full NACT versus NACT-F
+### NACT versus Modified NACT
 
-**Full NACT** (4,241,288) adds a centered residue feature, a `cos`/`sin` Fourier
+**NACT** (4,241,288) adds a centered residue feature, a `cos`/`sin` Fourier
 pair (the characters of `Z_q`, chosen because addition mod `q` is addition of
 angles), a zero/non-zero indicator, a learned zero-coordinate vector, and a
 per-head attention bias on zero-coordinate keys.
 
-**NACT-F** (4,238,208) removes all six, keeping the coordinate token, the base-81
+**Modified NACT** (4,238,208) removes all six, keeping the coordinate token, the base-81
 digit embeddings it is built from, and the absolute coordinate embedding.
 
-The ablation was decisive. Against full NACT at matched depth, seed and budget:
+The ablation was decisive. Against NACT at matched depth, seed and budget:
 
-| metric | full NACT | NACT-F | difference | 3σ seed band | resolvable? |
+| metric | NACT | Modified NACT | difference | 3σ seed band | resolvable? |
 |---|---:|---:|---:|---:|:---:|
 | validation loss | 0.9388 | 0.9891 | +0.0503 | 0.0696 | no |
 | acc_tau | 0.9839 | 0.9839 | +0.0000 | 0.0064 | no |
 | exact integer accuracy | 0.1011 | 0.0913 | −0.0098 | 0.0275 | no |
 
-Every difference falls inside full NACT's own seed-to-seed noise. NACT-F retains
+Every difference falls inside NACT's own seed-to-seed noise. Modified NACT retains
 100% of the V1→NACT acc_tau gap while removing six components and 3,080
 parameters (0.073%). **The one-token representation is the important
 simplification.**
 
-One caveat is recorded rather than smoothed over: NACT-F's sparse-input lift at
-the extreme end is roughly half full NACT's (+0.0500 versus +0.1167 on probes).
+One caveat is recorded rather than smoothed over: Modified NACT's sparse-input lift at
+the extreme end is roughly half NACT's (+0.0500 versus +0.1167 on probes).
 The margin narrowed; the recovery outcome did not change.
 
 ### Model dimensions
@@ -240,7 +245,7 @@ cannot receive one. Ground truth lives in a separate type used only by evaluatio
 
 `LatticeCodec` encodes at base 81, lsb-first, fixed width, no separator,
 producing `2n + 2` tokens framed by `<bos>`/`<eos>` over an 85-token vocabulary.
-NACT-F consumes this same token layout and folds it into `n + 2` coordinate
+Modified NACT consumes this same token layout and folds it into `n + 2` coordinate
 positions, reconstructing each integer losslessly — asserted by test for every
 dimension from 12 to 128 and for both representations.
 
@@ -329,14 +334,14 @@ secret, model output or training label reaches it.
 
 | n | h | model | parameters | samples | loss | acc_tau | exact integer acc | token acc | decode failures |
 |---:|---:|---|---:|---:|---:|---:|---:|---:|---:|
-| 12 | 2 | **NACT-F** | 4,238,208 | 100,032 | **0.9891** | **0.9839** | **0.0913** | 0.6934 | 0.0000 |
-| 20 | 2 | **NACT-F** | 4,238,208 | 100,032 | **0.9764** | **0.9863** | **0.1035** | 0.6995 | 0.0000 |
+| 12 | 2 | **Modified NACT** | 4,238,208 | 100,032 | **0.9891** | **0.9839** | **0.0913** | 0.6934 | 0.0000 |
+| 20 | 2 | **Modified NACT** | 4,238,208 | 100,032 | **0.9764** | **0.9863** | **0.1035** | 0.6995 | 0.0000 |
 | 12 | 2 | V1 GatedUT | 4,131,200 | 100,032 | 1.7413 | 0.3550 | 0.0078 | 0.5324 | 0.0000 |
 | 20 | 2 | V1 GatedUT | 4,131,200 | 200,000 | 1.8233 | 0.2344 | 0.0034 | 0.4590 | 0.0000 |
 
 V1's loss sits essentially at the marginals-only baseline of 1.86498 — at this
 budget it has largely not learned secret-related structure. Its exact integer
-accuracy at n=20 (0.0034) is **below** its own chance level of 0.00398. NACT-F's
+accuracy at n=20 (0.0034) is **below** its own chance level of 0.00398. Modified NACT's
 loss sits closer to the 0.83920 irreducible floor. Note V1's n=20 row used
 **twice** the sample budget.
 
@@ -379,7 +384,7 @@ nothing. **Prediction quality is necessary but not sufficient.**
 ## 13. End-to-end pipeline
 
 ```text
-public LWE/RLWE data → encoding → NACT-F → predict b
+public LWE/RLWE data → encoding → Modified NACT → predict b
    → direct secret recovery → candidate secret
    → independent residual verification → evaluation
 ```
@@ -498,7 +503,7 @@ None of the following has been performed.
 2. **Multi-seed validation** — several secrets per dimension, so recovery is
    reported as a rate with an uncertainty estimate rather than a single outcome.
 3. **Complete the ablation matrix** — variants C, D and E, to attribute the
-   residual sparse-input margin that NACT-F narrowed without changing the
+   residual sparse-input margin that Modified NACT narrowed without changing the
    recovery outcome.
 4. **Scalability analysis** — how the sample requirement grows with `n` and `h`,
    and whether the one-token advantage holds as sequences lengthen toward n=128.
@@ -520,6 +525,6 @@ None of the following has been performed.
 | n=20 training and recovery | `results/n20_nact_f_pilot/`, `results/n20_nact_f_recovery/` |
 | Pipeline replay | `results/final_pipeline/pipeline_report.md` |
 
-Test suite: **687 passed, 2 skipped**.
+Test suite: **690 passed, 2 skipped**.
 
 **No training was performed in producing this report.**
