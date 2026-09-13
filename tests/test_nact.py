@@ -460,3 +460,36 @@ def test_unknown_variant_is_rejected():
 
     with pytest.raises(ValueError, match="unknown nact_variant"):
         flags("nonsense")
+
+
+# --------------------------------------------------------------------------- #
+# 6. Model naming: NACT vs Modified NACT
+# --------------------------------------------------------------------------- #
+def test_variant_display_names_distinguish_nact_from_modified_nact():
+    from salsa.models import VARIANT_DISPLAY_NAMES
+
+    assert VARIANT_DISPLAY_NAMES["full"] == "Salsa2-NACT"
+    assert VARIANT_DISPLAY_NAMES["one_token_only"] == "Salsa2-Modified-NACT"
+
+    full = SalsaNact(NactSpec(encoder_loops=2))
+    modified = SalsaNact(NactSpec(encoder_loops=2, **_flags("one_token_only")))
+    assert full.name == "Salsa2-NACT"
+    assert modified.name == "Salsa2-Modified-NACT"
+
+
+def test_renaming_did_not_change_behaviour_or_parameter_count():
+    """The rename is a label change: counts and variants must be untouched."""
+    full = SalsaNact(NactSpec(encoder_loops=2))
+    modified = SalsaNact(NactSpec(encoder_loops=2, **_flags("one_token_only")))
+    assert count_trainable_parameters(full) == NACT_PARAMETERS == 4_241_288
+    assert count_trainable_parameters(modified) == NACT_F_PARAMETERS == 4_238_208
+    assert full.spec.variant == "full"
+    assert modified.spec.variant == "one_token_only"
+
+
+def test_describe_reports_the_variant_and_its_display_name():
+    modified = SalsaNact(NactSpec(encoder_loops=2, **_flags("one_token_only")))
+    description = modified.describe()
+    assert description["variant"] == "one_token_only"
+    assert description["variant_display_name"] == "Salsa2-Modified-NACT"
+    assert description["trainable_parameters"] == NACT_F_PARAMETERS
