@@ -142,7 +142,10 @@ def write_markdown(payload: Dict[str, Any], results, path: Path) -> None:
     rule = payload["recovery_rule"]
 
     lines = [
-        "# Phase 27 — Salsa 2.0 end-to-end pipeline",
+        "# Salsa 2.0 end-to-end pipeline — replay report",
+        "",
+        "*Naming: `nact_f` in run labels and filenames is the historical internal",
+        "identifier for **Modified NACT**, retained to preserve provenance.*",
         "",
         "**Integration and read-only replay.** No training, no new experiment, no",
         "checkpoint created or modified.",
@@ -154,7 +157,7 @@ def write_markdown(payload: Dict[str, Any], results, path: Path) -> None:
         "          |",
         "      encoding  (LatticeCodec, base 81, lsb-first, no separator)",
         "          |",
-        "      NACT-F    (one coordinate token per a_i, encoder sequence n+2)",
+        "  Modified NACT (one coordinate token per a_i, encoder sequence n+2)",
         "          |",
         "      predict b (greedy decode)",
         "          |",
@@ -275,13 +278,13 @@ def write_markdown(payload: Dict[str, Any], results, path: Path) -> None:
         "  token positions.",
         "- **NACT was introduced** to attack that: one token per coordinate, absolute",
         "  coordinate identity, and numerical features chosen for the modular structure.",
-        "- **NACT-F, 4,238,208 parameters,** is the ablation that removed every extra",
+        "- **Modified NACT, 4,238,208 parameters,** is the ablation that removed every extra",
         "  numerical, zero-aware and sparse-bias component and kept only the one-token",
         "  representation. It matched full NACT within one-seed noise, which is why the",
         "  **one-token representation is the important simplification** — the features",
         "  were not doing the heavy lifting.",
         "- **Recovery improvement.** V1: no exact recovery, probe decode validity 0.417.",
-        f"  NACT-F: exact recovery at both dimensions, probe decode validity "
+        f"  Modified NACT: exact recovery at both dimensions, probe decode validity "
         f"{n12.probe_decode_validity:.3f} and {n20.probe_decode_validity:.3f}.",
         "- **Verification.** Residual std ~3.0 against a configured sigma of 3.0, while",
         "  every incorrect candidate sits near 72.5 — a separation of roughly 24x.",
