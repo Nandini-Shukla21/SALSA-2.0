@@ -3,7 +3,7 @@
 One entry point, :func:`run_salsa2_pipeline`, joins the stages that until now
 lived in separate scripts::
 
-    public LWE/RLWE data -> encoding -> NACT-F -> predict b
+    public LWE/RLWE data -> encoding -> Modified NACT -> predict b
                          -> direct secret recovery -> candidate secret
                          -> independent residual verification -> result
 
