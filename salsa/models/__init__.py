@@ -51,6 +51,7 @@ from .parameter_count import (
 )
 from .nact import (
     NUMERICAL_FEATURES,
+    VARIANT_DISPLAY_NAMES,
     NactEncoderLayer,
     NactFrontEnd,
     NactSpec,
@@ -94,6 +95,7 @@ __all__ = [
     "SalsaNact",
     "build_nact",
     "NUMERICAL_FEATURES",
+    "VARIANT_DISPLAY_NAMES",
     # accounting
     "COMPONENTS",
     "ParameterReport",
