@@ -28,10 +28,14 @@ SOURCES = {
     "robustness": "results/v2_recovery_robustness/recovery_robustness.json",
 }
 
-TEST_STATUS = {"passed": 687, "skipped": 2, "failed": 0}
+TEST_STATUS = {"passed": 690, "skipped": 2, "failed": 0}
+
+#: Historical identifier mapping, stated once wherever the old name appears.
+MAP_NOTE = ("`nact_f` and `NACT-F` are the historical internal identifiers for "
+            "Modified NACT; result filenames retain them to preserve provenance.")
 MODELS = {"V1 Salsa2-GatedUT": 4_131_200,
           "V2 Salsa2-NACT (full)": 4_241_288,
-          "NACT-F (final)": 4_238_208}
+          "Modified NACT (final)": 4_238_208}
 
 
 def load(key: str) -> Dict[str, Any]:
@@ -58,7 +62,7 @@ def gather() -> Dict[str, Any]:
         rows[n] = {
             "n": n, "h": training["config"]["lwe"]["hamming_weight"]
             if "config" in training else 2,
-            "model": "NACT-F",
+            "model": "Modified NACT",
             "parameter_count": training["parameter_count"],
             "sample_count": training["state"]["samples_seen"],
             "valid_loss": valid["valid_loss"],
@@ -110,11 +114,12 @@ def write_summary(data: Dict[str, Any], path: Path) -> None:
     rows = data["rows"]
     payload = {
         "project": "SALSA 2.0 - Lightweight Neural Cryptanalysis of LWE/RLWE",
-        "final_model": "NACT-F",
+        "final_model": "Modified NACT",
         "final_model_description": (
-            "Numerical-Aware Compact Transformer reduced by ablation to the "
-            "one-token-per-coordinate representation only"),
-        "parameter_count": MODELS["NACT-F (final)"],
+            "Modified NACT - the Numerical-Aware Coordinate Transformer reduced by "
+            "ablation to the one-token-per-coordinate representation only. "
+            "Historical experiment records and filenames call it NACT-F."),
+        "parameter_count": MODELS["Modified NACT (final)"],
         "model_lineage": MODELS,
         "demonstrated_dimensions": [
             {"n": n, "h": rows[n]["h"], "search_space": rows[n]["search_space"]}
@@ -203,8 +208,8 @@ def write_status(data: Dict[str, Any], path: Path) -> None:
         "- **Encoding.** `LatticeCodec` at base 81, lsb-first, fixed width, with and",
         "  without separators. Verified token-for-token against the original SALSA",
         "  `encoders.py` by executing it.",
-        "- **Models.** V1 Salsa2-GatedUT (4,131,200), V2 Salsa2-NACT (4,241,288) and",
-        "  NACT-F (4,238,208). Every count verified three independent ways — actual,",
+        "- **Models.** V1 Salsa2-GatedUT (4,131,200), NACT (4,241,288) and",
+        "  **Modified NACT** (4,238,208). Every count verified three independent ways — actual,",
         "  component breakdown, analytical formula — with nothing unclassified and no",
         "  padding parameters.",
         "- **Training pipeline.** CPU-first trainer with alignment verification,",
@@ -254,21 +259,22 @@ def write_status(data: Dict[str, Any], path: Path) -> None:
         "",
         "Additional demonstrated findings:",
         "",
-        f"- **V1 fails where NACT-F succeeds at n=12.** V1: acc_tau "
+        f"- **V1 fails where Modified NACT succeeds at n=12.** V1: acc_tau "
         f"{data['v1_n12']['valid_acc_tau']:.4f}, exact secret recovery "
         f"{'YES' if data['v1_n12_recovery_exact'] else 'NO'}, "
         f"{data['v1_n12_recovery_k']}/10 successful K, probe decode validity "
         f"{data['v1_probe']['decode_validity']:.3f}.",
         f"- **Sparse-input generalization.** V1's lift over the best input-blind",
         f"  constant crosses zero between nnz=8 and nnz=6 and reaches "
-        f"{data['v1_probe']['acc_tau_minus_best_constant']:+.4f} on the probes; NACT-F "
+        f"{data['v1_probe']['acc_tau_minus_best_constant']:+.4f} on the probes; Modified NACT "
         f"stays positive throughout, at {data['f_probe']['acc_tau_minus_best_constant']:+.4f}.",
         f"- **Recovery reproduces across secrets at n=12.** "
         f"{data['robustness']['exact_recoveries']}/{data['robustness']['secrets_attacked']} "
         "secrets recovered exactly and verified, using three checkpoints trained under",
         "  different seeds.",
         "- **Component attribution.** The one-token representation carries the",
-        "  improvement; removing all six numerical/zero-aware features changed nothing",
+        "  improvement; removing all six numerical/zero-aware features to give Modified",
+        "  NACT changed nothing",
         "  measurable at one seed.",
         "",
         "---",
@@ -296,7 +302,7 @@ def write_status(data: Dict[str, Any], path: Path) -> None:
         "",
         "Reasonable next experiments, none performed.",
         "",
-        "1. **Dimension scaling.** Train NACT-F at n=30, then n=50, holding the",
+        "1. **Dimension scaling.** Train Modified NACT at n=30, then n=50, holding the",
         "   protocol fixed. The binding constraint is expected to be the sample",
         "   requirement rather than the architecture, since the parameter count does",
         "   not change with `n`.",
@@ -304,7 +310,7 @@ def write_status(data: Dict[str, Any], path: Path) -> None:
         "   can be reported as a rate with an uncertainty estimate instead of a single",
         "   outcome.",
         "3. **Complete the ablation matrix.** Variants C, D and E would attribute the",
-        "   residual sparse-input margin, which NACT-F narrowed to roughly half of full",
+        "   residual sparse-input margin, which Modified NACT narrowed to roughly half of",
         "   NACT's without changing the recovery outcome.",
         "4. **Scalability analysis.** Measure how the sample requirement grows with `n`",
         "   and `h`, and whether the one-token representation's advantage holds as the",
