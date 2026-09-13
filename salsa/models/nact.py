@@ -1,4 +1,16 @@
-"""Salsa2-NACT: the numerical-aware compact transformer approved in phase 14.
+"""Salsa2-NACT and Modified NACT: the numerical-aware coordinate transformer.
+
+Two variants share this implementation:
+
+``full``            **NACT** -- the complete Numerical-Aware Coordinate
+                    Transformer, with the numerical, zero-aware and
+                    sparse-attention features.
+``one_token_only``  **Modified NACT** -- the simplified final form, keeping only
+                    the one-token-per-coordinate representation, the digit
+                    embeddings it is built from, and the absolute coordinate
+                    embedding.  This is the model used for every demonstrated
+                    result.  Historical experiment records call it ``NACT-F``.
+
 
 What changes relative to V1
 ---------------------------
@@ -72,7 +84,7 @@ from .embeddings import TokenEmbedding
 from .transformer import CopyGate, DecoderLayer, FeedForward, RMSNorm
 
 __all__ = ["NactSpec", "NactFrontEnd", "NactEncoderLayer", "SalsaNact",
-           "build_nact", "VARIANTS"]
+           "build_nact", "VARIANTS", "VARIANT_DISPLAY_NAMES"]
 
 #: Order of the numerical scalars fed to the projection.  Fixed, because the
 #: parameter count and every report depend on it.
@@ -87,6 +99,18 @@ NUMERICAL_FEATURES: Tuple[str, ...] = (
 #: Ablation variants.  ``full`` is the phase-14 architecture; ``one_token_only``
 #: is phase-22 variant F, which keeps the coordinate-token layout and the digit
 #: and coordinate embeddings and removes every additional numerical feature.
+#: User-facing display name per variant.  ``full`` is the complete
+#: Numerical-Aware Coordinate Transformer; ``one_token_only`` is **Modified
+#: NACT**, its simplified final form and the model used for every demonstrated
+#: result.  Historical experiment records and filenames call Modified NACT
+#: ``NACT-F``; that identifier is retained only where renaming it would damage
+#: provenance.
+VARIANT_DISPLAY_NAMES: Dict[str, str] = {
+    "full": "Salsa2-NACT",
+    "one_token_only": "Salsa2-Modified-NACT",
+    "custom": "Salsa2-NACT (custom variant)",
+}
+
 VARIANTS: Dict[str, Dict[str, bool]] = {
     "full": {"use_numerical_features": True, "use_zero_vector": True,
              "use_sparse_attention_bias": True},
@@ -606,6 +630,8 @@ class SalsaNact(nn.Module):
             "attention_bias": False,
             "positional_encoding": "rope" if self.spec.use_rope else "none",
             "cross_attention_rope": False,
+            "variant": self.spec.variant,
+            "variant_display_name": self.name,
             "input_front_end": "coordinate tokens with numerical features",
             "encoder_tokens_per_coordinate": 1,
             "sparse_attention_bias": "learned, one scalar per encoder head, zero-init",
@@ -614,8 +640,14 @@ class SalsaNact(nn.Module):
 
     @property
     def name(self) -> str:
-        """Human-readable model name, as used in run metadata."""
-        return "Salsa2-NACT"
+        """Human-readable model name, as used in run metadata.
+
+        Distinguishes the two variants: the full architecture reports
+        ``Salsa2-NACT``, and its simplified final form reports
+        ``Salsa2-Modified-NACT``.  This is a label only -- the architecture,
+        the weights and the parameter count are unaffected.
+        """
+        return VARIANT_DISPLAY_NAMES.get(self.spec.variant, "Salsa2-NACT")
 
     @property
     def vocab_size(self) -> int:
