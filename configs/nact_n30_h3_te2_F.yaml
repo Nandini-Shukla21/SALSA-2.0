@@ -1,0 +1,16 @@
+# =============================================================================
+# NACT-F PILOT AT n=30, h=3
+# =============================================================================
+
+extends: nact_n20_h2_te2_F.yaml
+
+experiment:
+  name: nact_n30_h3_te2_F
+  notes: >-
+    NACT-F pilot at n=30, h=3 using the fixed 4.238M-parameter
+    one-token-only NACT architecture.
+  tags: [nact, variant-f, n30, h3, pilot, representation-r]
+
+lwe:
+  n: 30
+  hamming_weight: 3
