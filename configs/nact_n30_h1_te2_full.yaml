@@ -1,0 +1,14 @@
+extends: nact_n12_h2_te2.yaml
+
+experiment:
+  name: nact_n30_h1_te2_full
+  notes: Full NACT control at n=30, h=1 to isolate sparsity effects.
+  tags: [nact, full, n30, h1, sparsity-control, scaling]
+
+lwe:
+  n: 30
+  hamming_weight: 1
+
+training:
+  max_epochs: 99
+  steps_per_epoch: 79
