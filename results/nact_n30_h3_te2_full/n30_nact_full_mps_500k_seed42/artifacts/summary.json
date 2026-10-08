@@ -1,0 +1,71 @@
+{
+  "model_name": "Salsa2-NACT",
+  "architecture": "nact",
+  "parameter_count": 4241288,
+  "config_fingerprint": "32d1f0b42ce63f76",
+  "seed": 42,
+  "experiment": "nact_n30_h3_te2_full",
+  "plan": {
+    "sample_budget": 500000,
+    "batch_size": 64,
+    "total_steps": 7813,
+    "steps_per_epoch": 79,
+    "epochs": 99,
+    "warmup_steps": 200,
+    "valid_samples": 2048
+  },
+  "state": {
+    "epoch": 99,
+    "global_step": 7813,
+    "samples_seen": 500032,
+    "tokens_seen": 1500096,
+    "best_metric": 1.841309,
+    "best_epoch": 89,
+    "epochs_without_improvement": 9,
+    "elapsed_seconds": 2740.617444753647,
+    "stop_reason": "planned epochs completed"
+  },
+  "final_validation": {
+    "valid_loss": 1.84156,
+    "valid_token_accuracy": 0.445475,
+    "valid_perfect_accuracy": 0.003418,
+    "valid_greedy_token_accuracy": 0.347168,
+    "valid_exact_accuracy": 0.003418,
+    "valid_acc_tau": 0.10791,
+    "valid_tolerance": 0.1,
+    "valid_mean_distance": 124.123,
+    "valid_median_distance": 124.0,
+    "valid_percentiles": "[0.1079, 0.2041, 0.3062, 0.4077, 0.5049, 0.6055, 0.6987, 0.8066, 0.9097, 1.0]",
+    "valid_acc_tau_circular_DIAGNOSTIC": 0.198242,
+    "valid_mean_circular_distance_DIAGNOSTIC": 63.2227,
+    "valid_median_circular_distance_DIAGNOSTIC": 64.0,
+    "valid_decode_failure_rate": 0.0,
+    "valid_sequences": 2048,
+    "valid_tokens": 6144
+  },
+  "throughput": {
+    "samples_per_second": 206.275,
+    "tokens_per_second": 618.8,
+    "compute_seconds": 2424.106
+  },
+  "chance_baselines": {
+    "uniform_loss_nats": 4.442651256490317,
+    "marginal_loss_nats": 1.8649843130825523,
+    "chance_token_accuracy": 0.44621513944223107,
+    "chance_perfect_accuracy": 0.005142775511499817,
+    "chance_digit_accuracy": [
+      0.015936,
+      0.322709
+    ],
+    "chance_exact_accuracy": 0.00398406374501992,
+    "chance_acc_tau": 0.19286995444516752,
+    "chance_acc_tau_circular_DIAGNOSTIC": 0.20318725099601595,
+    "tolerance": 0.1,
+    "tolerance_absolute": 25.1
+  },
+  "cpu_memory_mb": {
+    "rss_mb": 129.671875,
+    "peak_rss_mb": 479287.6875
+  },
+  "run_dir": "results/nact_n30_h3_te2_full/n30_nact_full_mps_500k_seed42"
+}

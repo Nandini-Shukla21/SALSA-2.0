@@ -1,0 +1,14 @@
+extends: nact_n12_h2_te2.yaml
+
+experiment:
+  name: nact_n20_h3_te2_full
+  notes: Full NACT control at n=20, h=3 to isolate Hamming-weight effects before curriculum training.
+  tags: [nact, full, n20, h3, hamming-weight-control, scaling]
+
+lwe:
+  n: 20
+  hamming_weight: 3
+
+training:
+  max_epochs: 99
+  steps_per_epoch: 79

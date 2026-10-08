@@ -1,0 +1,20 @@
+# =============================================================================
+# FULL NACT CONTROL AT n=30, h=3
+# =============================================================================
+
+extends: nact_n12_h2_te2.yaml
+
+experiment:
+  name: nact_n30_h3_te2_full
+  notes: >-
+    Full NACT at n=30, h=3 using the same architecture and training
+    protocol as the validated n=12 full-NACT configuration.
+  tags: [nact, full, n30, h3, control, representation-r]
+
+lwe:
+  n: 30
+  hamming_weight: 3
+
+training:
+  max_epochs: 99
+  steps_per_epoch: 79

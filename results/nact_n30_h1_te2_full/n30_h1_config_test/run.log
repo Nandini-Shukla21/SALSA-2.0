@@ -1,0 +1,16 @@
+2026-10-08 12:07:23 | INFO    | salsa | Run directory: results/nact_n30_h1_te2_full/n30_h1_config_test
+2026-10-08 12:07:23 | INFO    | salsa | Config fingerprint: 35a5a48c52087f14
+2026-10-08 12:07:23 | WARNING | salsa | lwe: Hamming weight < 2 is a degenerate secret; the paper uses h >= 2.
+2026-10-08 12:07:24 | INFO    | salsa | ========================================================================
+2026-10-08 12:07:24 | INFO    | salsa | Model: Salsa2-NACT (nact)
+2026-10-08 12:07:24 | INFO    | salsa | Trainable parameters: 4241288
+2026-10-08 12:07:24 | INFO    | salsa | LWE: n=30 q=251 sigma=3.0 h=1 structure=rlwe
+2026-10-08 12:07:24 | INFO    | salsa | Encoding: base=81 order=lsb_first separator=False -> 62 input tokens, 4 output
+2026-10-08 12:07:24 | INFO    | salsa | Plan: {'sample_budget': 1000, 'batch_size': 64, 'total_steps': 16, 'steps_per_epoch': 16, 'epochs': 1, 'warmup_steps': 8, 'valid_samples': 2048}
+2026-10-08 12:07:24 | INFO    | salsa | Device: mps | threads: {'threads': 4, 'interop_threads': 10}
+2026-10-08 12:07:24 | INFO    | salsa | Chance baselines: {'uniform_loss_nats': 4.442651256490317, 'marginal_loss_nats': 1.8649843130825523, 'chance_token_accuracy': 0.44621513944223107, 'chance_perfect_accuracy': 0.005142775511499817, 'chance_digit_accuracy': [0.015936, 0.322709], 'chance_exact_accuracy': 0.00398406374501992, 'chance_acc_tau': 0.19286995444516752, 'chance_acc_tau_circular_DIAGNOSTIC': 0.20318725099601595, 'tolerance': 0.1, 'tolerance_absolute': 25.1}
+2026-10-08 12:07:24 | INFO    | salsa | ========================================================================
+2026-10-08 12:07:25 | INFO    | salsa | Alignment verified: {'src_ids': (64, 62), 'tgt_ids': (64, 4), 'decoder_input': (64, 3), 'target': (64, 3), 'logits': (64, 3, 85), 'vocab_size': 85, 'pad_id': 0}
+2026-10-08 12:07:30 | INFO    | salsa | epoch 0 | train 2.8131 | valid 2.2958 | token 0.445 | acc_tau 0.000 | exact 0.0000 | 432.0 samples/s
+2026-10-08 12:07:30 | INFO    | salsa | New best valid_loss: 2.295814
+2026-10-08 12:07:33 | INFO    | salsa | Training finished: planned epochs completed

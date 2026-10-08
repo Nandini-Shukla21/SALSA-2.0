@@ -1,0 +1,14 @@
+extends: nact_n12_h2_te2.yaml
+
+experiment:
+  name: nact_n20_h2_te2_full
+  notes: Full NACT scaling control at n=20, h=2 using the same 4.24M-parameter architecture and 500k training protocol.
+  tags: [nact, full, n20, h2, scaling]
+
+lwe:
+  n: 20
+  hamming_weight: 2
+
+training:
+  max_epochs: 99
+  steps_per_epoch: 79
