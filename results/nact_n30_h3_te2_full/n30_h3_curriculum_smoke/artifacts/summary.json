@@ -1,0 +1,71 @@
+{
+  "model_name": "Salsa2-NACT",
+  "architecture": "nact",
+  "parameter_count": 4241288,
+  "config_fingerprint": "456fcdc5d4227c71",
+  "seed": 0,
+  "experiment": "nact_n30_h3_te2_full",
+  "plan": {
+    "sample_budget": 1000,
+    "batch_size": 64,
+    "total_steps": 16,
+    "steps_per_epoch": 16,
+    "epochs": 1,
+    "warmup_steps": 8,
+    "valid_samples": 2048
+  },
+  "state": {
+    "epoch": 1,
+    "global_step": 16,
+    "samples_seen": 1024,
+    "tokens_seen": 3072,
+    "best_metric": 1.843292,
+    "best_epoch": 0,
+    "epochs_without_improvement": 0,
+    "elapsed_seconds": 1.9191060066223145,
+    "stop_reason": "planned epochs completed"
+  },
+  "final_validation": {
+    "valid_loss": 1.843292,
+    "valid_token_accuracy": 0.447591,
+    "valid_perfect_accuracy": 0.004883,
+    "valid_greedy_token_accuracy": 0.446126,
+    "valid_exact_accuracy": 0.004883,
+    "valid_acc_tau": 0.12207,
+    "valid_tolerance": 0.1,
+    "valid_mean_distance": 121.4458,
+    "valid_median_distance": 121.0,
+    "valid_percentiles": "[0.1221, 0.2168, 0.311, 0.417, 0.5122, 0.6143, 0.7104, 0.8213, 0.9185, 1.0]",
+    "valid_acc_tau_circular_DIAGNOSTIC": 0.203613,
+    "valid_mean_circular_distance_DIAGNOSTIC": 62.6602,
+    "valid_median_circular_distance_DIAGNOSTIC": 63.0,
+    "valid_decode_failure_rate": 0.0,
+    "valid_sequences": 2048,
+    "valid_tokens": 6144
+  },
+  "throughput": {
+    "samples_per_second": 681.026,
+    "tokens_per_second": 2043.1,
+    "compute_seconds": 1.504
+  },
+  "chance_baselines": {
+    "uniform_loss_nats": 4.442651256490317,
+    "marginal_loss_nats": 1.8649843130825523,
+    "chance_token_accuracy": 0.44621513944223107,
+    "chance_perfect_accuracy": 0.005142775511499817,
+    "chance_digit_accuracy": [
+      0.015936,
+      0.322709
+    ],
+    "chance_exact_accuracy": 0.00398406374501992,
+    "chance_acc_tau": 0.19286995444516752,
+    "chance_acc_tau_circular_DIAGNOSTIC": 0.20318725099601595,
+    "tolerance": 0.1,
+    "tolerance_absolute": 25.1
+  },
+  "cpu_memory_mb": {
+    "rss_mb": 521.53125,
+    "peak_rss_mb": 479330.59375
+  },
+  "run_dir": "results/nact_n30_h3_te2_full/n30_h3_curriculum_smoke"
+}

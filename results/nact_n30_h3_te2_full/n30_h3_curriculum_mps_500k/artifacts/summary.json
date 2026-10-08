@@ -1,0 +1,71 @@
+{
+  "model_name": "Salsa2-NACT",
+  "architecture": "nact",
+  "parameter_count": 4241288,
+  "config_fingerprint": "50f0c3f017cf0d92",
+  "seed": 0,
+  "experiment": "nact_n30_h3_te2_full",
+  "plan": {
+    "sample_budget": 500000,
+    "batch_size": 64,
+    "total_steps": 7813,
+    "steps_per_epoch": 79,
+    "epochs": 99,
+    "warmup_steps": 200,
+    "valid_samples": 2048
+  },
+  "state": {
+    "epoch": 99,
+    "global_step": 7813,
+    "samples_seen": 500032,
+    "tokens_seen": 1500096,
+    "best_metric": 1.841718,
+    "best_epoch": 0,
+    "epochs_without_improvement": 98,
+    "elapsed_seconds": 5379.617004156113,
+    "stop_reason": "planned epochs completed"
+  },
+  "final_validation": {
+    "valid_loss": 1.841934,
+    "valid_token_accuracy": 0.445964,
+    "valid_perfect_accuracy": 0.003418,
+    "valid_greedy_token_accuracy": 0.349772,
+    "valid_exact_accuracy": 0.003418,
+    "valid_acc_tau": 0.112793,
+    "valid_tolerance": 0.1,
+    "valid_mean_distance": 121.6396,
+    "valid_median_distance": 122.0,
+    "valid_percentiles": "[0.1128, 0.2148, 0.3208, 0.4185, 0.5142, 0.6172, 0.7153, 0.8149, 0.9092, 1.0]",
+    "valid_acc_tau_circular_DIAGNOSTIC": 0.203613,
+    "valid_mean_circular_distance_DIAGNOSTIC": 62.7495,
+    "valid_median_circular_distance_DIAGNOSTIC": 62.0,
+    "valid_decode_failure_rate": 0.0,
+    "valid_sequences": 2048,
+    "valid_tokens": 6144
+  },
+  "throughput": {
+    "samples_per_second": 119.389,
+    "tokens_per_second": 358.2,
+    "compute_seconds": 4188.262
+  },
+  "chance_baselines": {
+    "uniform_loss_nats": 4.442651256490317,
+    "marginal_loss_nats": 1.8649843130825523,
+    "chance_token_accuracy": 0.44621513944223107,
+    "chance_perfect_accuracy": 0.005142775511499817,
+    "chance_digit_accuracy": [
+      0.015936,
+      0.322709
+    ],
+    "chance_exact_accuracy": 0.00398406374501992,
+    "chance_acc_tau": 0.19286995444516752,
+    "chance_acc_tau_circular_DIAGNOSTIC": 0.20318725099601595,
+    "tolerance": 0.1,
+    "tolerance_absolute": 25.1
+  },
+  "cpu_memory_mb": {
+    "rss_mb": 349.265625,
+    "peak_rss_mb": 479335.640625
+  },
+  "run_dir": "results/nact_n30_h3_te2_full/n30_h3_curriculum_mps_500k"
+}

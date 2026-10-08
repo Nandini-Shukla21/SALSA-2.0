@@ -54,6 +54,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="Reuse the run directory and continue from its last checkpoint.",
     )
     parser.add_argument(
+        "--init-checkpoint",
+        type=Path,
+        default=None,
+        help="Initialize model weights from a checkpoint without restoring optimizer, scheduler, or progress.",
+    )
+    parser.add_argument(
         "--quiet", action="store_true", help="Do not mirror the log to stdout."
     )
     return parser
@@ -88,6 +94,21 @@ def main(argv: Optional[List[str]] = None) -> int:
         context.logger.warning(warning)
 
     trainer = Trainer(config, context=context)
+
+    if args.init_checkpoint is not None:
+        import torch
+
+        payload = torch.load(
+            args.init_checkpoint,
+            map_location=trainer.device,
+            weights_only=False,
+        )
+        trainer.model.load_state_dict(payload['model'], strict=True)
+        context.logger.info(
+            "Initialized model weights from %s; optimizer, scheduler, and progress are fresh.",
+            args.init_checkpoint,
+        )
+
     if args.resume and trainer.maybe_resume():
         context.logger.info("Resumed an existing run.")
 
