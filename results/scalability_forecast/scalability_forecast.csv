@@ -1,0 +1,92 @@
+n,metric,value,lower,upper,evidence_class,confidence,source
+12,valid_loss,0.989069,,,observed,high,results/nact_ablation_F/nact_n12_h2_te2_F/seed_0/artifacts/summary.json
+12,acc_tau,0.983887,,,observed,high,results/nact_ablation_F/nact_n12_h2_te2_F/seed_0/artifacts/summary.json
+12,samples_per_second,108.902,,,observed,high,results/nact_ablation_F/nact_n12_h2_te2_F/seed_0/artifacts/summary.json
+12,peak_rss_mb,446.8,,,observed,high,results/nact_ablation_F/nact_n12_h2_te2_F/seed_0/artifacts/summary.json
+12,exact_recovery_secrets,1/1,,,observed,high,results/final_pipeline/final_summary.json
+12,successful_informative_K,8/8,,,observed,high,results/final_pipeline/final_summary.json
+12,probe_decode_validity,1.0,,,observed,high,results/final_pipeline/final_summary.json
+12,verification_residual_std,2.9983,,,observed,high,results/final_pipeline/final_summary.json
+20,valid_loss,0.976393,,,observed,high,results/n20_nact_f_pilot/nact_n20_h2_te2_F/seed_0/artifacts/summary.json
+20,acc_tau,0.986328,,,observed,high,results/n20_nact_f_pilot/nact_n20_h2_te2_F/seed_0/artifacts/summary.json
+20,samples_per_second,87.428,,,observed,high,results/n20_nact_f_pilot/nact_n20_h2_te2_F/seed_0/artifacts/summary.json
+20,peak_rss_mb,503.7,,,observed,high,results/n20_nact_f_pilot/nact_n20_h2_te2_F/seed_0/artifacts/summary.json
+20,exact_recovery_secrets,1/1,,,observed,high,results/final_pipeline/final_summary.json
+20,successful_informative_K,8/8,,,observed,high,results/final_pipeline/final_summary.json
+20,probe_decode_validity,1.0,,,observed,high,results/final_pipeline/final_summary.json
+20,verification_residual_std,2.9415,,,observed,high,results/final_pipeline/final_summary.json
+12,exact_recovery_secrets_full_NACT,3/3,,,observed,high,"results/v2_recovery_robustness/recovery_robustness.json (DIFFERENT model: full NACT, 4,241,288)"
+30,valid_loss__GatedUT_4131200_h3,1.842615,,,observed,high,results/pilot_gatedut_n30_r/ or results/archive/pilot_control_n30_r/
+30,acc_tau__GatedUT_4131200_h3,0.134277,,,observed,high,results/pilot_gatedut_n30_r/ or results/archive/pilot_control_n30_r/
+30,valid_loss__CompactTransformer_4251520_h3,1.843147,,,observed,high,results/pilot_gatedut_n30_r/ or results/archive/pilot_control_n30_r/
+30,acc_tau__CompactTransformer_4251520_h3,0.147949,,,observed,high,results/pilot_gatedut_n30_r/ or results/archive/pilot_control_n30_r/
+12,encoder_sequence_length,14,,,theoretical,high,"salsa/models/nact.py - NactFrontEnd, one token per coordinate"
+12,parameter_count,4238208,,,theoretical,high,salsa/models/parameter_count.py:211 - invariant in n up to max_coordinates
+12,relative_compute_per_100k_wallclock,0.803,,,observed,high (measured),2-point linear fit to measured throughput; EXCLUDES samples required
+12,relative_compute_encoder_flop_proxy,0.627,,,theoretical,medium,"L*d^2 + L^2*d, d=512, L=n+2"
+20,encoder_sequence_length,22,,,theoretical,high,"salsa/models/nact.py - NactFrontEnd, one token per coordinate"
+20,parameter_count,4238208,,,theoretical,high,salsa/models/parameter_count.py:211 - invariant in n up to max_coordinates
+20,relative_compute_per_100k_wallclock,1.0,,,observed,high (measured),2-point linear fit to measured throughput; EXCLUDES samples required
+20,relative_compute_encoder_flop_proxy,1.0,,,theoretical,medium,"L*d^2 + L^2*d, d=512, L=n+2"
+30,encoder_sequence_length,32,,,theoretical,high,"salsa/models/nact.py - NactFrontEnd, one token per coordinate"
+30,parameter_count,4238208,,,theoretical,high,salsa/models/parameter_count.py:211 - invariant in n up to max_coordinates
+30,relative_compute_per_100k_wallclock,1.246,,,extrapolated,medium,2-point linear fit to measured throughput; EXCLUDES samples required
+30,relative_compute_encoder_flop_proxy,1.482,,,theoretical,medium,"L*d^2 + L^2*d, d=512, L=n+2"
+50,encoder_sequence_length,52,,,theoretical,high,"salsa/models/nact.py - NactFrontEnd, one token per coordinate"
+50,parameter_count,4238208,,,theoretical,high,salsa/models/parameter_count.py:211 - invariant in n up to max_coordinates
+50,relative_compute_per_100k_wallclock,1.739,,,extrapolated,low,2-point linear fit to measured throughput; EXCLUDES samples required
+50,relative_compute_encoder_flop_proxy,2.496,,,theoretical,medium,"L*d^2 + L^2*d, d=512, L=n+2"
+70,encoder_sequence_length,72,,,theoretical,high,"salsa/models/nact.py - NactFrontEnd, one token per coordinate"
+70,parameter_count,4238208,,,theoretical,high,salsa/models/parameter_count.py:211 - invariant in n up to max_coordinates
+70,relative_compute_per_100k_wallclock,2.232,,,extrapolated,low,2-point linear fit to measured throughput; EXCLUDES samples required
+70,relative_compute_encoder_flop_proxy,3.579,,,theoretical,medium,"L*d^2 + L^2*d, d=512, L=n+2"
+90,encoder_sequence_length,92,,,theoretical,high,"salsa/models/nact.py - NactFrontEnd, one token per coordinate"
+90,parameter_count,4238208,,,theoretical,high,salsa/models/parameter_count.py:211 - invariant in n up to max_coordinates
+90,relative_compute_per_100k_wallclock,2.725,,,extrapolated,low,2-point linear fit to measured throughput; EXCLUDES samples required
+90,relative_compute_encoder_flop_proxy,4.73,,,theoretical,medium,"L*d^2 + L^2*d, d=512, L=n+2"
+110,encoder_sequence_length,112,,,theoretical,high,"salsa/models/nact.py - NactFrontEnd, one token per coordinate"
+110,parameter_count,4238208,,,theoretical,high,salsa/models/parameter_count.py:211 - invariant in n up to max_coordinates
+110,relative_compute_per_100k_wallclock,3.218,,,extrapolated,low,2-point linear fit to measured throughput; EXCLUDES samples required
+110,relative_compute_encoder_flop_proxy,5.949,,,theoretical,medium,"L*d^2 + L^2*d, d=512, L=n+2"
+128,encoder_sequence_length,130,,,theoretical,high,"salsa/models/nact.py - NactFrontEnd, one token per coordinate"
+128,parameter_count,4238208,,,theoretical,high,salsa/models/parameter_count.py:211 - invariant in n up to max_coordinates
+128,relative_compute_per_100k_wallclock,3.662,,,extrapolated,low,2-point linear fit to measured throughput; EXCLUDES samples required
+128,relative_compute_encoder_flop_proxy,7.104,,,theoretical,medium,"L*d^2 + L^2*d, d=512, L=n+2"
+30,valid_loss,not reliably estimable,0.976393,1.864984,extrapolated,medium,envelope bounded by measured best and measured chance baseline
+30,acc_tau,not reliably estimable,0.19287,0.986328,extrapolated,medium,envelope bounded by measured chance baseline and measured best
+30,exact_recovery_secrets,not reliably estimable,,,not_estimable,medium,no model trained; two single-seed successes give no rate
+30,successful_informative_K,not reliably estimable,,,not_estimable,medium,no model trained
+30,probe_decode_validity,not reliably estimable,,,not_estimable,medium,no model trained
+30,recovery_outlook,uncertain,,,extrapolated,medium,judgement from the evidence in SCALABILITY_ANALYSIS.md
+50,valid_loss,not reliably estimable,0.976393,1.864984,extrapolated,low,envelope bounded by measured best and measured chance baseline
+50,acc_tau,not reliably estimable,0.19287,0.986328,extrapolated,low,envelope bounded by measured chance baseline and measured best
+50,exact_recovery_secrets,not reliably estimable,,,not_estimable,low,no model trained; two single-seed successes give no rate
+50,successful_informative_K,not reliably estimable,,,not_estimable,low,no model trained
+50,probe_decode_validity,not reliably estimable,,,not_estimable,low,no model trained
+50,recovery_outlook,uncertain to unlikely at a 100k-sample budget,,,extrapolated,low,judgement from the evidence in SCALABILITY_ANALYSIS.md
+70,valid_loss,not reliably estimable,0.976393,1.864984,extrapolated,low,envelope bounded by measured best and measured chance baseline
+70,acc_tau,not reliably estimable,0.19287,0.986328,extrapolated,low,envelope bounded by measured chance baseline and measured best
+70,exact_recovery_secrets,not reliably estimable,,,not_estimable,low,no model trained; two single-seed successes give no rate
+70,successful_informative_K,not reliably estimable,,,not_estimable,low,no model trained
+70,probe_decode_validity,not reliably estimable,,,not_estimable,low,no model trained
+70,recovery_outlook,unlikely at this budget,,,extrapolated,low,judgement from the evidence in SCALABILITY_ANALYSIS.md
+90,valid_loss,not reliably estimable,0.976393,1.864984,extrapolated,low,envelope bounded by measured best and measured chance baseline
+90,acc_tau,not reliably estimable,0.19287,0.986328,extrapolated,low,envelope bounded by measured chance baseline and measured best
+90,exact_recovery_secrets,not reliably estimable,,,not_estimable,low,no model trained; two single-seed successes give no rate
+90,successful_informative_K,not reliably estimable,,,not_estimable,low,no model trained
+90,probe_decode_validity,not reliably estimable,,,not_estimable,low,no model trained
+90,recovery_outlook,unlikely at this budget,,,extrapolated,low,judgement from the evidence in SCALABILITY_ANALYSIS.md
+110,valid_loss,not reliably estimable,0.976393,1.864984,extrapolated,low,envelope bounded by measured best and measured chance baseline
+110,acc_tau,not reliably estimable,0.19287,0.986328,extrapolated,low,envelope bounded by measured chance baseline and measured best
+110,exact_recovery_secrets,not reliably estimable,,,not_estimable,low,no model trained; two single-seed successes give no rate
+110,successful_informative_K,not reliably estimable,,,not_estimable,low,no model trained
+110,probe_decode_validity,not reliably estimable,,,not_estimable,low,no model trained
+110,recovery_outlook,unlikely at this budget,,,extrapolated,low,judgement from the evidence in SCALABILITY_ANALYSIS.md
+128,valid_loss,not reliably estimable,0.976393,1.864984,extrapolated,low,envelope bounded by measured best and measured chance baseline
+128,acc_tau,not reliably estimable,0.19287,0.986328,extrapolated,low,envelope bounded by measured chance baseline and measured best
+128,exact_recovery_secrets,not reliably estimable,,,not_estimable,low,no model trained; two single-seed successes give no rate
+128,successful_informative_K,not reliably estimable,,,not_estimable,low,no model trained
+128,probe_decode_validity,not reliably estimable,,,not_estimable,low,no model trained
+128,recovery_outlook,unlikely at this budget,,,extrapolated,low,judgement from the evidence in SCALABILITY_ANALYSIS.md
+30,samples_required__literature,3913424 to 29210829,3913424,29210829,literature,n/a - different model,"SALSA (NeurIPS 2022) Table 2 as recorded in results/archive/n30_prediction/; ~51M params, sample reuse 10x, negacyclic. NOT a Modified NACT measurement."
+128,secret_search_space_C_n_2,8128,,,theoretical,high,"C(n,2) at h=2 - the whole space is enumerable; see SCALABILITY_ANALYSIS.md section A.1"
