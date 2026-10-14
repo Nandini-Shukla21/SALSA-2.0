@@ -1,0 +1,1998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SALSA 2.0 — Lightweight Neural Cryptanalysis of LWE/RLWE</title>
+<meta name="author" content="Nandini Shukla">
+<meta name="subject" content="Research internship report, Scientific Analysis Group (SAG), DRDO">
+<meta name="keywords" content="neural cryptanalysis, Learning With Errors, RLWE, Transformer, lattice cryptography, post-quantum">
+<meta name="description" content="SALSA 2.0: Lightweight Neural Cryptanalysis of LWE/RLWE. Research internship report prepared at the Scientific Analysis Group, DRDO, for J.C. Bose University of Science and Technology, YMCA, Faridabad.">
+
+<style>
+/* ===================================================================
+   PAGE GEOMETRY — A4 with the reference report's binding margin.
+   =================================================================== */
+@page {
+  size: A4;
+  margin: 25mm 22mm 20mm 32mm;
+  @bottom-center {
+    content: counter(page);
+    font-family: "Times New Roman", Times, serif;
+    font-size: 10.5pt;
+    color: #333333;
+    vertical-align: top;
+    padding-top: 6mm;
+  }
+}
+@page cover  { margin: 18mm 20mm 18mm 20mm; @bottom-center { content: ""; } }
+@page front  { @bottom-center { content: counter(page, lower-roman); } }
+@page main   { @bottom-center { content: counter(page); } }
+
+.pg-cover { page: cover; }
+.pg-front { page: front; }
+.pg-main  { page: main;  }
+
+/* ===================================================================
+   BASE TYPOGRAPHY
+   =================================================================== */
+html { font-family: "Times New Roman", Times, serif; }
+body {
+  font-family: "Times New Roman", Times, serif;
+  font-size: 12pt;
+  line-height: 1.5;
+  text-align: justify;
+  hyphens: auto;
+  color: #000000;
+  margin: 0;
+}
+p { margin: 0 0 7pt 0; orphans: 3; widows: 3; }
+
+h1, h2, h3 { font-family: "Times New Roman", Times, serif; color: #000000; break-after: avoid-page; page-break-after: avoid; }
+h1 {
+  font-size: 16pt; font-weight: bold; text-align: left;
+  margin: 0 0 16pt 0; padding-bottom: 5pt;
+  border-bottom: 1pt solid #999999;
+  break-before: page; page-break-before: always;
+}
+h1.nobreak { break-before: auto; page-break-before: auto; }
+h1 .chno { display: block; font-size: 11.5pt; font-weight: normal; letter-spacing: 0.10em;
+           text-transform: uppercase; color: #444444; margin-bottom: 4pt; }
+h2 { font-size: 13pt; font-weight: bold; margin: 15pt 0 6pt 0; }
+h3 { font-size: 12pt; font-weight: bold; margin: 12pt 0 5pt 0; }
+
+/* ===================================================================
+   COVER PAGE
+   =================================================================== */
+.cover { text-align: center; }
+.cover .logo { margin: 2mm 0 7mm 0; }
+.cover .logo img { height: 33mm; width: auto; }          /* 1.30 in, aspect preserved */
+.cover .rule { border: none; border-top: 1.2pt solid #222222; width: 62%; margin: 7mm auto; }
+.cover .ttl { font-size: 19pt; font-weight: bold; line-height: 1.3; margin: 0 6mm; letter-spacing: 0.01em; }
+.cover .sub { font-size: 11.5pt; line-height: 1.55; margin: 5mm 8mm 0 8mm; text-align: center; }
+.cover .lbl { font-size: 10.5pt; font-style: italic; color: #333333; margin: 6mm 0 1.5mm 0; }
+.cover .nm  { font-size: 14pt; font-weight: bold; line-height: 1.4; }
+.cover .org { font-size: 12pt; line-height: 1.5; }
+.cover .uni { font-size: 12.5pt; font-weight: bold; line-height: 1.45; }
+.cover .dte { font-size: 11.5pt; }
+
+/* ===================================================================
+   FRONT-MATTER HEADINGS
+   =================================================================== */
+h1.fm { text-align: center; border-bottom: none; font-size: 15pt; letter-spacing: 0.08em;
+        margin-bottom: 14pt; }
+
+/* ===================================================================
+   TABLES
+   =================================================================== */
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 9.5pt;
+  line-height: 1.32;
+  margin: 0 0 4pt 0;
+  text-align: left;
+}
+thead { display: table-header-group; }                   /* repeat header across pages */
+tr { break-inside: avoid; page-break-inside: avoid; }
+th, td { border: 0.6pt solid #777777; padding: 3pt 4.5pt; vertical-align: top; text-align: left; }
+th { background-color: #ededed; font-weight: bold; }
+td.num, th.num { text-align: right; }
+td.ctr, th.ctr { text-align: center; }
+table.tight { font-size: 9pt; }
+
+/* ===================================================================
+   FIGURES AND CAPTIONS
+   =================================================================== */
+figure { margin: 10pt 0 4pt 0; text-align: center; break-inside: avoid; page-break-inside: avoid; }
+figure img { max-width: 100%; height: auto; border: 0.5pt solid #cfcfcf; }
+figcaption, p.caption {
+  font-size: 10pt; text-align: center; line-height: 1.35;
+  margin: 5pt auto 0 auto; max-width: 96%;
+  break-before: avoid-page; page-break-before: avoid;
+}
+p.tcaption {
+  font-size: 10pt; font-weight: bold; text-align: left; line-height: 1.35;
+  margin: 13pt 0 4pt 0;
+  break-after: avoid-page; page-break-after: avoid;
+}
+p.note {
+  font-size: 9.5pt; line-height: 1.38; text-align: justify;
+  margin: 4pt 0 13pt 0; padding-left: 7pt;
+  border-left: 2pt solid #cccccc; color: #222222;
+  break-before: avoid-page; page-break-before: avoid;
+}
+.figblock { break-inside: avoid; page-break-inside: avoid; }
+
+/* ===================================================================
+   EQUATIONS
+   =================================================================== */
+p.eq {
+  text-align: center; margin: 11pt 0; font-size: 12pt;
+  break-inside: avoid; page-break-inside: avoid;
+}
+p.eq .en { float: right; font-style: normal; }
+.v { font-weight: bold; }                                 /* vectors */
+
+/* ===================================================================
+   LISTS OF CONTENTS / FIGURES / TABLES
+   =================================================================== */
+ul.toc { list-style: none; margin: 0; padding: 0; font-size: 11pt; line-height: 1.75; }
+ul.toc li { margin: 0; }
+ul.toc a { text-decoration: none; color: #000000; display: block; position: relative; }
+ul.toc a::after {
+  content: target-counter(attr(href), page);
+  position: absolute; right: 0;
+}
+ul.toc a .t { background: #ffffff; padding-right: 4pt; }
+ul.toc li.lv0 { font-weight: bold; margin-top: 9pt; }
+ul.toc li.lv1 { padding-left: 9mm; }
+ul.toc li.lv2 { padding-left: 18mm; font-size: 10.5pt; }
+ul.toc li a { border-bottom: 0.5pt dotted #bbbbbb; }
+ul.toc li.lv0 a { border-bottom: none; }
+
+/* ===================================================================
+   MISC
+   =================================================================== */
+.ph { color: #A32020; font-weight: bold; }
+.phbox {
+  border: 1pt dashed #A32020; background: #fdf4f4; color: #7a1a1a;
+  padding: 7pt 9pt; font-size: 10pt; line-height: 1.4; margin: 0 0 12pt 0; text-align: left;
+}
+.sigtable { width: 100%; border: none; font-size: 11pt; margin-top: 16mm; }
+.sigtable td { border: none; padding: 0; vertical-align: bottom; }
+.sigline { border-top: 0.8pt solid #333333; width: 58mm; margin-bottom: 3pt; }
+tt, code { font-family: "Consolas", "Courier New", monospace; font-size: 9.5pt; }
+.refs p { text-indent: -10mm; padding-left: 10mm; margin-bottom: 7pt; font-size: 11pt; text-align: left; }
+.kw { font-size: 11pt; }
+</style>
+</head>
+<body>
+
+<!-- ===================== COVER ===================== -->
+<section class="pg-cover">
+<div class="cover">
+
+  <div class="logo"><img src="assets/drdo_logo.png" alt="Defence Research and Development Organisation official emblem"></div>
+
+  <hr class="rule">
+
+  <p class="ttl">SALSA 2.0<br>LIGHTWEIGHT NEURAL CRYPTANALYSIS<br>OF LWE/RLWE</p>
+
+  <hr class="rule">
+
+  <p class="sub">A report submitted in partial fulfilment of the requirements<br>
+  for the award of the degree of</p>
+
+  <p class="sub"><b>BACHELOR OF TECHNOLOGY</b><br>
+  in<br>
+  <b>COMPUTER SCIENCE AND ENGINEERING<br>
+  (ARTIFICIAL INTELLIGENCE AND MACHINE LEARNING)</b></p>
+
+  <p class="lbl">Submitted by</p>
+  <p class="nm">NANDINI SHUKLA</p>
+  <p class="org">Roll No.: <span class="ph">[ROLL NUMBER — TO BE SUPPLIED]</span></p>
+
+  <p class="lbl">Under the guidance of</p>
+  <p class="nm">Mr. Yogesh Adhana</p>
+  <p class="org">Scientist &lsquo;F&rsquo;</p>
+
+  <p class="lbl">Carried out at</p>
+  <p class="org"><b>SCIENTIFIC ANALYSIS GROUP (SAG)</b><br>
+  Defence Research and Development Organisation (DRDO)<br>
+  Metcalfe House, Civil Lines, Delhi &ndash; 110054, India</p>
+  <p class="org" style="font-size:11pt;">Internship period: 20 April 2026 &ndash; 20 October 2026</p>
+
+  <hr class="rule">
+
+  <p class="uni">J.C. BOSE UNIVERSITY OF SCIENCE AND TECHNOLOGY, YMCA<br>
+  FARIDABAD, HARYANA, INDIA</p>
+
+  <p class="dte"><span class="ph">[MONTH AND YEAR OF SUBMISSION — TO BE CONFIRMED]</span></p>
+
+</div>
+</section>
+
+<!-- ===================== FRONT MATTER ===================== -->
+<section class="pg-front">
+
+<h1 class="fm" id="fm-cert">CERTIFICATE</h1>
+
+<div class="phbox">
+<b>DRAFT FOR SUPERVISOR REVIEW — NOT AN ISSUED CERTIFICATE.</b><br>
+This page must be reproduced on the official certificate format issued by the Scientific
+Analysis Group, DRDO, and signed by the supervisor. The wording below is a neutral draft
+provided for review only. No signature, seal, approval number or registration number has
+been generated, and this page does not constitute approval by DRDO or SAG.
+</div>
+
+<p>This is to certify that the work presented in this report, entitled <b>&ldquo;SALSA 2.0 &mdash;
+Lightweight Neural Cryptanalysis of LWE/RLWE&rdquo;</b>, was carried out by <b>Nandini Shukla</b>,
+a student of Bachelor of Technology in Computer Science and Engineering (Artificial
+Intelligence and Machine Learning) at J.C. Bose University of Science and Technology, YMCA,
+Faridabad, Haryana, during the internship period 20 April 2026 to 20 October 2026 at the
+Scientific Analysis Group (SAG), Defence Research and Development Organisation (DRDO),
+Metcalfe House, Civil Lines, Delhi &ndash; 110054.</p>
+
+<p>The work was carried out under my supervision, and to the best of my knowledge it is the
+candidate&rsquo;s own work.</p>
+
+<table class="sigtable">
+<tr>
+  <td style="width:50%;">
+    Date: <span class="ph">[DATE]</span><br>
+    Place: Delhi
+  </td>
+  <td style="width:50%; text-align:right;">
+    <div class="sigline" style="margin-left:auto;"></div>
+    <b>Mr. Yogesh Adhana</b><br>
+    Scientist &lsquo;F&rsquo;<br>
+    Scientific Analysis Group, DRDO
+  </td>
+</tr>
+</table>
+
+<h1 class="fm" id="fm-decl">DECLARATION</h1>
+
+<p>I hereby declare that the work presented in this report, entitled <b>&ldquo;SALSA 2.0 &mdash;
+Lightweight Neural Cryptanalysis of LWE/RLWE&rdquo;</b>, is an authentic record of my own work
+carried out under the guidance of Mr. Yogesh Adhana, Scientist &lsquo;F&rsquo;, Scientific
+Analysis Group, Defence Research and Development Organisation.</p>
+
+<p>All software described in this report was written during the internship. The original SALSA
+publication and its publicly released source code were consulted as reference material for the
+purposes of comparison and fidelity auditing; no part of that code was copied into this project.
+Every numerical result reported here was produced by the software described in Chapter 4 and is
+recorded in a corresponding artefact file, as listed in Appendix C. Results obtained by other
+authors are cited and are clearly distinguished from results obtained in this work. Predictions
+and extrapolations are labelled as such throughout and are never presented as measurements.</p>
+
+<p>The content of this report has not been submitted elsewhere for the award of any other degree
+or diploma.</p>
+
+<table class="sigtable">
+<tr>
+  <td style="width:50%;">
+    Date: <span class="ph">[DATE]</span><br>
+    Place: Delhi
+  </td>
+  <td style="width:50%; text-align:right;">
+    <div class="sigline" style="margin-left:auto;"></div>
+    <b>Nandini Shukla</b><br>
+    Roll No.: <span class="ph">[ROLL NUMBER]</span><br>
+    B.Tech. CSE (AI &amp; ML)
+  </td>
+</tr>
+</table>
+
+<h1 class="fm" id="fm-ack">ACKNOWLEDGEMENT</h1>
+
+<p>I wish to record my gratitude to the Scientific Analysis Group, Defence Research and
+Development Organisation, for the opportunity to carry out this work and for providing access to
+the computational facilities used throughout the internship.</p>
+
+<p>I am especially grateful to my supervisor, Mr. Yogesh Adhana, Scientist &lsquo;F&rsquo;, for
+his guidance over the course of the project. The insistence on staged, independently verifiable
+experiments, on keeping measured quantities strictly separate from predicted ones, and on never
+permitting the ground-truth secret to influence any stage of the attack shaped the methodology of
+this work more than any other single factor, and is the reason the results reported here can be
+audited rather than merely believed.</p>
+
+<p>I thank the scientists and staff of the Scientific Analysis Group for their assistance during
+the internship period, and the faculty of the Department of Computer Engineering at J.C. Bose
+University of Science and Technology, YMCA, Faridabad, for the academic preparation that made
+this work possible.</p>
+
+<p>Finally, I thank my family for their support throughout the duration of this internship.</p>
+
+<p style="text-align:right; margin-top:10mm;"><b>Nandini Shukla</b></p>
+
+<h1 class="fm" id="fm-abs">ABSTRACT</h1>
+
+<p>Lattice-based cryptography, and in particular the Learning With Errors (LWE) problem and its
+ring variant (RLWE), underpins the key-establishment and digital-signature schemes recently
+standardised for the post-quantum era. In 2022, Wenger, Chen, Charton and Lauter introduced
+SALSA, a machine-learning attack that trains a Transformer to predict the public value
+<i>b</i> from the public matrix row <span class="v">a</span>, and then converts the trained model
+into a secret-recovery procedure by querying it on specially chosen inputs. The published attack
+uses a Universal Transformer of approximately 51 million parameters.</p>
+
+<p>This work asks a narrow and testable question: <i>does the SALSA attack survive a reduction of
+the model to between four and five million parameters, and if it fails, is the cause capacity,
+training budget, or input representation?</i> The project is an independent, CPU-only
+reimplementation and extension. Three successive architectures were implemented and compared
+under a fixed training protocol: a faithful compact reduction of the published gated Universal
+Transformer (Salsa2-GatedUT, 4,131,200 parameters); a Numerical-Aware Coordinate Transformer
+(NACT, 4,241,288 parameters); and <b>Modified NACT</b> (4,238,208 parameters), the final model,
+obtained from NACT by an ablation that removes every additional numerical feature and retains
+only the one-token-per-coordinate input representation and its absolute coordinate embedding.</p>
+
+<p>At the compact parameter budget the baseline architecture fails: at <i>n</i> = 12 with Hamming
+weight <i>h</i> = 2 it reaches a validation loss of 1.7413 against a marginals-only chance
+baseline of 1.86498, leaves 58 per cent of its probe outputs undecodable, and recovers no secret.
+Modified NACT, which differs by 2.6 per cent in parameter count, reaches a validation loss of
+0.9891 and recovers the secret exactly. The same architecture and training budget were then
+applied at <i>n</i> = 20, where the secret was again recovered exactly. Both recoveries were
+confirmed by an independent residual test that receives only the public data, the candidate, the
+modulus and the noise scale: the centred residual standard deviation is 2.998 at <i>n</i> = 12 and
+2.941 at <i>n</i> = 20 against a configured noise scale of 3.0, where an incorrect candidate would
+give approximately 72.5.</p>
+
+<p>The evidence therefore points to the input representation, rather than to model capacity, as
+the principal observed source of the improvement. Two limitations are stated plainly and are not
+softened anywhere in this report. First, each recovery is a single secret under a single training
+seed, so the results are two outcomes and not a measured success rate. Second, with a Hamming
+weight of two the secret space contains only C(<i>n</i>,&nbsp;2) = <i>n</i>(<i>n</i>&nbsp;&minus;&nbsp;1)/2
+candidates &mdash; growing quadratically with the dimension, from 66 at <i>n</i> = 12 to 8,128 at
+<i>n</i> = 128, and therefore remaining small in absolute terms across the whole range considered.
+Exhaustive enumeration scored by the residual verifier developed here consequently remains a
+credible baseline at these dimensions, subject to the cost and the reliability of that verifier
+when it is applied to a large candidate set rather than to a single candidate. Nothing in this
+work constitutes a practical break of deployed lattice cryptography.</p>
+
+<p>The complete pipeline &mdash; learning, secret recovery and verification &mdash; executes on a
+laptop CPU and replays from stored checkpoints in 1.19 s at <i>n</i> = 12 and 1.59 s at
+<i>n</i> = 20, with 12 of 12 recorded quantities reproduced and a test suite of 690 passing
+tests.</p>
+
+<p class="kw"><b>Keywords:</b> neural cryptanalysis; Learning With Errors; Ring Learning With
+Errors; Transformer; lattice-based cryptography; post-quantum cryptography; secret recovery;
+model compression.</p>
+
+<!-- ===================== LIST OF FIGURES ===================== -->
+<h1 class="fm" id="fm-lof">LIST OF FIGURES</h1>
+<p>[[LOF]]</p>
+
+<!-- ===================== LIST OF TABLES ===================== -->
+<h1 class="fm" id="fm-lot">LIST OF TABLES</h1>
+<p>[[LOT]]</p>
+
+<!-- ===================== ABBREVIATIONS ===================== -->
+<h1 class="fm" id="fm-abbr">LIST OF ABBREVIATIONS AND SYMBOLS</h1>
+
+<p class="tcaption">Abbreviations</p>
+<table>
+<thead><tr><th style="width:24%;">Abbreviation</th><th>Expansion</th></tr></thead>
+<tbody>
+<tr><td>AdamW</td><td>Adam optimiser with decoupled weight decay</td></tr>
+<tr><td>CPU</td><td>Central Processing Unit</td></tr>
+<tr><td>DRDO</td><td>Defence Research and Development Organisation</td></tr>
+<tr><td>FFN</td><td>Feed-Forward Network</td></tr>
+<tr><td>FIPS</td><td>Federal Information Processing Standard</td></tr>
+<tr><td>GELU</td><td>Gaussian Error Linear Unit</td></tr>
+<tr><td>GatedUT</td><td>Gated Universal Transformer</td></tr>
+<tr><td>LWE</td><td>Learning With Errors</td></tr>
+<tr><td>ML-KEM</td><td>Module-Lattice-Based Key-Encapsulation Mechanism</td></tr>
+<tr><td>NACT</td><td>Numerical-Aware Coordinate Transformer</td></tr>
+<tr><td>NIST</td><td>National Institute of Standards and Technology</td></tr>
+<tr><td>RLWE</td><td>Ring Learning With Errors</td></tr>
+<tr><td>RMSNorm</td><td>Root Mean Square Layer Normalisation</td></tr>
+<tr><td>RoPE</td><td>Rotary Position Embedding</td></tr>
+<tr><td>SAG</td><td>Scientific Analysis Group</td></tr>
+<tr><td>SALSA</td><td>The machine-learning attack on LWE of Wenger <i>et al.</i> (2022)</td></tr>
+<tr><td>YAML</td><td>YAML Ain&rsquo;t Markup Language (configuration file format)</td></tr>
+</tbody>
+</table>
+
+<p class="tcaption">Principal symbols</p>
+<table>
+<thead><tr><th style="width:24%;">Symbol</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><i>n</i></td><td>Lattice dimension; length of the secret vector</td></tr>
+<tr><td><i>q</i></td><td>Prime modulus of the lattice problem (251 throughout)</td></tr>
+<tr><td>&sigma;</td><td>Standard deviation of the discrete Gaussian error (3.0 throughout)</td></tr>
+<tr><td><i>h</i></td><td>Hamming weight: the exact number of non-zero secret coordinates</td></tr>
+<tr><td><i>m</i></td><td>Number of samples</td></tr>
+<tr><td><span class="v">A</span></td><td>Public matrix whose rows are LWE samples</td></tr>
+<tr><td><span class="v">a</span></td><td>One row of <span class="v">A</span>; a single public sample vector</td></tr>
+<tr><td><span class="v">s</span></td><td>The secret vector, unknown to the attack</td></tr>
+<tr><td>s&#771;</td><td>A candidate secret produced by the recovery procedure</td></tr>
+<tr><td><span class="v">e</span></td><td>The error (noise) vector</td></tr>
+<tr><td><i>b</i></td><td>The public target value, <i>b</i> = <span class="v">a</span>&middot;<span class="v">s</span> + <i>e</i> mod <i>q</i></td></tr>
+<tr><td>b&#770;</td><td>The model&rsquo;s prediction of <i>b</i></td></tr>
+<tr><td><i>K</i></td><td>Probe multiplier used in direct secret recovery</td></tr>
+<tr><td><span class="v">e</span><sub><i>i</i></sub></td><td>The <i>i</i>-th standard basis vector</td></tr>
+<tr><td>&tau;</td><td>Relative tolerance used by the acc_tau metric (0.1 throughout)</td></tr>
+<tr><td><i>L</i></td><td>Encoder sequence length, <i>n</i> + 2 for Modified NACT</td></tr>
+<tr><td><i>d<sub>e</sub></i>, <i>d<sub>d</sub></i></td><td>Encoder and decoder model widths (512 and 128)</td></tr>
+<tr><td><i>T<sub>e</sub></i>, <i>T<sub>d</sub></i></td><td>Encoder and decoder loop counts (2 and 2)</td></tr>
+<tr><td><i>r</i></td><td>Residual, <i>r</i> = (<span class="v">b</span> &minus; <span class="v">A</span>s&#771;) mod <i>q</i></td></tr>
+<tr><td>C(<i>n</i>,&nbsp;<i>h</i>)</td><td>Binomial coefficient; the number of weight-<i>h</i> binary secrets</td></tr>
+</tbody>
+</table>
+
+<!-- ===================== TABLE OF CONTENTS ===================== -->
+<h1 class="fm" id="fm-toc">TABLE OF CONTENTS</h1>
+<p>[[TOC]]</p>
+
+</section>
+
+<!-- ===================== BODY ===================== -->
+<p>[[SECTIONBREAK]]</p>
+<section>
+
+<h1 id="ch1"><span class="chno">Chapter 1</span>INTRODUCTION</h1>
+
+<h2 id="s11">1.1 Background</h2>
+
+<p>Public-key cryptography as deployed today rests on the difficulty of integer factorisation and
+of the discrete logarithm problem. Both of these problems admit an efficient quantum algorithm,
+and consequently a sufficiently large quantum computer would render the currently deployed
+public-key infrastructure insecure. The response of the cryptographic community has been to
+identify computational problems for which no efficient quantum algorithm is known, and to build
+replacement schemes on them. Problems arising from point lattices have emerged as the leading
+candidates. In August 2024 the National Institute of Standards and Technology published FIPS 203,
+which standardises ML-KEM, a key-encapsulation mechanism whose security is related to the
+computational difficulty of the Module Learning With Errors problem [10].</p>
+
+<p>The Learning With Errors problem, introduced by Regev [1], is simple to state. An adversary is
+given many pairs (<span class="v">a</span>, <i>b</i>) where <span class="v">a</span> is a
+uniformly random vector over the integers modulo <i>q</i> and <i>b</i> =
+<span class="v">a</span>&middot;<span class="v">s</span> + <i>e</i> mod <i>q</i> for a fixed
+secret vector <span class="v">s</span> and a small random error <i>e</i>. Without the error term
+this is a linear system that Gaussian elimination solves immediately. With the error term, and for
+suitable parameters, the problem is believed to be hard, and Regev gave a quantum reduction from
+worst-case lattice problems to it. The ring variant, RLWE, introduced by Lyubashevsky, Peikert and
+Regev [2], replaces the unstructured matrix by one derived from a single polynomial, which reduces
+key sizes and permits faster arithmetic. The structure that makes RLWE practical is also
+additional structure that an attacker may attempt to exploit.</p>
+
+<p>The security of these schemes is assessed by estimating the cost of the best known attacks,
+principally lattice-reduction algorithms whose concrete cost has been studied extensively [9]. Any
+attack that does not fit the lattice-reduction mould is therefore of interest, because it may not
+be covered by existing cost estimates.</p>
+
+<h2 id="s12">1.2 Motivation: learning-based cryptanalysis</h2>
+
+<p>Transformers trained on symbolic mathematics have been shown to learn arithmetic and linear
+algebraic operations from examples alone [8]. SALSA [3] applied this observation to LWE. The
+attack has three parts. First, a Transformer is trained on public LWE samples to predict <i>b</i>
+from <span class="v">a</span>; the secret never appears in the training data or in the loss.
+Second, if the model has learned the map well, then it has implicitly learned something about
+<span class="v">s</span>, and that information is extracted by querying the model on chosen inputs
+it never saw during training. Third, a candidate secret produced in this way is checked by an
+independent statistical test on the residuals, which requires no knowledge of the true secret.</p>
+
+<p>The appeal of this attack, from the point of view of a defender, is that its cost profile is
+entirely unlike that of lattice reduction. Its weakness, as published, is its cost in another
+sense: the model is large, and the sample requirements reported for even moderate dimensions run
+into millions of distinct instances. If the attack can be made to work at a fraction of the model
+size, then its practical reach &mdash; and therefore its significance for parameter selection
+&mdash; changes. If it cannot, then the reason it cannot is itself informative. This project set
+out to determine which of the two holds at a compact parameter budget.</p>
+
+<h2 id="s13">1.3 Research questions</h2>
+
+<p>The project was organised around three questions, fixed before experiments were run.</p>
+
+<p><b>RQ1.</b> Does the secret-recovery capability of the SALSA attack survive a reduction of the
+model from approximately 51 million parameters to between four and five million?</p>
+
+<p><b>RQ2.</b> If a compact model fails, is the limiting factor its capacity, its training budget,
+or the representation in which the problem is presented to it?</p>
+
+<p><b>RQ3.</b> Can the complete attack &mdash; training, secret recovery and independent
+verification &mdash; be executed reproducibly on a commodity CPU, without specialised hardware?</p>
+
+<h2 id="s14">1.4 Objectives and scope</h2>
+
+<p>The objectives of the work were as follows.</p>
+
+<p>(i) To implement a faithful but compact reduction of the published SALSA architecture, and to
+audit the implementation against the published description and the released source code so that
+every divergence is recorded rather than discovered later.</p>
+
+<p>(ii) To measure the behaviour of that baseline at a compact parameter budget, and to diagnose
+the mechanism of any failure rather than simply reporting it.</p>
+
+<p>(iii) To design, implement and evaluate an alternative input representation motivated by that
+diagnosis, holding the parameter budget, the training protocol and the cryptographic instance
+fixed.</p>
+
+<p>(iv) To implement secret recovery and an independent verification procedure, with a software
+structure that makes it impossible for the ground-truth secret to influence either.</p>
+
+<p>(v) To assemble the result into a single reproducible pipeline, and to characterise honestly
+what the evidence does and does not establish.</p>
+
+<p>The scope of the experimental work is deliberately narrow. All demonstrated results use a prime
+modulus <i>q</i> = 251, a discrete Gaussian error of standard deviation &sigma; = 3, binary
+secrets of exact Hamming weight <i>h</i> = 2, and circulant RLWE-style samples, at lattice
+dimensions <i>n</i> = 12 and <i>n</i> = 20. These are diagnostic instances. They are not
+cryptographically meaningful parameters, and this report does not claim otherwise at any point.</p>
+
+<h2 id="s15">1.5 Contributions</h2>
+
+<p>The principal contributions of this work are the following.</p>
+
+<p>1. An independent, CPU-only implementation of the SALSA attack chain, with a documented
+fidelity audit against the published description and released code, which identified sixteen
+points of comparison and classified each as identical, equivalent, or divergent.</p>
+
+<p>2. A measured diagnosis of why the compact baseline fails: its predictive advantage over the
+best input-blind constant predictor decreases monotonically as the input becomes sparser, and
+crosses zero before the input density reaches that of the recovery probes. The failure is
+therefore a property of the representation under sparse inputs, not a sudden breakdown at the
+probe distribution.</p>
+
+<p>3. <b>Modified NACT</b>, a 4,238,208-parameter architecture that represents each coordinate by
+a single token carrying an absolute coordinate identity, halving the encoder sequence length, and
+which recovers the secret where the baseline does not.</p>
+
+<p>4. An independent residual verification procedure, implemented as a separate module that
+receives only public data, together with a secret-free candidate selection rule whose guard
+parameter is derived from the noise scale rather than chosen by hand.</p>
+
+<p>5. A scalability analysis that separates measured results, published literature, theoretical
+estimates and extrapolation, and that identifies the architectural constraints governing larger
+dimensions.</p>
+
+<h2 id="s16">1.6 Organisation of the report</h2>
+
+<p>Chapter 2 reviews the original SALSA work and related research. Chapter 3 states the problem
+formally and defines the notation used throughout. Chapter 4 describes the proposed methodology
+and the Modified NACT architecture. Chapter 5 documents the experimental setup and the evaluation
+metrics. Chapter 6 presents and discusses the measured results. Chapter 7 analyses scalability to
+larger dimensions. Chapter 8 states the limitations of the work and the experiments that would
+resolve them. Chapter 9 concludes. Appendices give the resolved configuration, the probe detail
+and the provenance of every reported figure.</p>
+
+<h1 id="ch2"><span class="chno">Chapter 2</span>LITERATURE REVIEW</h1>
+
+<h2 id="s21">2.1 The Learning With Errors problem</h2>
+
+<p>Regev [1] introduced LWE and established a quantum reduction from worst-case lattice problems
+to its average-case hardness, which is the foundation of its use in cryptography. Lyubashevsky,
+Peikert and Regev [2] introduced the ring variant, in which the public matrix is generated from a
+single polynomial, so that <i>n</i> samples are produced from <i>n</i> coefficients rather than
+<i>n</i><sup>2</sup>. This reduces key size and allows arithmetic by fast polynomial
+multiplication, at the cost of introducing algebraic structure.</p>
+
+<p>Concrete security estimates for LWE parameters rest principally on lattice reduction. Albrecht,
+Player and Scott [9] survey the available attacks and provide the estimator that is widely used
+for parameter selection. ML-KEM, standardised as FIPS 203 [10], uses the module variant of the
+problem with parameter sets ML-KEM-512, ML-KEM-768 and ML-KEM-1024.</p>
+
+<h2 id="s22">2.2 Transformers and symbolic mathematics</h2>
+
+<p>The Transformer architecture [4] replaced recurrence with attention and is the basis of all
+models considered in this work. Dehghani <i>et al.</i> [5] proposed the Universal Transformer, in
+which a single layer is applied repeatedly, so that effective depth is decoupled from parameter
+count &mdash; a property of direct relevance when a parameter budget is binding. Csordás, Irie and
+Schmidhuber [6] showed that a copy gate added to each sub-layer substantially improves systematic
+generalisation on algorithmic tasks; SALSA adopts this gating, and so does the present work.</p>
+
+<p>Charton [8] demonstrated that Transformers trained on randomly generated matrices learn a range
+of linear-algebraic operations, including eigenvalue decomposition and matrix inversion, and
+generalise beyond their training distribution. This result is the immediate intellectual
+predecessor of applying a Transformer to the linear-algebraic core of LWE.</p>
+
+<p>Two architectural components used here are standard and are adopted for efficiency rather than
+novelty. RMSNorm [12] normalises by root mean square without re-centring, removing a mean
+subtraction and a bias parameter per normalisation. Rotary position embedding [11] encodes
+position by rotating query and key vectors, adding no parameters; it supplies relative position
+information only, a limitation that proves to be important in Chapter 4. The optimiser used
+throughout is AdamW [15].</p>
+
+<h2 id="s23">2.3 SALSA and its successors</h2>
+
+<p>SALSA [3] trains a sequence-to-sequence Transformer on public LWE samples to predict <i>b</i>
+from <span class="v">a</span>, using a gated Universal Transformer encoder and decoder with
+approximately 51 million parameters. Integers are written as digit sequences in a fixed base.
+After partial training, the model is queried on chosen inputs of the form <span class="v">a</span>
+= <i>K</i><span class="v">e</span><sub><i>i</i></sub>, for which
+<span class="v">a</span>&middot;<span class="v">s</span> = <i>K s<sub>i</sub></i> &mdash; so the
+model&rsquo;s response reveals the single bit <i>s<sub>i</sub></i> if the model has learned the
+map. Candidates are checked by the distribution of the residuals. The paper reports full recovery
+for small and medium-sized instances with sparse binary secrets.</p>
+
+<p>Two successors extend the approach. SALSA PICANTE [13] adds a data-preprocessing stage and
+targets binary secrets at higher dimensions. SALSA VERDE [14] extends the attack to sparse small
+secrets beyond the binary case. Both follow the same three-stage structure of training, recovery
+and verification.</p>
+
+<p>These published results must be read with care in the present context. They were obtained with
+models an order of magnitude larger than the one studied here, with sample reuse, with a different
+matrix construction, and with a candidate decision rule that is resolved against the true secret.
+Section 2.5 records those differences explicitly. Success reported in the literature at a given
+dimension is therefore not evidence that the model studied in this work will succeed at that
+dimension.</p>
+
+<h2 id="s24">2.4 Comparison of related work</h2>
+
+<p class="tcaption" id="tab21">Table 2.1: Comparison of related work. The final row describes the
+present project. Published figures are those stated by the cited authors; they were not
+re-measured in this work.</p>
+<table class="tight">
+<thead><tr>
+<th style="width:15%;">Work</th><th style="width:12%;">Model size</th><th style="width:17%;">Problem setting</th>
+<th style="width:13%;">Dimensions reported</th><th style="width:22%;">Principal finding</th><th style="width:21%;">Limitation relevant here</th>
+</tr></thead>
+<tbody>
+<tr><td>Regev [1]</td><td>&mdash;</td><td>LWE hardness</td><td>&mdash;</td>
+<td>Quantum reduction from worst-case lattice problems</td><td>Theoretical; gives no attack</td></tr>
+<tr><td>Lyubashevsky <i>et al.</i> [2]</td><td>&mdash;</td><td>RLWE</td><td>&mdash;</td>
+<td>Ring structure reduces key size and cost</td><td>Introduces exploitable structure</td></tr>
+<tr><td>Charton [8]</td><td>Transformer</td><td>Linear algebra on random matrices</td><td>Matrices to 10&times;10</td>
+<td>Transformers learn linear-algebraic operations and generalise out of distribution</td><td>No cryptographic setting</td></tr>
+<tr><td>SALSA [3]</td><td>&asymp; 51 M</td><td>LWE/RLWE, sparse binary secrets, <i>q</i> = 251</td><td>Up to <i>n</i> = 128 reported for <i>h</i> = 3</td>
+<td>End-to-end machine-learning secret recovery with statistical verification</td><td>Large model; millions of distinct samples; candidate polarity resolved against the true secret</td></tr>
+<tr><td>SALSA PICANTE [13]</td><td>Transformer</td><td>LWE, binary secrets</td><td>Higher than SALSA</td>
+<td>Data preprocessing extends reach</td><td>Not reproduced or re-measured in this work</td></tr>
+<tr><td>SALSA VERDE [14]</td><td>Transformer</td><td>LWE, sparse small secrets</td><td>Higher than SALSA</td>
+<td>Extends the attack beyond binary secrets</td><td>Not reproduced or re-measured in this work</td></tr>
+<tr><td><b>This work<br>(SALSA 2.0)</b></td><td><b>4,238,208</b></td><td>RLWE circulant, binary <i>h</i> = 2, <i>q</i> = 251, &sigma; = 3</td><td><b><i>n</i> = 12, <i>n</i> = 20</b></td>
+<td>Exact recovery with a 12&times; smaller model; representation identified as the operative factor</td><td>One secret and one seed per dimension; <i>h</i> = 2 only</td></tr>
+</tbody>
+</table>
+<p class="note"><b>What this table shows:</b> the position of this project relative to published
+work in model size, problem setting and demonstrated dimension. <b>What it does not establish:</b>
+any claim that the dimensions reached by the published attacks are reachable by the model studied
+here.</p>
+
+<h2 id="s25">2.5 Relationship of Modified NACT to the original approach</h2>
+
+<p>A systematic comparison of this implementation against the published description and the
+released SALSA source was carried out before any architectural change was proposed, and is
+recorded in the project artefacts. Sixteen points of comparison were examined, covering sample
+generation, secret generation, error generation, matrix construction, integer encoding, input and
+output sequence construction, vocabulary, model architecture, training objective, decoding, probe
+construction, modular reduction of the probe multiplier, the candidate decision rule, the success
+criterion, and verification. The divergences material to the interpretation of the results in this
+report are the following.</p>
+
+<p><b>Matrix construction.</b> The released code builds the public matrix by negating the strict
+upper triangle of a circulant matrix before reduction &mdash; that is, a negacyclic construction
+&mdash; despite the paper&rsquo;s use of the word &ldquo;circulant&rdquo;. This project implements
+a genuinely circulant construction. The two are different distributions.</p>
+
+<p><b>Sample reuse.</b> The released configuration reuses each distinct LWE instance approximately
+ten times. Every run in this project uses a fresh instance for every training sample. A sample
+budget here is therefore not directly comparable to a sample count reported in the literature, and
+sample-requirement extrapolations made from this project&rsquo;s data may be pessimistic by up to
+an order of magnitude on that account alone.</p>
+
+<p><b>Error distribution.</b> The released code rounds a continuous Gaussian sample; this project
+samples an exact truncated discrete Gaussian. The measured total variation distance between the
+two distributions at &sigma; = 3 is 0.00219.</p>
+
+<p><b>Candidate decision rule.</b> In the released evaluator, several candidate vectors and their
+complements are generated and the variant that best matches the true secret is reported as the
+result. That procedure consults the ground truth. The present work uses an anchored rule that
+compares the model&rsquo;s prediction against the two values it could take under the two
+hypotheses for the secret bit, and therefore never consults the secret. This is a deliberate
+divergence, and it makes the recovery results of this project and of the released code
+non-comparable in the attacker&rsquo;s favour: the rule used here is strictly harder.</p>
+
+<p><b>Verification.</b> The residual test is described in the SALSA paper but is not implemented
+in the released evaluator. It is implemented here as an independent module.</p>
+
+<p>Modified NACT retains the published attack&rsquo;s overall structure &mdash; a gated Universal
+Transformer encoder and decoder, digit-based integer encoding, chosen-input probing, and residual
+verification &mdash; and changes one thing: how a coordinate of <span class="v">a</span> is
+presented to the encoder. Chapter 4 describes that change and the measurement that motivated
+it.</p>
+
+<h1 id="ch3"><span class="chno">Chapter 3</span>PROBLEM FORMULATION AND MATHEMATICAL BACKGROUND</h1>
+
+<h2 id="s31">3.1 Notation</h2>
+
+<p>Let <i>q</i> be a prime modulus and let <b>Z</b><sub><i>q</i></sub> denote the integers modulo
+<i>q</i>, represented throughout by the set {0, 1, &hellip;, <i>q</i> &minus; 1}. Vectors are
+written in bold. The lattice dimension is <i>n</i> and the number of samples is <i>m</i>. The
+symbols used in this report are collected in the List of Abbreviations and Symbols in the
+preliminary pages.</p>
+
+<h2 id="s32">3.2 The Learning With Errors problem</h2>
+
+<p>A single LWE sample is a pair (<span class="v">a</span>, <i>b</i>) with
+<span class="v">a</span> drawn uniformly from <b>Z</b><sub><i>q</i></sub><sup><i>n</i></sup> and</p>
+
+<p class="eq"><i>b</i> = <span class="v">a</span> &middot; <span class="v">s</span> + <i>e</i>
+&nbsp;(mod <i>q</i>)<span class="en">(3.1)</span></p>
+
+<p>where <span class="v">s</span> &isin; <b>Z</b><sub><i>q</i></sub><sup><i>n</i></sup> is a fixed
+secret and <i>e</i> is drawn from an error distribution concentrated on small values. Given
+<i>m</i> samples, collect the vectors as the rows of a matrix <span class="v">A</span> &isin;
+<b>Z</b><sub><i>q</i></sub><sup><i>m</i>&times;<i>n</i></sup> and the targets as a vector
+<span class="v">b</span>, so that</p>
+
+<p class="eq"><span class="v">b</span> = <span class="v">A</span><span class="v">s</span> +
+<span class="v">e</span> &nbsp;(mod <i>q</i>)<span class="en">(3.2)</span></p>
+
+<p>The search problem is to recover <span class="v">s</span> from (<span class="v">A</span>,
+<span class="v">b</span>). If <span class="v">e</span> = <span class="v">0</span> this is a linear
+system soluble by Gaussian elimination; the error is what makes the problem hard.</p>
+
+<h2 id="s33">3.3 Error, secret and sample structure as implemented</h2>
+
+<p><b>Error distribution.</b> The error is an exact truncated discrete Gaussian on the integers,
+with probability proportional to exp(&minus;<i>x</i><sup>2</sup> / 2&sigma;<sup>2</sup>) over a
+bounded support, with &sigma; = 3.0. Sampling uses the exact discrete distribution rather than
+rounding a continuous draw.</p>
+
+<p><b>Secret distribution.</b> The secret is binary with an exact Hamming weight: exactly <i>h</i>
+coordinates equal one and the remaining <i>n</i> &minus; <i>h</i> equal zero. The support is drawn
+uniformly without replacement, so the secret is uniform over the</p>
+
+<p class="eq">|<i>S<sub>n,h</sub></i>| = C(<i>n</i>, <i>h</i>) = <i>n</i>! / (<i>h</i>!
+(<i>n</i> &minus; <i>h</i>)!)<span class="en">(3.3)</span></p>
+
+<p>vectors of that weight. For the demonstrated setting <i>h</i> = 2 this gives 66 possible
+secrets at <i>n</i> = 12 and 190 at <i>n</i> = 20. The consequences of this search space are taken
+up in Section 8.3 and are central to the interpretation of the results.</p>
+
+<p><b>Sample structure.</b> Samples are RLWE-style. A generator vector of length <i>n</i> is drawn
+uniformly from <b>Z</b><sub><i>q</i></sub><sup><i>n</i></sup> and expanded into an
+<i>n</i>&times;<i>n</i> circulant matrix whose <i>i</i>-th row is the generator rotated by <i>i</i>
+positions; the rows of that block are used as samples. Producing <i>m</i> samples therefore
+requires &lceil;<i>m</i>/<i>n</i>&rceil; independent generator vectors. The implementation also
+provides the negacyclic construction, in which entries that wrap around are negated; the
+negacyclic variant is the one used by the released SALSA code, and the distinction is recorded in
+Section 2.5. All experiments reported here use the circulant construction.</p>
+
+<h2 id="s34">3.4 The sparse-secret baseline problem</h2>
+
+<p>A sparse secret creates a trap for any accuracy-based evaluation. Since exactly <i>h</i> of
+<i>n</i> coordinates are non-zero, the all-zeros vector &mdash; which contains no information
+whatsoever &mdash; already achieves a coordinate-wise accuracy of</p>
+
+<p class="eq">(<i>n</i> &minus; <i>h</i>) / <i>n</i><span class="en">(3.4)</span></p>
+
+<p>which is 0.8333 at <i>n</i> = 12 and 0.9000 at <i>n</i> = 20, both with <i>h</i> = 2.
+Coordinate-wise accuracy is therefore never, by itself, evidence of recovery. Throughout this
+report, a recovery is counted only when the candidate equals the true secret in every coordinate.
+Partial agreement is reported as a diagnostic and never as a success.</p>
+
+<h2 id="s35">3.5 Direct secret recovery</h2>
+
+<p>The recovery procedure follows Algorithm 1 of the SALSA paper. Suppose a model <i>f</i> has
+been trained to approximate the map <span class="v">a</span> &#8614; <i>b</i>. Consider a probe
+input of the form</p>
+
+<p class="eq"><span class="v">a</span> = <i>K</i> <span class="v">e</span><sub><i>i</i></sub>,
+&nbsp;&nbsp; <i>K</i> &isin; <b>Z</b><sub><i>q</i></sub><span class="en">(3.5)</span></p>
+
+<p>where <span class="v">e</span><sub><i>i</i></sub> is the <i>i</i>-th standard basis vector. For
+such an input, the true relation (3.1) collapses to</p>
+
+<p class="eq"><span class="v">a</span> &middot; <span class="v">s</span> = <i>K s<sub>i</sub></i>
+&nbsp;(mod <i>q</i>)<span class="en">(3.6)</span></p>
+
+<p>so that the noiseless target is 0 if <i>s<sub>i</sub></i> = 0 and <i>K</i> mod <i>q</i> if
+<i>s<sub>i</sub></i> = 1. The model&rsquo;s response b&#770; on this input is compared against
+those two values, and the coordinate is assigned to whichever is nearer in the ring. This is the
+<i>anchored</i> rule: it uses only the model&rsquo;s output and the publicly chosen <i>K</i>, and
+never the true secret.</p>
+
+<p>The reliability of this decision depends on how far apart the two hypotheses lie. Define the
+<i>probe separation</i> of a multiplier as</p>
+
+<p class="eq">sep(<i>K</i>) = min( <i>K</i> mod <i>q</i>, &nbsp;<i>q</i> &minus; (<i>K</i> mod
+<i>q</i>) )<span class="en">(3.7)</span></p>
+
+<p>which is the ring distance between the two candidate targets. A multiplier with small
+separation cannot support a reliable decision, because the noise alone is of comparable size. Two
+such multipliers, <i>K</i> = 1 and <i>K</i> = <i>q</i> &minus; 1 = 250, both of separation 1, are
+included in every sweep as negative controls: a correct implementation must fail on them. The
+recovery procedure excludes from selection any multiplier whose separation does not exceed the
+noise scale, using the guard</p>
+
+<p class="eq">sep(<i>K</i>) &ge; min_separation = &lfloor;&sigma;&rfloor; +
+1<span class="en">(3.8)</span></p>
+
+<p>which equals 4 at &sigma; = 3. The guard is derived from the noise scale, a configured public
+quantity, and is not chosen by inspection of results.</p>
+
+<p>A single multiplier produces one candidate vector. The default selection rule, named
+<i>aggregate</i>, combines the per-multiplier candidates by a separation-weighted vote across all
+eligible multipliers, so that better-separated probes carry more weight. Both the aggregate rule
+and the diagnostic single-multiplier rule operate exclusively on model predictions and public
+quantities.</p>
+
+<h2 id="s36">3.6 Residual verification</h2>
+
+<p>Given a candidate s&#771;, form the residual vector on held-out public samples</p>
+
+<p class="eq"><span class="v">r</span> = (<span class="v">b</span> &minus;
+<span class="v">A</span> s&#771;) mod <i>q</i><span class="en">(3.9)</span></p>
+
+<p>and map each entry to its centred representative in [&minus;<i>q</i>/2, <i>q</i>/2). If
+s&#771; = <span class="v">s</span> then by (3.2) the residual is exactly the error vector, so its
+entries are small and its standard deviation is close to &sigma;. If s&#771; &ne;
+<span class="v">s</span> then <span class="v">A</span>(<span class="v">s</span> &minus; s&#771;)
+is a non-trivial modular combination, and the residual is close to uniform on
+<b>Z</b><sub><i>q</i></sub>, whose standard deviation is</p>
+
+<p class="eq">&radic;((<i>q</i><sup>2</sup> &minus; 1) / 12) = 72.457 for <i>q</i> =
+251<span class="en">(3.10)</span></p>
+
+<p>The separation between the two cases is therefore roughly a factor of 24, which is what makes
+the test decisive. Four acceptance criteria are applied, all expressed against the configured
+&sigma; and against input-blind baselines, never against the true secret:</p>
+
+<p>C1: the centred residual standard deviation is at most 1.5&sigma;;<br>
+C2: the mean absolute centred residual is at most 1.5&sigma;&radic;(2/&pi;);<br>
+C3: the candidate standard deviation is below one quarter of the smallest baseline standard
+deviation;<br>
+C4: at least 99 per cent of centred residuals satisfy |<i>r</i>| &le; 3&sigma;.</p>
+
+<p>A candidate is accepted only if all four hold. The verification module receives the tuple
+(<span class="v">A</span>, <span class="v">b</span>, s&#771;, <i>q</i>, &sigma;) and nothing else.
+The criteria were calibrated for the assessment of a single candidate; their false-acceptance rate
+when applied across a large candidate set has not been measured in this project, a point taken up
+in Section 8.3.</p>
+
+<h1 id="ch4"><span class="chno">Chapter 4</span>PROPOSED METHODOLOGY: SALSA 2.0</h1>
+
+<h2 id="s41">4.1 System overview</h2>
+
+<p>The system is organised into four stages that are kept structurally separate in the source
+code, so that the isolation of the secret is a property of the software architecture and not of
+programmer discipline. Figure 4.1 shows the complete workflow.</p>
+
+<div class="figblock">
+<figure id="fig41">
+<img src="SALSA_2.0_Report_Figures/fig1_workflow.png" alt="Overall SALSA 2.0 workflow">
+</figure>
+<p class="caption"><b>Figure 4.1:</b> Overall SALSA 2.0 workflow. Stages 1 to 3 lie inside the
+secret-free region and receive only public quantities; the true secret enters only at stage 4,
+after a candidate has been produced and independently verified.</p>
+<p class="note"><b>What this figure shows:</b> the order of the stages and the boundary across
+which the ground-truth secret may not pass. <b>What it does not establish:</b> anything about the
+success rate of the recovery stage, which is reported in Chapter 6.</p>
+</div>
+
+<p>Stage 1 trains the model on public samples only; the trainer requests unlabelled batches, and
+the secret is not an argument to any function it calls. Stage 2 freezes the trained model, queries
+it on probe inputs, and produces a candidate. Stage 3 verifies that candidate from public data.
+Stage 4 loads the true secret and reports coordinate accuracy and Hamming distance, purely for the
+purpose of this report; invoking the pipeline with evaluation disabled omits stage 4 entirely and
+the attack runs end to end with no ground truth consulted at any point.</p>
+
+<h2 id="s42">4.2 Data preparation and encoding</h2>
+
+<p>Integers are written as fixed-width digit sequences in base <i>B</i> = 81, least significant
+digit first. Since 81<sup>2</sup> = 6561 &ge; 251, two digits suffice for every element of
+<b>Z</b><sub>251</sub>, so each coordinate of <span class="v">a</span> occupies exactly two digit
+tokens. The vocabulary has 85 entries: four special tokens (padding, beginning of sequence, end of
+sequence and separator) and the 81 digit values. Under the representation used throughout &mdash;
+no separator token &mdash; an input sequence for dimension <i>n</i> has 2<i>n</i> + 2 tokens and
+the target sequence for the single integer <i>b</i> has four tokens. At <i>n</i> = 12 these are 26
+and 4 respectively.</p>
+
+<p>Two properties of this encoding matter later. First, the digit width depends only on <i>q</i>
+and <i>B</i>, not on <i>n</i>, so the front end is unchanged as the dimension varies. Second, the
+target length is independent of <i>n</i>: a sample always supplies one value of <i>b</i>, that is
+at most log<sub>2</sub> 251 = 7.97 bits of supervision, however large the input becomes.</p>
+
+<h2 id="s43">4.3 The baseline architecture and its measured failure</h2>
+
+<p>The baseline, Salsa2-GatedUT, is a compact reduction of the published architecture: a gated
+Universal Transformer with an encoder width of 512 and a decoder width of 128, one shared encoder
+layer applied twice and one shared decoder layer applied twice, eight encoder heads and four
+decoder heads, RMSNorm, rotary position embedding, a two-matrix GELU feed-forward block of
+expansion factor four, no biases, and a copy gate on every sub-layer. It has 4,131,200
+parameters.</p>
+
+<p>At <i>n</i> = 12 and <i>h</i> = 2, on the training budget described in Chapter 5, this model
+reaches a validation loss of 1.7413 against a marginals-only chance baseline of 1.86498, and
+recovers no secret from any of the ten probe multipliers. The important question is why.</p>
+
+<p>The diagnosis was obtained by feeding the frozen baseline inputs of systematically decreasing
+density and scoring its predictions not against chance but against the <i>best input-blind
+constant predictor</i> on the same targets. This correction is necessary because sparser inputs
+make a constant answer a better predictor, so raw accuracy understates the collapse. The resulting
+quantity, the <i>lift</i>, is reported in Section 6.5. It decreases monotonically with sparsity
+and crosses zero between eight and six non-zero coordinates &mdash; that is, well before the
+single-non-zero density of the recovery probes. The recovery probes therefore lie at the far end
+of the same curve, not at a separate cliff. The model does not fail <i>at</i> the probes; it has
+already ceased to carry information about its input by the time it reaches them.</p>
+
+<h2 id="s44">4.4 Motivation for the Modified NACT representation</h2>
+
+<p>Two observations followed from that diagnosis.</p>
+
+<p>First, the relation <i>b</i> = &Sigma;<sub><i>i</i></sub> <i>a<sub>i</sub> s<sub>i</sub></i>
+binds coordinate index <i>i</i> to secret bit <i>s<sub>i</sub></i>. To learn it, the model must
+know <i>which</i> coordinate it is reading. The baseline supplies position only through rotary
+embedding, which is purely relative: it tells the model that two tokens are a certain distance
+apart, not that a token is coordinate seven. Absolute coordinate identity is therefore not
+directly expressible in the baseline front end.</p>
+
+<p>Second, under the baseline layout a coordinate is spread across two token positions. The
+predicate &ldquo;this coordinate is zero&rdquo;, which is exactly the predicate that matters for a
+sparse probe, is a conjunction across those two positions: in base 81, the low digit is zero for 4
+of 251 residues and the high digit for 81 of them, but only one residue satisfies both. The
+encoder must spend attention computing that conjunction once per coordinate on every forward
+pass.</p>
+
+<p>Both observations point to the same remedy: represent each coordinate by a single token, and
+give that token an absolute coordinate identity. With one token per coordinate, position
+<i>is</i> coordinate index.</p>
+
+<h2 id="s45">4.5 The Modified NACT architecture</h2>
+
+<p>The front end reconstructs each coordinate value losslessly from the digit tokens the codec
+already produces, embeds it as a single vector, and adds a learned absolute coordinate
+embedding:</p>
+
+<p class="eq"><i>e<sub>i</sub></i> = &Sigma;<sub><i>w</i></sub> DigitEmb[<i>w</i>,
+<i>d<sub>w</sub></i><sup>(<i>i</i>)</sup>] + CoordEmb[<i>i</i>]<span class="en">(4.1)</span></p>
+
+<p>so that the encoder sequence is &lang;bos&rang; <i>e</i><sub>0</sub> &hellip;
+<i>e</i><sub><i>n</i>&minus;1</sub> &lang;eos&rang;, of length <i>n</i> + 2 rather than
+2<i>n</i> + 2. Everything downstream &mdash; the encoder body, the whole decoder and the output
+interface &mdash; is the baseline module, unmodified, so a Modified NACT checkpoint speaks exactly
+the same target language as a baseline checkpoint and every downstream script operates on it
+without change. Figure 4.2 shows the architecture in full.</p>
+
+<div class="figblock">
+<figure id="fig42">
+<img src="SALSA_2.0_Report_Figures/fig2_architecture.png" alt="The Modified NACT architecture">
+</figure>
+<p class="caption"><b>Figure 4.2:</b> The Modified NACT architecture as implemented. Components removed
+from the full NACT variant by the ablation of Section 4.6 are shown in grey.</p>
+<p class="note"><b>What this figure shows:</b> the token flow, the shared-weight blocks, the
+widths and head counts actually used, and the parameter totals of the encoder and decoder.
+<b>What it does not establish:</b> the contribution of any individual component, which Section 6.6
+discusses and which remains only partially attributed.</p>
+</div>
+
+<p>The coordinate embedding table is allocated with a fixed capacity of 128 coordinates, so its
+size does not depend on <i>n</i>. Consequently the parameter count of the model is identical at
+<i>n</i> = 12 and <i>n</i> = 20; only the encoder sequence length changes, from 14 to 22 tokens.
+This property is examined again in Chapter 7, where its limits are made precise.</p>
+
+<h2 id="s46">4.6 Component ablation and the derivation of the final model</h2>
+
+<p>The intermediate architecture, full NACT, added four numerical features per coordinate (a zero
+indicator, the signed centred residue, and the cosine and sine of 2&pi;<i>x</i>/<i>q</i>, the last
+two being the characters of <b>Z</b><sub><i>q</i></sub>), a learned zero vector, and a learned
+per-head attention bias on keys at zero coordinates. Two competing explanations for its advantage
+were possible: the coordinate-token layout, or the numerical features.</p>
+
+<p>A single ablation separates them. Removing every numerical feature while retaining the
+one-token layout and the coordinate embedding yields Modified NACT, which differs from full NACT
+by 3,080 parameters, or 0.073 per cent &mdash; far too small for capacity to explain any
+difference in outcome. The result, reported in Section 6.6, is that Modified NACT matches full
+NACT within the seed-to-seed variation of NACT itself on all three primary metrics. The one-token
+representation, not the numerical features, therefore carries the observed improvement, subject to
+the caveat stated in Section 6.6.</p>
+
+<p class="tcaption" id="tab41">Table 4.1: Component comparison of the three architectures
+implemented in this project. All three were trained under the identical protocol of Chapter 5.</p>
+<table>
+<thead><tr>
+<th style="width:34%;">Component</th><th style="width:22%;">Salsa2-GatedUT (V1)</th>
+<th style="width:22%;">Salsa2-NACT (full)</th><th style="width:22%;">Modified NACT (final)</th>
+</tr></thead>
+<tbody>
+<tr><td>Tokens per coordinate</td><td>2 digit tokens</td><td>1 coordinate token</td><td>1 coordinate token</td></tr>
+<tr><td>Encoder sequence length</td><td>2<i>n</i> + 2</td><td><i>n</i> + 2</td><td><i>n</i> + 2</td></tr>
+<tr><td>Coordinate identity</td><td>RoPE (relative only)</td><td>Learned absolute embedding</td><td>Learned absolute embedding</td></tr>
+<tr><td>Numerical features</td><td>none</td><td>4 per coordinate</td><td>none</td></tr>
+<tr><td>Learned zero vector</td><td>no</td><td>yes</td><td>no</td></tr>
+<tr><td>Sparse attention bias</td><td>no</td><td>yes, 8 scalars</td><td>no</td></tr>
+<tr><td>Encoder body, decoder, gating, RMSNorm, RoPE</td><td colspan="3" class="ctr">Identical in all three</td></tr>
+<tr><td><b>Trainable parameters</b></td><td class="num"><b>4,131,200</b></td><td class="num"><b>4,241,288</b></td><td class="num"><b>4,238,208</b></td></tr>
+</tbody>
+</table>
+<p class="note"><b>What this table shows:</b> that the three models differ in the input front end
+alone, and that their parameter counts lie within 2.7 per cent of one another. <b>What it does not
+establish:</b> that the parameter difference is irrelevant to performance &mdash; that is an
+inference supported by the ablation of Section 6.6, not by this table.</p>
+
+<p>Figure 4.3 places these three models beside the published SALSA model.</p>
+
+<div class="figblock">
+<figure id="fig43">
+<img src="SALSA_2.0_Report_Figures/fig4_model_comparison.png" alt="Parameter counts of the implemented and published models">
+</figure>
+<p class="caption"><b>Figure 4.3:</b> Trainable parameter counts of the three architectures implemented
+in this project and of the published SALSA model, on a logarithmic scale.</p>
+<p class="note"><b>What this figure shows:</b> the scale of the reduction attempted, and that all
+three implemented models satisfy the four-to-five-million parameter budget. <b>What it does not
+establish:</b> comparability of capability &mdash; the published model was trained on a different
+construction with sample reuse and a far larger sample budget, as recorded in Section 2.5.</p>
+</div>
+
+<h2 id="s47">4.7 Parameter accounting</h2>
+
+<p>Parameter counts are verified three ways: by summing the tensors of the constructed model, by
+an independent closed-form expression derived from the architecture, and against the budget
+declared in the configuration file. A run aborts if the three disagree or if the count falls
+outside the declared budget. The breakdown is given in Table 4.2.</p>
+
+<p class="tcaption" id="tab42">Table 4.2: Parameter breakdown of Modified NACT, as recorded in the
+run header of the <i>n</i> = 12 experiment.</p>
+<table>
+<thead><tr><th style="width:44%;">Component</th><th class="num" style="width:18%;">Parameters</th><th style="width:38%;">Shape</th></tr></thead>
+<tbody>
+<tr><td>Encoder digit embeddings</td><td class="num">82,944</td><td>2 &times; 81 &times; 512</td></tr>
+<tr><td>Encoder special embeddings</td><td class="num">2,048</td><td>4 &times; 512</td></tr>
+<tr><td>Coordinate embedding</td><td class="num">65,536</td><td>128 &times; 512</td></tr>
+<tr><td>Encoder attention</td><td class="num">1,048,576</td><td>4 &times; 512 &times; 512</td></tr>
+<tr><td>Encoder feed-forward</td><td class="num">2,097,152</td><td>2 &times; 512 &times; 2048</td></tr>
+<tr><td>Encoder copy gate</td><td class="num">524,800</td><td>2 &times; 512<sup>2</sup> + 512</td></tr>
+<tr><td>Encoder normalisation</td><td class="num">1,536</td><td>3 &times; 512</td></tr>
+<tr><td>Decoder embedding</td><td class="num">10,880</td><td>85 &times; 128</td></tr>
+<tr><td>Decoder self-attention</td><td class="num">65,536</td><td>4 &times; 128 &times; 128</td></tr>
+<tr><td>Decoder cross-attention</td><td class="num">163,840</td><td>2 &times; 128<sup>2</sup> + 2 &times; 512 &times; 128</td></tr>
+<tr><td>Decoder feed-forward</td><td class="num">131,072</td><td>2 &times; 128 &times; 512</td></tr>
+<tr><td>Decoder copy gate</td><td class="num">32,896</td><td>2 &times; 128<sup>2</sup> + 128</td></tr>
+<tr><td>Decoder normalisation</td><td class="num">512</td><td>4 &times; 128</td></tr>
+<tr><td>Output projection</td><td class="num">10,880</td><td>128 &times; 85</td></tr>
+<tr><td><b>Total</b></td><td class="num"><b>4,238,208</b></td><td>encoder 3,822,592 + decoder 415,616</td></tr>
+</tbody>
+</table>
+<p class="note"><b>What this table shows:</b> where the parameter budget is spent &mdash; 90.2 per
+cent in the encoder, and 74.0 per cent in the encoder attention and feed-forward blocks alone.
+<b>What it does not establish:</b> that this allocation is optimal; no width or depth sweep was
+performed at the final architecture.</p>
+
+<h2 id="s48">4.8 Secret recovery and verification pipeline</h2>
+
+<p>The recovery module implements the procedure of Section 3.5. It sweeps ten probe multipliers,
+chosen to span the available separations: <i>K</i> &isin; {1, 31, 63, 94, 125, 126, 157, 188, 220,
+250}, with separations {1, 31, 63, 94, 125, 125, 94, 63, 31, 1}. The two multipliers of separation
+1 are the negative controls and are excluded from selection by the guard of equation (3.8),
+leaving eight informative multipliers. The module exposes no parameter through which a secret
+could be supplied, and an automated test inspects the source text of the recovery package for any
+reference to ground truth.</p>
+
+<p>The verification module implements the test of Section 3.6 as an independent component with its
+own interface. Running the two in sequence and comparing their conclusions provides a cross-check
+that does not depend on either being correct for the right reason.</p>
+
+<h1 id="ch5"><span class="chno">Chapter 5</span>EXPERIMENTAL SETUP</h1>
+
+<h2 id="s51">5.1 Hardware and software environment</h2>
+
+<p class="tcaption" id="tab51">Table 5.1: Computing environment, as recorded in the run headers of
+the two final experiments.</p>
+<table>
+<thead><tr><th style="width:34%;">Item</th><th>Value</th></tr></thead>
+<tbody>
+<tr><td>Processor</td><td>AMD64 Family 23 Model 104 (consumer laptop CPU)</td></tr>
+<tr><td>Compute device</td><td>CPU only; no GPU used at any point</td></tr>
+<tr><td>Threads</td><td>6 compute threads, 6 inter-operation threads</td></tr>
+<tr><td>Numerical precision</td><td>float32</td></tr>
+<tr><td>Operating system</td><td>Windows 10.0.26200</td></tr>
+<tr><td>Python</td><td>3.10.11</td></tr>
+<tr><td>Deep-learning framework</td><td>PyTorch 2.13.0+cpu</td></tr>
+<tr><td>Other dependencies</td><td>NumPy, PyYAML, psutil; matplotlib for analysis plots only</td></tr>
+<tr><td>Peak resident memory</td><td>446.8 MB at <i>n</i> = 12; 503.7 MB at <i>n</i> = 20</td></tr>
+</tbody>
+</table>
+<p class="note"><b>What this table shows:</b> that the complete attack chain was developed and
+executed on commodity hardware without specialised accelerators, which addresses research question
+RQ3. <b>What it does not establish:</b> the cost of training at any dimension not listed, which is
+treated in Chapter 7.</p>
+
+<h2 id="s52">5.2 Cryptographic instance and training configuration</h2>
+
+<p>Every experiment is defined by a YAML configuration file together with a fixed seed.
+Configurations inherit from one another, so that an experiment which should differ from its
+predecessor in exactly one setting does so by construction and not by the correctness of a manual
+copy. The final <i>n</i> = 20 configuration, for instance, inherits the <i>n</i> = 12
+configuration and overrides a single field.</p>
+
+<p class="tcaption" id="tab52">Table 5.2: Experimental configuration for the two final runs.
+Values marked identical are the same object in the configuration inheritance chain, not
+independently restated values.</p>
+<table>
+<thead><tr><th style="width:38%;">Setting</th><th style="width:31%;"><i>n</i> = 12 run</th><th style="width:31%;"><i>n</i> = 20 run</th></tr></thead>
+<tbody>
+<tr><td>Lattice dimension <i>n</i></td><td>12</td><td>20</td></tr>
+<tr><td>Modulus <i>q</i></td><td colspan="2" class="ctr">251 (identical)</td></tr>
+<tr><td>Error standard deviation &sigma;</td><td colspan="2" class="ctr">3.0, truncated discrete Gaussian (identical)</td></tr>
+<tr><td>Secret distribution</td><td colspan="2" class="ctr">Binary, exact Hamming weight <i>h</i> = 2 (identical)</td></tr>
+<tr><td>Sample structure</td><td colspan="2" class="ctr">RLWE, circulant (identical)</td></tr>
+<tr><td>Sample reuse</td><td colspan="2" class="ctr">1 &mdash; every training sample is a fresh instance</td></tr>
+<tr><td>Training samples</td><td colspan="2" class="ctr">100,000 budgeted; 100,032 seen</td></tr>
+<tr><td>Validation samples</td><td colspan="2" class="ctr">2,048 (identical)</td></tr>
+<tr><td>Encoding base</td><td colspan="2" class="ctr">81, least significant digit first, fixed width, no separator</td></tr>
+<tr><td>Vocabulary</td><td colspan="2" class="ctr">85 tokens</td></tr>
+<tr><td>Input / target tokens</td><td>26 / 4</td><td>42 / 4</td></tr>
+<tr><td>Encoder sequence length</td><td>14</td><td>22</td></tr>
+<tr><td>Optimiser</td><td colspan="2" class="ctr">AdamW, weight decay 0.01 (identical)</td></tr>
+<tr><td>Learning rate</td><td colspan="2" class="ctr">5 &times; 10<sup>&minus;4</sup>, cosine schedule, 200 warm-up steps</td></tr>
+<tr><td>Batch size</td><td colspan="2" class="ctr">64 (identical)</td></tr>
+<tr><td>Epochs / steps</td><td colspan="2" class="ctr">20 epochs, 79 steps per epoch, 1,563 total steps</td></tr>
+<tr><td>Gradient clipping</td><td colspan="2" class="ctr">1.0 (identical)</td></tr>
+<tr><td>Checkpoint selection</td><td colspan="2" class="ctr">Minimum validation loss</td></tr>
+<tr><td>Seed</td><td colspan="2" class="ctr">0, deterministic mode enabled</td></tr>
+<tr><td>Configuration fingerprint</td><td>f148ac749a6db162</td><td>bbf51d2d5d8182c5</td></tr>
+</tbody>
+</table>
+<p class="note"><b>What this table shows:</b> that the two dimensions were trained under an
+otherwise identical protocol, so the comparison between them is controlled. <b>What it does not
+establish:</b> that the budget is adequate at either dimension; it is a fixed pilot budget, not a
+tuned one.</p>
+
+<p>Figure 5.1 shows the experimental workflow and the reproducibility gate.</p>
+
+<div class="figblock">
+<figure id="fig51">
+<img src="SALSA_2.0_Report_Figures/fig3_experimental_workflow.png" alt="Experimental workflow">
+</figure>
+<p class="caption"><b>Figure 5.1:</b> Experimental workflow, from configuration file to verified
+candidate, with the stages at which the ground-truth secret is and is not available.</p>
+<p class="note"><b>What this figure shows:</b> the order of operations and the separation of the
+recovery and verification stages from evaluation. <b>What it does not establish:</b> the outcome
+of any stage; those are reported in Chapter 6.</p>
+</div>
+
+<h2 id="s53">5.3 Evaluation metrics</h2>
+
+<p>Five distinct quantities are reported, and they are not interchangeable. Confusing any two of
+them would materially misrepresent the result, so each is defined here together with its chance
+level. All chance baselines are computed exactly from <i>q</i>, the encoding and the tolerance;
+none depends on <i>n</i>, so they transfer unchanged between dimensions.</p>
+
+<p><b>Validation loss.</b> Mean cross-entropy in nats per scored target token. The meaningful zero
+point is not the uniform-distribution loss of 4.44265 but the <i>marginals-only</i> loss of
+<b>1.86498</b> &mdash; the loss achieved by a predictor that knows the marginal distribution of
+each digit position and nothing about the input. A model above that value has learned nothing
+useful about its input.</p>
+
+<p><b>acc_tau.</b> The fraction of validation samples for which |<i>b</i> &minus; b&#770;| &le;
+&tau;<i>q</i>, with &tau; = 0.1, so the absolute tolerance is 25.1. The chance level is
+<b>0.19287</b>. This metric is computed as a plain absolute difference. A circular variant is
+recorded separately and clearly labelled as a diagnostic, because computing the tolerance in ring
+distance flatters the model.</p>
+
+<p><b>Exact integer accuracy.</b> The fraction of samples for which b&#770; equals <i>b</i>
+exactly. The chance level is 1/251 = <b>0.00398</b>.</p>
+
+<p><b>Token accuracy.</b> The fraction of correctly predicted target tokens. Its chance level is
+<b>0.44621</b>, which is high because the target sequence contains structurally predictable
+positions; a token accuracy near 45 per cent is therefore free and must never be read as evidence
+of learning.</p>
+
+<p><b>Decode failure rate.</b> The fraction of model outputs that do not parse as a valid integer.
+This is distinct from accuracy: a model may emit well-formed but wrong answers, or ill-formed
+ones. The distinction becomes decisive under probe inputs, as Section 6.5 shows.</p>
+
+<p>Three further quantities describe the attack rather than the predictor, and are reported
+separately throughout.</p>
+
+<p><b>Exact secret recovery.</b> A binary outcome per secret: the candidate matches the true
+secret in every coordinate, or it does not. Partial matches are not successes. Because a sparse
+secret makes the all-zeros vector score 0.8333 at <i>n</i> = 12, coordinate accuracy is reported
+only alongside the exact-recovery outcome and never in place of it.</p>
+
+<p><b>Informative probe multipliers recovered.</b> How many of the eight multipliers that pass the
+separation guard independently yield the correct secret. The two excluded multipliers are negative
+controls that must fail.</p>
+
+<p><b>Probe decode validity.</b> The fraction of probe queries whose output parses as a valid
+integer. A model whose probe outputs do not decode cannot support recovery regardless of its
+validation metrics.</p>
+
+<h2 id="s54">5.4 Reproducibility practices</h2>
+
+<p>Every experiment is reproducible from its configuration file and a fixed seed. Each checkpoint
+stores a fingerprint of the configuration that produced it, and the pipeline refuses to load a
+checkpoint whose fingerprint does not match the configuration requested, which prevents the
+accidental mixing of runs.</p>
+
+<p>The two final results replay from stored checkpoints in 1.19 s at <i>n</i> = 12 and 1.59 s at
+<i>n</i> = 20. A replay script re-derives six recorded quantities per dimension &mdash; exact
+recovery, coordinate accuracy, Hamming distance, the count of successful multipliers, the
+verification outcome and the parameter count &mdash; and compares each against the stored
+artefacts; all twelve agree. The recorded test suite result is 690 passing tests with 2 skipped
+and none failing, covering the lattice mathematics, the parameter budget, the encoding round trip,
+the isolation of the secret, the pipeline and regression cases.</p>
+
+<h1 id="ch6"><span class="chno">Chapter 6</span>RESULTS AND DISCUSSION</h1>
+
+<h2 id="s61">6.1 Prediction performance</h2>
+
+<p>Table 6.1 reports the prediction metrics of the final model at both demonstrated dimensions,
+against the exactly computed chance baselines.</p>
+
+<p class="tcaption" id="tab61">Table 6.1: Measured prediction performance of Modified NACT. Both
+runs used 100,032 training samples and were evaluated on 2,048 held-out validation samples.</p>
+<table>
+<thead><tr><th style="width:40%;">Metric</th><th class="num" style="width:16%;"><i>n</i> = 12</th>
+<th class="num" style="width:16%;"><i>n</i> = 20</th><th class="num" style="width:28%;">Chance baseline</th></tr></thead>
+<tbody>
+<tr><td>Validation loss (nats/token)</td><td class="num">0.9891</td><td class="num">0.9764</td><td class="num">1.86498 (marginals only)</td></tr>
+<tr><td>acc_tau (&tau; = 0.1)</td><td class="num">0.9839</td><td class="num">0.9863</td><td class="num">0.19287</td></tr>
+<tr><td>Exact integer accuracy</td><td class="num">0.0913</td><td class="num">0.1035</td><td class="num">0.00398</td></tr>
+<tr><td>Token accuracy</td><td class="num">0.6934</td><td class="num">0.6995</td><td class="num">0.44622</td></tr>
+<tr><td>Greedy token accuracy</td><td class="num">0.6771</td><td class="num">0.6851</td><td class="num">&mdash;</td></tr>
+<tr><td>Decode failure rate</td><td class="num">0.0000</td><td class="num">0.0000</td><td class="num">&mdash;</td></tr>
+<tr><td>Mean absolute error</td><td class="num">7.1465</td><td class="num">6.5093</td><td class="num">&mdash;</td></tr>
+<tr><td>Median absolute error</td><td class="num">3.0</td><td class="num">3.0</td><td class="num">&mdash;</td></tr>
+<tr><td>Best epoch</td><td class="num">19</td><td class="num">19</td><td class="num">&mdash;</td></tr>
+<tr><td>Training wall-clock (s)</td><td class="num">1,146.3</td><td class="num">1,424.2</td><td class="num">&mdash;</td></tr>
+<tr><td>Throughput (samples/s)</td><td class="num">108.9</td><td class="num">87.4</td><td class="num">&mdash;</td></tr>
+</tbody>
+</table>
+<p class="note"><b>What this table shows:</b> that the model predicts <i>b</i> far above every
+chance baseline at both dimensions, and that its median absolute error of 3 equals the noise scale
+&mdash; that is, the typical prediction is as close to the truth as the noise permits. <b>What it
+does not establish:</b> anything about secret recovery, which is a separate claim reported in
+Section 6.2. In particular, an exact integer accuracy near 0.10 is not a recovery rate.</p>
+
+<p>Figure 6.1 displays the two measured points for each of the two principal metrics.</p>
+
+<div class="figblock">
+<figure id="fig61">
+<img src="SALSA_2.0_Report_Figures/fig5_observed_performance.png" alt="Observed performance against dimension">
+</figure>
+<p class="caption"><b>Figure 6.1:</b> Observed validation loss and acc_tau at the two demonstrated
+dimensions, against their chance baselines.</p>
+<p class="note"><b>What this figure shows:</b> the measured values and their distance from chance.
+<b>What it does not establish:</b> a trend. Two points, one seed each, cannot distinguish a flat
+relationship from a declining one, and the connecting line is drawn only to associate the two
+measurements of the same model.</p>
+</div>
+
+<p>Performance does not degrade from <i>n</i> = 12 to <i>n</i> = 20; the loss is marginally lower
+and acc_tau marginally higher at the larger dimension. With one seed per dimension it is not
+possible to distinguish this from seed-to-seed variation, and no claim of improvement with
+dimension is made.</p>
+
+<h2 id="s62">6.2 Secret recovery</h2>
+
+<p class="tcaption" id="tab62">Table 6.2: Measured secret-recovery results. Each dimension was
+attacked with one secret, derived deterministically from the training seed.</p>
+<table>
+<thead><tr><th style="width:44%;">Quantity</th><th class="num" style="width:28%;"><i>n</i> = 12, <i>h</i> = 2</th>
+<th class="num" style="width:28%;"><i>n</i> = 20, <i>h</i> = 2</th></tr></thead>
+<tbody>
+<tr><td><b>Exact secret recovery</b></td><td class="num"><b>YES</b></td><td class="num"><b>YES</b></td></tr>
+<tr><td>Independent secrets attacked</td><td class="num">1</td><td class="num">1</td></tr>
+<tr><td>Coordinate accuracy</td><td class="num">1.0000</td><td class="num">1.0000</td></tr>
+<tr><td>Hamming distance to true secret</td><td class="num">0</td><td class="num">0</td></tr>
+<tr><td>Informative multipliers recovered</td><td class="num">8 of 8</td><td class="num">8 of 8</td></tr>
+<tr><td>Negative controls (<i>K</i> = 1, 250)</td><td class="num">excluded; failed as required</td><td class="num">excluded; failed as required</td></tr>
+<tr><td>Probe decode validity</td><td class="num">1.0000</td><td class="num">1.0000</td></tr>
+<tr><td>Selection rule</td><td class="num">aggregate</td><td class="num">aggregate</td></tr>
+<tr><td>Separation guard</td><td class="num">4</td><td class="num">4</td></tr>
+<tr><td>Candidate Hamming weight</td><td class="num">2</td><td class="num">2</td></tr>
+<tr><td>Secret search space C(<i>n</i>, 2)</td><td class="num">66</td><td class="num">190</td></tr>
+</tbody>
+</table>
+<p class="note"><b>What this table shows:</b> that the attack recovered the secret exactly at both
+dimensions, and that all eight informative multipliers agreed independently, which is a strong
+internal consistency check. <b>What it does not establish:</b> a recovery rate. One secret at each
+dimension is one outcome, not a frequency, and no confidence interval can be attached to it.</p>
+
+<p>The agreement of all eight informative multipliers is worth emphasising, because the
+multipliers are different queries that share only the underlying model. The two multipliers that
+fail are precisely the two that must fail: <i>K</i> = 1 and <i>K</i> = 250 have ring separation 1,
+so the two hypotheses for a secret bit are adjacent and the noise alone is three times larger than
+the gap between them.</p>
+
+<h2 id="s63">6.3 Independent verification</h2>
+
+<p class="tcaption" id="tab63">Table 6.3: Residual verification. The verifier receives only
+(<span class="v">A</span>, <span class="v">b</span>, candidate, <i>q</i>, &sigma;).</p>
+<table>
+<thead><tr><th style="width:44%;">Quantity</th><th class="num" style="width:28%;"><i>n</i> = 12</th><th class="num" style="width:28%;"><i>n</i> = 20</th></tr></thead>
+<tbody>
+<tr><td><b>Verification outcome</b></td><td class="num"><b>PASS</b></td><td class="num"><b>PASS</b></td></tr>
+<tr><td>Centred residual standard deviation</td><td class="num">2.998</td><td class="num">2.941</td></tr>
+<tr><td>Configured &sigma;</td><td class="num">3.0</td><td class="num">3.0</td></tr>
+<tr><td>Uniform reference &radic;((<i>q</i><sup>2</sup>&minus;1)/12)</td><td class="num">72.457</td><td class="num">72.457</td></tr>
+<tr><td>Ratio, reference to observed</td><td class="num">24.2</td><td class="num">24.6</td></tr>
+<tr><td>Acceptance criteria satisfied</td><td class="num">4 of 4</td><td class="num">4 of 4</td></tr>
+</tbody>
+</table>
+<p class="note"><b>What this table shows:</b> that the recovered candidates are correct by a test
+that is entirely independent of the model and of the recovery procedure, and that the margin of
+the test is approximately a factor of 24. <b>What it does not establish:</b> that the recovery
+procedure is reliable in general; the verifier confirms a particular candidate, not a method.</p>
+
+<p>This verification is the single most important control in the project. The recovery procedure
+could in principle be subtly wrong and still produce a candidate; the residual test would then
+reject it. That the residual standard deviation lands within 0.06 of the configured noise scale,
+against an alternative of 72.457, leaves no reasonable doubt that the recovered vectors are the
+secrets that generated the data.</p>
+
+<h2 id="s64">6.4 The central comparison: representation against capacity</h2>
+
+<p class="tcaption" id="tab64">Table 6.4: Architecture comparison at <i>n</i> = 12, <i>h</i> = 2
+under the identical training protocol and an identical parameter budget.</p>
+<table>
+<thead><tr><th style="width:26%;">Model</th><th class="num" style="width:15%;">Parameters</th>
+<th class="num" style="width:14%;">Validation loss</th><th class="num" style="width:12%;">acc_tau</th>
+<th class="num" style="width:16%;">Probe decode validity</th><th class="num" style="width:17%;">Exact recovery</th></tr></thead>
+<tbody>
+<tr><td>Salsa2-GatedUT (V1)</td><td class="num">4,131,200</td><td class="num">1.7413</td><td class="num">0.3550</td><td class="num">0.417</td><td class="num"><b>NO</b> (0 of 10 <i>K</i>)</td></tr>
+<tr><td><b>Modified NACT</b></td><td class="num"><b>4,238,208</b></td><td class="num"><b>0.9891</b></td><td class="num"><b>0.9839</b></td><td class="num"><b>1.000</b></td><td class="num"><b>YES</b> (8 of 8 <i>K</i>)</td></tr>
+<tr><td>Difference</td><td class="num">+2.6 %</td><td class="num">&minus;0.7522</td><td class="num">+0.6289</td><td class="num">+0.583</td><td class="num">&mdash;</td></tr>
+</tbody>
+</table>
+<p class="note"><b>What this table shows:</b> that a 2.6 per cent difference in parameter count
+accompanies the difference between no recovery and exact recovery, which makes capacity an
+implausible explanation. <b>What it does not establish:</b> that representation is the <i>only</i>
+operative factor; it establishes that capacity at this budget is not the binding one.</p>
+
+<p>The baseline&rsquo;s validation loss of 1.7413 sits close to the marginals-only baseline of
+1.86498, meaning that at this budget it has largely not learned input-dependent structure. On
+probe inputs it left 58 per cent of its outputs undecodable and answered with a single constant on
+eight of the ten multipliers. These are the signatures of a model that has fallen back on the
+output marginals.</p>
+
+<h2 id="s65">6.5 Why the baseline fails: the sparse-input diagnosis</h2>
+
+<p>Table 6.5 reports the lift over the best input-blind constant predictor as the input density is
+reduced. The correction is essential: as inputs become sparser the constant predictor itself
+improves, so an uncorrected accuracy would understate the collapse.</p>
+
+<p class="tcaption" id="tab65">Table 6.5: Lift over the best input-blind constant predictor, by
+number of non-zero input coordinates, at <i>n</i> = 12. A positive lift means the model&rsquo;s
+output carries information about its input; a negative lift means it does not.</p>
+<table>
+<thead><tr><th style="width:24%;">Non-zero coordinates</th><th class="num">12</th><th class="num">10</th><th class="num">8</th>
+<th class="num">6</th><th class="num">4</th><th class="num">2</th><th class="num">1</th><th class="num">Probes</th></tr></thead>
+<tbody>
+<tr><td>Salsa2-GatedUT (V1)</td><td class="num">+0.1309</td><td class="num">+0.0991</td><td class="num">+0.0718</td><td class="num">&minus;0.0527</td><td class="num">&minus;0.1787</td><td class="num">&minus;0.3730</td><td class="num">&minus;0.4800</td><td class="num"><b>&minus;0.4417</b></td></tr>
+<tr><td><b>Modified NACT</b></td><td class="num">+0.7651</td><td class="num">+0.7393</td><td class="num">+0.7222</td><td class="num">+0.5981</td><td class="num">+0.4346</td><td class="num">+0.1895</td><td class="num">+0.0562</td><td class="num"><b>+0.0500</b></td></tr>
+</tbody>
+</table>
+<p class="note"><b>What this table shows:</b> that the baseline&rsquo;s lift falls monotonically
+with sparsity (Spearman &rho; = 1.000; exact permutation test <i>p</i> = 0.0004) and crosses zero
+between eight and six non-zero coordinates, while Modified NACT never crosses zero. The recovery
+probes lie at the extreme of the same curve, not on a separate cliff. <b>What it does not
+establish:</b> a causal mechanism at the level of individual attention heads; the measurement is
+behavioural.</p>
+
+<p>This is the result that motivated the architecture. The baseline does not fail because probe
+inputs are out of distribution in some unanalysable way; it fails because its output ceases to
+depend on its input once the input is sufficiently sparse, and the probes are the sparsest inputs
+of all. Modified NACT maintains a positive lift throughout and holds probe decode validity at
+1.000 where the baseline collapses to 0.417.</p>
+
+<h2 id="s66">6.6 Component attribution</h2>
+
+<p>The ablation described in Section 4.6 removed six components at once. Under matched depth, seed
+and budget, every difference between full NACT and Modified NACT fell inside the seed-to-seed
+variation measured for NACT itself.</p>
+
+<p class="tcaption" id="tab66">Table 6.6: Ablation result at <i>n</i> = 12, seed 0. The
+three-sigma seed band is the variation measured across three NACT training seeds under the same
+protocol.</p>
+<table>
+<thead><tr><th style="width:28%;">Metric</th><th class="num" style="width:14%;">NACT (full)</th>
+<th class="num" style="width:16%;">Modified NACT</th><th class="num" style="width:14%;">Difference</th>
+<th class="num" style="width:16%;">3&sigma; seed band</th><th class="num" style="width:12%;">Resolvable?</th></tr></thead>
+<tbody>
+<tr><td>Validation loss</td><td class="num">0.9388</td><td class="num">0.9891</td><td class="num">+0.0503</td><td class="num">0.0696</td><td class="num">no</td></tr>
+<tr><td>acc_tau</td><td class="num">0.9839</td><td class="num">0.9839</td><td class="num">+0.0000</td><td class="num">0.0064</td><td class="num">no</td></tr>
+<tr><td>Exact integer accuracy</td><td class="num">0.1011</td><td class="num">0.0913</td><td class="num">&minus;0.0098</td><td class="num">0.0275</td><td class="num">no</td></tr>
+</tbody>
+</table>
+<p class="note"><b>What this table shows:</b> that removing the four numerical features, the zero
+vector and the sparse attention bias cost nothing measurable in this setting, and that Modified
+NACT retained 100 per cent of the baseline-to-NACT gap in acc_tau. <b>What it does not
+establish:</b> that those components are useless. A single seed at a single dimension cannot
+establish a null result, and the components may matter at larger <i>n</i>, larger <i>h</i>, or
+longer training.</p>
+
+<h2 id="s67">6.7 Reproduction across secrets</h2>
+
+<p>A multi-secret control was run using three checkpoints trained under different seeds, which
+therefore target three distinct secrets. All three secrets were recovered exactly and all three
+candidates passed verification, with a mean of 7.67 of 8 informative multipliers succeeding and a
+mean probe decode validity of 1.000.</p>
+
+<p>This control must be attributed correctly. The three checkpoints are <b>full NACT</b> models of
+4,241,288 parameters, not Modified NACT. The result therefore demonstrates that the recovery
+procedure is not specific to one secret for the immediately adjacent architecture; it is not a
+multi-secret result for the final model. For Modified NACT itself the evidence remains one secret
+at <i>n</i> = 12 and one at <i>n</i> = 20.</p>
+
+<h2 id="s68">6.8 Discussion</h2>
+
+<p><b>On research question RQ1.</b> Secret-recovery capability does survive reduction to
+approximately 4.24 million parameters, at the dimensions and Hamming weight tested. It does not
+survive naive reduction: the faithful compact reduction of the published architecture fails
+completely at the same budget.</p>
+
+<p><b>On research question RQ2.</b> The limiting factor at this budget is the input
+representation. Three independent lines of evidence support this. The parameter counts of the
+failing and succeeding models differ by 2.6 per cent, which is too small to explain the difference
+in outcome. The ablation shows that removing six components at a cost of 0.073 per cent of the
+parameters changes nothing measurable, so the operative change is the layout rather than the added
+features. And the sparse-input measurement identifies a specific mechanism &mdash; loss of input
+dependence under sparse inputs &mdash; which the one-token representation with absolute coordinate
+identity directly addresses.</p>
+
+<p><b>On research question RQ3.</b> The complete chain runs on a laptop CPU. Training took 19
+minutes at <i>n</i> = 12 and 24 minutes at <i>n</i> = 20, peak memory stayed below 510 MB, and the
+stored results replay in 1.19 s and 1.59 s respectively.</p>
+
+<p><b>What these results do not show.</b> Three statements are necessary here and are not hedged
+elsewhere in this report. First, two single-seed recoveries are two outcomes and not a rate; no
+statistical reliability has been established, and a recovery rate cannot be inferred from them.
+Second, the demonstrated instances are diagnostic: with <i>h</i> = 2 the search space contains 66
+secrets at <i>n</i> = 12 and 190 at <i>n</i> = 20, small enough that exhaustive enumeration
+remains a credible competing baseline, as Section 8.3 sets out. Third, no claim is made that any
+deployed lattice-based scheme is weakened by this work.</p>
+
+<h1 id="ch7"><span class="chno">Chapter 7</span>SCALABILITY ANALYSIS</h1>
+
+<h2 id="s71">7.1 Separation of evidence classes</h2>
+
+<p>This chapter forecasts behaviour at dimensions that were never trained. To keep measured and
+predicted quantities distinct, every statement below belongs to exactly one of four classes.</p>
+
+<p class="tcaption" id="tab71">Table 7.1: Evidence classes used throughout this chapter.</p>
+<table>
+<thead><tr><th style="width:22%;">Class</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><b>Observed</b></td><td>Measured in this project and recorded in an artefact file</td></tr>
+<tr><td><b>Literature</b></td><td>Reported by other authors for a different model and setting</td></tr>
+<tr><td><b>Theoretical</b></td><td>Derived from the implemented architecture by calculation, with assumptions stated</td></tr>
+<tr><td><b>Extrapolated</b></td><td>A prediction. Not measured, and not to be read as a result</td></tr>
+</tbody>
+</table>
+
+<h2 id="s72">7.2 Architectural constraints</h2>
+
+<p><b>The coordinate-embedding ceiling.</b> The coordinate table is allocated with a capacity of
+128 and the forward pass raises an error if <i>n</i> exceeds it. The dimension <i>n</i> = 128 fits
+exactly. Above 128 the table is allocated at size <i>n</i>, which adds 512 parameters per
+additional coordinate; the model is then no longer a 4,238,208-parameter model and the pipeline,
+which asserts the expected parameter count, rejects it. (Theoretical.)</p>
+
+<p><b>Only the first <i>n</i> rows are trained.</b> The front end indexes rows 0 to
+<i>n</i>&nbsp;&minus;&nbsp;1 of the coordinate table, so only those rows receive gradient. A
+checkpoint trained at <i>n</i> = 12 has 116 of its 128 coordinate rows still at their random
+initialisation. Loading such a checkpoint at <i>n</i> = 30 is legal, raises no error and produces
+output &mdash; while eighteen of the thirty coordinate identities are random vectors the encoder
+has never seen. (Theoretical.)</p>
+
+<p>This is the single most important distinction in this chapter: <b>technical compatibility with
+a dimension is not demonstrated secret-recovery capability at that dimension</b>. The table is
+sized at 128 so that the <i>architecture</i> covers every dimension without a change in parameter
+count. It does not mean that one <i>checkpoint</i> covers every dimension, and it says nothing
+whatever about whether recovery at <i>n</i> = 128 would succeed. Three independent reasons make
+retraining mandatory at every new dimension: the untrained coordinate rows; the configuration
+fingerprint, which causes the pipeline to refuse a mismatched checkpoint; and the design of the
+attack itself, in which one model is trained per secret, so that the secret at <i>n</i> = 30 is a
+different object with nothing to transfer.</p>
+
+<p><b>Sequence length and attention cost.</b> The one-token representation gives an encoder
+sequence of <i>L</i> = <i>n</i> + 2, which is 130 at <i>n</i> = 128 against 258 for the baseline
+layout. Per application of the encoder layer, attention costs
+O(<i>L</i><sup>2</sup><i>d<sub>e</sub></i>) and the feed-forward block costs
+O(<i>Ld<sub>e</sub></i><sup>2</sup>). With <i>d<sub>e</sub></i> = 512,
+<i>d<sub>e</sub></i><sup>2</sup> = 262,144 against <i>L</i><sup>2</sup> = 16,900 at
+<i>n</i> = 128, so the feed-forward term dominates across the entire range considered and cost is
+approximately linear in <i>L</i>. Quadratic attention growth is therefore not the binding
+constraint below <i>n</i> = 128. (Theoretical.)</p>
+
+<p><b>Fixed supervision per sample.</b> The target is four tokens regardless of <i>n</i>, because
+<i>b</i> is a single element of <b>Z</b><sub><i>q</i></sub>. As <i>n</i> grows, the input grows
+linearly and the number of terms in the sum grows linearly, while the supervision per sample stays
+fixed at no more than 7.97 bits. The signal per sample therefore falls roughly as 1/<i>n</i> while
+the function to be learned becomes harder, which is a structural reason to expect sample
+requirements to grow faster than linearly. (Theoretical.)</p>
+
+<p><b>Training-set diversity.</b> Producing <i>m</i> circulant samples requires
+&lceil;<i>m</i>/<i>n</i>&rceil; independent generator vectors. At a fixed budget of 100,032
+samples this falls from 8,336 independent generators at <i>n</i> = 12 to 782 at <i>n</i> = 128.
+(Theoretical.)</p>
+
+<p><b>What does not constrain scaling.</b> The digit width depends only on <i>q</i> and the base;
+rotary embedding is parameter-free and has no table to outgrow; the parameter count is genuinely
+invariant in <i>n</i> up to 128; and the chance baselines depend on <i>q</i> and &tau; rather than
+on <i>n</i>, so the pre-registered thresholds transfer unchanged between dimensions.</p>
+
+<h2 id="s73">7.3 Computational burden</h2>
+
+<p>Two cost models are given, both relative to the measured <i>n</i> = 20 run and both <b>per
+100,000 training samples</b>. Neither includes the number of samples required at a given
+dimension, which is unknown and which dominates total cost.</p>
+
+<p>The first fits a straight line through the two measured throughputs, giving</p>
+
+<p class="eq">time per sample (ms) &asymp; 5.236 + 0.2819 &times; <i>L</i><span class="en">(7.1)</span></p>
+
+<p>Two points determine a two-parameter model exactly, so this fit has no residual and carries no
+evidence about its own correctness. It is used because it is the only model the measured data can
+support, and because it includes the large dimension-independent overhead &mdash; the decoder, the
+optimiser step, the data pipeline and interpreter costs &mdash; that a pure operation count omits.
+(Extrapolated.)</p>
+
+<p>The second is a theoretical encoder operation count,
+<i>Ld<sub>e</sub></i><sup>2</sup> + <i>L</i><sup>2</sup><i>d<sub>e</sub></i>, normalised at
+<i>L</i> = 22. It excludes the decoder, cross-attention, the optimiser step, data generation,
+validation passes, memory bandwidth and interpreter overhead. (Theoretical.)</p>
+
+<div class="figblock">
+<figure id="fig71">
+<img src="SALSA_2.0_Report_Figures/fig6_scalability_forecast.png" alt="Relative computational burden against dimension">
+</figure>
+<p class="caption"><b>Figure 7.1:</b> Relative computational burden per 100,000 training samples, with
+the measured points, the wall-clock extrapolation and the theoretical operation-count proxy shown
+separately.</p>
+<p class="note"><b>What this figure shows:</b> that per-sample cost grows modestly with dimension,
+and that the two cost models disagree by roughly a factor of two at <i>n</i> = 128 because about
+half the measured per-sample time is independent of dimension. <b>What it does not establish:</b>
+total training cost at any untested dimension, because the number of samples required is unknown
+and is the dominant factor. The dashed and dotted curves are forecasts, not measurements.</p>
+</div>
+
+<p>The two models give 3.66&times; and 7.10&times; respectively at <i>n</i> = 128. The measured
+figures should be treated as a floor: the baseline architecture, for which three measured
+throughput points exist, grows faster than linearly in <i>L</i>. Memory is not a constraint.
+Measured peak resident memory was 446.8 MB at <i>n</i> = 12 and 503.7 MB at <i>n</i> = 20, and
+activation memory scales as batch &times; <i>L</i> &times; <i>d<sub>e</sub></i>, so a dimension of
+128 remains well within the memory of a commodity machine.</p>
+
+<h2 id="s74">7.4 Evidence at <i>n</i> = 30 from other architectures</h2>
+
+<p>No Modified NACT model has been trained above <i>n</i> = 20. Two models of comparable size
+were, however, trained at <i>n</i> = 30 earlier in the project, at Hamming weight <i>h</i> = 3 and
+on the same 100,032-sample budget. Both reached chance on every metric.</p>
+
+<p class="tcaption" id="tab72">Table 7.2: Measured results at <i>n</i> = 30 for architectures
+other than the final model. Both runs used <i>h</i> = 3, not <i>h</i> = 2.</p>
+<table>
+<thead><tr><th style="width:36%;">Model</th><th class="num" style="width:16%;">Parameters</th>
+<th class="num" style="width:16%;">Validation loss</th><th class="num" style="width:16%;">acc_tau</th>
+<th class="num" style="width:16%;">Exact accuracy</th></tr></thead>
+<tbody>
+<tr><td>Salsa2-GatedUT</td><td class="num">4,131,200</td><td class="num">1.8426</td><td class="num">0.1343</td><td class="num">0.0029</td></tr>
+<tr><td>Salsa2-CompactTransformer</td><td class="num">4,251,520</td><td class="num">1.8431</td><td class="num">0.1479</td><td class="num">0.0024</td></tr>
+<tr><td><i>Chance baseline</i></td><td class="num">&mdash;</td><td class="num">1.86498</td><td class="num">0.19287</td><td class="num">0.00398</td></tr>
+</tbody>
+</table>
+<p class="note"><b>What this table shows:</b> that at <i>n</i> = 30 two models in the same
+parameter class reached chance on loss and fell <i>below</i> chance on acc_tau and exact accuracy
+under this sample budget. These are clean negative results. <b>What it does not establish:</b> a
+bound on Modified NACT, which is a different architecture and was tested at a different Hamming
+weight.</p>
+
+<h2 id="s75">7.5 Literature anchor</h2>
+
+<p>The SALSA paper reports sample counts between 3,913,424 and 29,210,829
+(2<sup>21.9</sup> to 2<sup>24.8</sup>) for <i>n</i> = 30 with <i>q</i> = 251 and a sparse binary
+secret. That range exceeds this project&rsquo;s entire per-run budget by a factor of between 39
+and 292, for the smallest dimension in the extrapolation range. Two qualifications apply. The
+published counts refer to a model roughly twelve times larger. They also count distinct instances
+under a scheme that reuses each instance approximately ten times, whereas every sample here is
+fresh, so the budgets are not directly comparable and this project&rsquo;s sample-requirement
+extrapolations may be pessimistic by up to an order of magnitude on that account. (Literature.)</p>
+
+<h2 id="s76">7.6 Forecast</h2>
+
+<p class="tcaption" id="tab73">Table 7.3: Scalability forecast for Modified NACT. The recovery
+outlook concerns whether a model retrained at that dimension on a budget of this order would
+plausibly recover the secret; it is not a claim that such a recovery would be cryptographically
+meaningful.</p>
+<table class="tight">
+<thead><tr><th class="num" style="width:6%;"><i>n</i></th><th class="num" style="width:6%;"><i>L</i></th>
+<th style="width:22%;">Evidence status</th><th style="width:21%;">Recovery outlook</th>
+<th class="num" style="width:13%;">Cost per 100k vs <i>n</i> = 20</th>
+<th style="width:21%;">Principal risk</th><th style="width:11%;">Confidence</th></tr></thead>
+<tbody>
+<tr><td class="num">12</td><td class="num">14</td><td><b>Observed</b>: recovered and verified</td><td>Demonstrated</td><td class="num">0.80&times;</td><td>None</td><td>High</td></tr>
+<tr><td class="num">20</td><td class="num">22</td><td><b>Observed</b>: recovered and verified</td><td>Demonstrated</td><td class="num">1.00&times;</td><td>One seed, one secret</td><td>High</td></tr>
+<tr><td class="num">30</td><td class="num">32</td><td><b>Observed for other architectures</b> at <i>h</i> = 3, both at chance</td><td>Uncertain</td><td class="num">1.25&times;</td><td>Sample budget insufficient; regime change between 20 and 30</td><td>Medium</td></tr>
+<tr><td class="num">50</td><td class="num">52</td><td>Extrapolated</td><td>Uncertain to unlikely at this budget</td><td class="num">1.74&times;</td><td>Sample requirement far above budget</td><td>Low</td></tr>
+<tr><td class="num">70</td><td class="num">72</td><td>Extrapolated</td><td>Unlikely at this budget</td><td class="num">2.23&times;</td><td>As above; capacity adequacy untested</td><td>Low</td></tr>
+<tr><td class="num">90</td><td class="num">92</td><td>Extrapolated</td><td>Unlikely at this budget</td><td class="num">2.73&times;</td><td>As above</td><td>Low</td></tr>
+<tr><td class="num">110</td><td class="num">112</td><td>Extrapolated</td><td>Unlikely at this budget</td><td class="num">3.22&times;</td><td>As above</td><td>Low</td></tr>
+<tr><td class="num">128</td><td class="num">130</td><td>Extrapolated; architectural ceiling reached exactly</td><td>Unlikely at this budget</td><td class="num">3.66&times;</td><td>As above; coordinate capacity exhausted</td><td>Low</td></tr>
+</tbody>
+</table>
+<p class="note"><b>What this table shows:</b> the status of the evidence at each dimension and the
+calculable part of the cost. <b>What it does not establish:</b> validation loss, acc_tau, probe
+success, decode validity or recovery probability at any dimension above 20. Those quantities are
+<b>not reliably estimable</b> from the available evidence, and no numerical value is given for
+them anywhere in this report.</p>
+
+<h2 id="s77">7.7 Non-smooth failure modes</h2>
+
+<p>Performance need not degrade smoothly with dimension. Three mechanisms present in this system
+could produce an abrupt transition rather than a gradual decline.</p>
+
+<p><b>Decode-validity collapse.</b> Recovery requires the model&rsquo;s output to parse as an
+integer on probe inputs far outside the training distribution. The baseline left 58 per cent of
+probe outputs undecodable at <i>n</i> = 12 while still scoring above chance on in-distribution
+validation data. Decode validity can therefore fail abruptly while validation metrics still look
+healthy.</p>
+
+<p><b>The constant-predictor attractor.</b> As inputs become sparser, a constant output becomes a
+better predictor. The measured lift curve of Section 6.5 crosses zero at a specific density; past
+that crossing the output carries no information about the input at all. This is a threshold, not a
+slope.</p>
+
+<p><b>Budget cliff.</b> If the sample requirement crosses the fixed budget between two dimensions,
+the observed result jumps from learning to chance with nothing in between. That is the shape of
+the measured transition from <i>n</i> = 20 to <i>n</i> = 30 for the baseline architecture.</p>
+
+<h2 id="s78">7.8 The most defensible next prediction</h2>
+
+<p>The largest dimension at which a cautious, evidence-based prediction is reasonable is
+<b><i>n</i> = 30</b> &mdash; and the prediction is that the experiment would be informative, not
+that it would succeed. Four reasons support this. It is one increment beyond measured ground. It
+is the only untested dimension at which a same-budget negative control already exists, so a single
+run there is a controlled comparison rather than an isolated number. It would be the third point,
+at which the shape of the trainability curve stops being a modelling choice and becomes a
+measurement; an earlier internal extrapolation at <i>n</i> = 30, fitting five plausible models
+through two points, produced estimates spanning a factor of 29, which is precisely the condition a
+third point remedies. And the cost is bounded and known to within a small factor, at approximately
+1.25 times the <i>n</i> = 20 run per 100,000 samples.</p>
+
+<p>Two design requirements follow. The Hamming weight must match the existing <i>n</i> = 30
+controls, or a fresh control must be run at <i>h</i> = 2, since otherwise the new result would
+compare against nothing. And the thresholds must be pre-registered before the results are
+inspected; because the chance baselines do not depend on <i>n</i>, the same three bars used at
+<i>n</i> = 20 apply unchanged.</p>
+
+<p>Dimensions of 50 and above are not currently predictable. They lie three to six increments
+beyond evidence, past a dimension at which two comparable models already failed, on a budget one
+to two orders of magnitude below the only published figure for the easier case.</p>
+
+<h1 id="ch8"><span class="chno">Chapter 8</span>LIMITATIONS AND FUTURE WORK</h1>
+
+<h2 id="s81">8.1 Statistical limitations</h2>
+
+<p>The central limitation is the number of independent trials. Modified NACT was evaluated against
+one secret at <i>n</i> = 12 and one at <i>n</i> = 20, each under a single training seed. Two
+successes are two outcomes. They cannot be converted into a success rate, no confidence interval
+can be attached to them, and they do not exclude the possibility that a different secret or a
+different seed would have failed. The multi-secret control of Section 6.7, which recovered three
+of three, used the adjacent full NACT architecture and does not close this gap for the final
+model.</p>
+
+<p>The remedy is direct and inexpensive: train the final architecture under several seeds at each
+dimension, so that recovery becomes a measured frequency with an uncertainty estimate. At the
+measured throughput, ten seeds at <i>n</i> = 12 would require approximately three hours of CPU
+time.</p>
+
+<h2 id="s82">8.2 Scope limitations</h2>
+
+<p>Only one Hamming weight, <i>h</i> = 2, was demonstrated end to end. Only one modulus, one noise
+scale, one secret distribution and one sample structure were used. The negacyclic construction is
+implemented but was not used in any reported experiment. The distinguisher-based recovery mode
+described in the SALSA paper was not implemented. The separation guard of equation (3.8) has been
+validated at &sigma; = 3 only. Capacity was never varied at the final architecture, so it is not
+known whether 4.24 million parameters is comfortably sufficient at the tested dimensions or
+marginally so.</p>
+
+<h2 id="s83">8.3 Exhaustive enumeration as a baseline at <i>h</i> = 2</h2>
+
+<p>This section states the consideration that most constrains how the results of this report
+should be read.</p>
+
+<p>With a binary secret of exact Hamming weight two, the number of candidate secrets is</p>
+
+<p class="eq">C(<i>n</i>, 2) = <i>n</i>(<i>n</i> &minus; 1) / 2<span class="en">(8.1)</span></p>
+
+<p>This grows quadratically with the dimension: 66 at <i>n</i> = 12, 190 at <i>n</i> = 20, 435 at
+<i>n</i> = 30 and 8,128 at <i>n</i> = 128. Increasing <i>n</i> at a fixed Hamming weight therefore
+does enlarge the search space, and a recovery at a larger dimension is in that sense a harder
+task. The point is one of magnitude rather than of direction: quadratic growth from a base of 66
+leaves the space small in absolute terms across the whole range considered in this report.</p>
+
+<p>The practical consequence is that exhaustive enumeration remains a credible competing baseline
+across this range. Enumerating all C(<i>n</i>, 2) weight-two vectors and scoring each with the
+residual verifier of Section 3.6 costs O(<i>mn</i>) arithmetic operations per candidate, hence
+O(<i>mn</i> &middot; C(<i>n</i>, 2)) in total. At <i>n</i> = 128 with <i>m</i> = 2,048 held-out
+samples this is approximately 8,128 &times; 2,048 &times; 128 &asymp; 2.1 &times; 10<sup>9</sup>
+multiply-accumulate operations, which is a matter of seconds to minutes in a vectorised
+implementation.</p>
+
+<p>Two qualifications attach to that estimate, and neither has been measured in this project.
+First, the acceptance criteria of Section 3.6 were calibrated for the assessment of a single
+candidate; their false-acceptance rate when applied to thousands of candidates has not been
+characterised, and a sweep that accepts more than one candidate would require a tie-breaking rule
+that does not exist in the current implementation. Second, the estimate above assumes the verifier
+retains its approximately 24-fold separation at every dimension, which is expected from equation
+(3.10) but was measured only at <i>n</i> = 12 and <i>n</i> = 20. Subject to those qualifications,
+enumeration should be regarded as the appropriate baseline against which a neural attack at
+<i>h</i> = 2 is judged.</p>
+
+<p>Two consequences follow for the interpretation of this work, and both are accepted here. First,
+the results of Chapter 6 are best read as evidence about <i>what a compact Transformer can
+learn</i> &mdash; a question in machine learning &mdash; rather than as evidence about the
+security of any lattice scheme. Second, the scientifically informative axis for future work is the
+Hamming weight, and the sample efficiency at a given weight, rather than the dimension alone. At
+<i>h</i> = 3 the search space grows cubically in <i>n</i>; at a constant density it grows
+exponentially, and it is in that regime that enumeration ceases to be a competitive baseline.</p>
+
+<p>This observation does not diminish the measured results. It locates them. The comparison that
+carries weight in Chapter 6 is not between the attack and brute force, but between two
+architectures of almost identical size under an identical protocol, one of which recovers the
+secret and one of which does not.</p>
+
+<h2 id="s84">8.4 Methodological limitations</h2>
+
+<p>The component attribution of Section 6.6 is incomplete: six components were removed in a single
+ablation, so their individual contributions are unknown, and three further ablation variants were
+designed but not run. The comparison against the original SALSA is a comparison against an
+independent reimplementation, with the divergences recorded in Section 2.5; it is not a comparison
+against the authors&rsquo; own trained models. The sparse-input diagnosis of Section 6.5 is a
+behavioural measurement and does not identify the internal mechanism.</p>
+
+<h2 id="s85">8.5 Future work</h2>
+
+<p class="tcaption" id="tab81">Table 8.1: Limitations and the experiments that would resolve them,
+ordered by the ratio of scientific value to computational cost. None of these has been
+performed.</p>
+<table class="tight">
+<thead><tr><th style="width:24%;">Open question</th><th style="width:30%;">Experiment that would resolve it</th>
+<th style="width:20%;">Estimated cost</th><th style="width:26%;">Expected value</th></tr></thead>
+<tbody>
+<tr><td>Is recovery reliable, or was it fortunate?</td><td>Train the final architecture under 10 seeds at <i>n</i> = 12 and 10 at <i>n</i> = 20; report recovery as a frequency</td><td>Approximately 7 CPU-hours in total</td><td>Converts two outcomes into two rates with uncertainty. The highest-value next experiment</td></tr>
+<tr><td>Does the approach extend beyond <i>n</i> = 20?</td><td>One pilot at <i>n</i> = 30, matched to the Hamming weight of the existing controls, with pre-registered thresholds</td><td>Under 1 CPU-hour at the current budget</td><td>Supplies the third point and a controlled comparison against two existing negative results</td></tr>
+<tr><td>Is the result cryptographically meaningful?</td><td>Repeat at <i>h</i> = 3 and above, where the search space ceases to be trivially enumerable</td><td>Unknown; the sample requirement is the unknown factor</td><td>The only route by which this line of work becomes a statement about security</td></tr>
+<tr><td>How reliable is the verifier over many candidates?</td><td>Measure the false-acceptance rate of the four criteria across a full C(<i>n</i>, 2) enumeration</td><td>Minutes of CPU time</td><td>Settles whether the enumeration baseline of Section 8.3 is practical as well as cheap</td></tr>
+<tr><td>Which component carries the improvement?</td><td>Run the three remaining ablation variants, which isolate the numerical features, the zero vector and the attention bias separately</td><td>Approximately 3 CPU-hours</td><td>Completes the attribution begun in Section 6.6</td></tr>
+<tr><td>How many samples are needed at each dimension?</td><td>Sample-efficiency sweep at <i>n</i> = 12 and 20, locating the budget at which recovery first succeeds</td><td>Several CPU-hours</td><td>Replaces the unmeasured dominant term in every cost extrapolation of Chapter 7</td></tr>
+<tr><td>Is 4.24 M parameters sufficient or marginal?</td><td>Width and depth sweep at the final architecture</td><td>Several CPU-hours</td><td>Determines whether capacity becomes binding before data does at larger <i>n</i></td></tr>
+<tr><td>Does the result hold for the published construction?</td><td>Repeat the comparison using the negacyclic variant already implemented</td><td>Approximately 1 CPU-hour</td><td>Removes one documented divergence from the published setting</td></tr>
+</tbody>
+</table>
+<p class="note"><b>What this table shows:</b> a prioritised programme in which the two
+highest-value experiments together cost under eight CPU-hours. <b>What it does not establish:</b>
+the outcome of any of them.</p>
+
+<h1 id="ch9"><span class="chno">Chapter 9</span>CONCLUSION</h1>
+
+<p>This project implemented, on CPU hardware alone, a complete machine-learning attack chain
+against LWE and RLWE instances: data generation, digit-based encoding, Transformer training on
+public samples, direct secret recovery by chosen-input probing, and independent residual
+verification. Three architectures were built and compared under a single fixed protocol within a
+parameter budget of four to five million.</p>
+
+<p>The principal experimental finding is that the attack is sensitive to the input representation
+in a way that the published literature does not emphasise. A faithful compact reduction of the
+published gated Universal Transformer, at 4,131,200 parameters, fails completely at <i>n</i> = 12
+with <i>h</i> = 2: its validation loss of 1.7413 lies near the marginals-only baseline of 1.86498,
+58 per cent of its probe outputs fail to decode, and no secret is recovered. Modified NACT, at
+4,238,208 parameters &mdash; a difference of 2.6 per cent &mdash; reaches a validation loss of
+0.9891 and recovers the secret exactly. The same architecture recovered the secret at <i>n</i> =
+20 under an otherwise identical protocol. Both candidates passed an independent residual test with
+centred standard deviations of 2.998 and 2.941 against a configured noise scale of 3.0, where an
+incorrect candidate would give approximately 72.5.</p>
+
+<p>The mechanism behind this difference was measured rather than assumed. The baseline&rsquo;s
+predictive advantage over the best input-blind constant predictor falls monotonically as its input
+becomes sparser and crosses zero before reaching the density of the recovery probes; the probes
+lie at the end of that curve rather than at a separate discontinuity. Representing each coordinate
+by a single token carrying an absolute coordinate identity addresses this directly, and an
+ablation that removes six other components at a cost of 0.073 per cent of the parameters changes
+nothing measurable. The evidence therefore identifies representation, not capacity, as the
+operative factor at this budget.</p>
+
+<p>The contributions of the work are an independent CPU-only implementation with a documented
+fidelity audit against the published method; a measured diagnosis of the compact baseline&rsquo;s
+failure; the Modified NACT architecture; a secret-free recovery rule whose guard is derived from
+the noise scale together with an independent verification module; and a scalability analysis that
+separates measurement from prediction and identifies the architectural constraints that govern
+larger dimensions.</p>
+
+<p>The limitations are equally clear and are not qualified elsewhere in this report. Each recovery
+is one secret under one seed, so no success rate has been established. Only <i>h</i> = 2 was
+demonstrated, and at that Hamming weight the candidate space is C(<i>n</i>, 2), which grows only
+quadratically with the dimension and reaches just 8,128 at <i>n</i> = 128; exhaustive enumeration
+scored by the verifier developed here therefore remains a credible competing baseline across the
+whole range considered, subject to the verifier&rsquo;s behaviour over a large candidate set,
+which was not measured. No model was trained above <i>n</i> = 20, and no quantitative prediction
+of accuracy or recovery is offered for any larger dimension, because none can be supported.
+Nothing in this work constitutes a practical break of any deployed lattice-based cryptosystem.</p>
+
+<p>Within those bounds the conclusion is specific and, it is hoped, useful. At a compact parameter
+budget, how the lattice problem is presented to the model matters more than how many parameters
+the model has. The single highest-value next experiment is a multi-seed repetition that turns the
+present outcomes into measured rates; the single most informative next direction is an increase in
+the Hamming weight, which is the axis along which this line of work becomes a statement about
+security rather than about learning.</p>
+
+<h1 id="refs">REFERENCES</h1>
+
+<div class="refs">
+
+<p>[1]&nbsp;&nbsp;O. Regev, &ldquo;On lattices, learning with errors, random linear codes, and
+cryptography,&rdquo; <i>Journal of the ACM</i>, vol. 56, no. 6, pp. 1&ndash;40, 2009. Preliminary
+version in <i>Proc. 37th ACM Symposium on Theory of Computing (STOC)</i>, pp. 84&ndash;93,
+2005.</p>
+
+<p>[2]&nbsp;&nbsp;V. Lyubashevsky, C. Peikert and O. Regev, &ldquo;On ideal lattices and learning
+with errors over rings,&rdquo; in <i>Advances in Cryptology &mdash; EUROCRYPT 2010</i>, Lecture
+Notes in Computer Science, vol. 6110, Springer, pp. 1&ndash;23, 2010.</p>
+
+<p>[3]&nbsp;&nbsp;E. Wenger, M. Chen, F. Charton and K. E. Lauter, &ldquo;SALSA: Attacking lattice
+cryptography with transformers,&rdquo; in <i>Advances in Neural Information Processing Systems
+35 (NeurIPS 2022)</i>, 2022. arXiv:2207.04785; IACR Cryptology ePrint Archive, Report
+2022/935.</p>
+
+<p>[4]&nbsp;&nbsp;A. Vaswani, N. Shazeer, N. Parmar, J. Uszkoreit, L. Jones, A. N. Gomez,
+&#321;. Kaiser and I. Polosukhin, &ldquo;Attention is all you need,&rdquo; in <i>Advances in
+Neural Information Processing Systems 30 (NIPS 2017)</i>, 2017. arXiv:1706.03762.</p>
+
+<p>[5]&nbsp;&nbsp;M. Dehghani, S. Gouws, O. Vinyals, J. Uszkoreit and &#321;. Kaiser,
+&ldquo;Universal transformers,&rdquo; in <i>Proc. International Conference on Learning
+Representations (ICLR)</i>, 2019. arXiv:1807.03819.</p>
+
+<p>[6]&nbsp;&nbsp;R. Csordás, K. Irie and J. Schmidhuber, &ldquo;The neural data router: Adaptive
+control flow in transformers improves systematic generalization,&rdquo; in <i>Proc. International
+Conference on Learning Representations (ICLR)</i>, 2022. arXiv:2110.07732.</p>
+
+<p>[7]&nbsp;&nbsp;D. Hendrycks and K. Gimpel, &ldquo;Gaussian error linear units (GELUs),&rdquo;
+arXiv:1606.08415, 2016.</p>
+
+<p>[8]&nbsp;&nbsp;F. Charton, &ldquo;Linear algebra with transformers,&rdquo; <i>Transactions on
+Machine Learning Research</i>, 2022. arXiv:2112.01898.</p>
+
+<p>[9]&nbsp;&nbsp;M. R. Albrecht, R. Player and S. Scott, &ldquo;On the concrete hardness of
+learning with errors,&rdquo; <i>Journal of Mathematical Cryptology</i>, vol. 9, no. 3, pp.
+169&ndash;203, 2015.</p>
+
+<p>[10]&nbsp;National Institute of Standards and Technology, <i>Module-Lattice-Based
+Key-Encapsulation Mechanism Standard</i>, Federal Information Processing Standards Publication 203
+(FIPS 203), U.S. Department of Commerce, 13 August 2024.</p>
+
+<p>[11]&nbsp;J. Su, Y. Lu, S. Pan, A. Murtadha, B. Wen and Y. Liu, &ldquo;RoFormer: Enhanced
+transformer with rotary position embedding,&rdquo; arXiv:2104.09864, 2021.</p>
+
+<p>[12]&nbsp;B. Zhang and R. Sennrich, &ldquo;Root mean square layer normalization,&rdquo; in
+<i>Advances in Neural Information Processing Systems 32 (NeurIPS 2019)</i>, 2019.
+arXiv:1910.07467.</p>
+
+<p>[13]&nbsp;C. Li, J. Sotáková, E. Wenger, M. Malhou, E. Garcelon, F. Charton and K. Lauter,
+&ldquo;SALSA PICANTE: A machine learning attack on LWE with binary secrets,&rdquo;
+arXiv:2303.04178, 2023.</p>
+
+<p>[14]&nbsp;C. Y. Li, E. Wenger, Z. Allen-Zhu, F. Charton and K. Lauter, &ldquo;SALSA VERDE: A
+machine learning attack on Learning With Errors with sparse small secrets,&rdquo;
+arXiv:2306.11641, 2023.</p>
+
+<p>[15]&nbsp;I. Loshchilov and F. Hutter, &ldquo;Decoupled weight decay regularization,&rdquo; in
+<i>Proc. International Conference on Learning Representations (ICLR)</i>, 2019.
+arXiv:1711.05101.</p>
+
+</div>
+
+<h1 id="appa"><span class="chno">Appendix A</span>RESOLVED MODEL CONFIGURATION</h1>
+
+<p>The following values are taken from the run header recorded with the <i>n</i> = 12 experiment.
+The <i>n</i> = 20 run differs in the lattice dimension alone.</p>
+
+<p class="tcaption" id="taba1">Table A.1: Resolved model specification of Modified NACT.</p>
+<table>
+<thead><tr><th style="width:38%;">Field</th><th class="num" style="width:20%;">Value</th><th style="width:42%;">Note</th></tr></thead>
+<tbody>
+<tr><td>arch</td><td class="num">nact</td><td>Architecture family</td></tr>
+<tr><td>nact_variant</td><td class="num">one_token_only</td><td>Selects Modified NACT</td></tr>
+<tr><td>vocab_size</td><td class="num">85</td><td>4 specials + 81 digits</td></tr>
+<tr><td>encoder_dim</td><td class="num">512</td><td><i>d<sub>e</sub></i></td></tr>
+<tr><td>decoder_dim</td><td class="num">128</td><td><i>d<sub>d</sub></i></td></tr>
+<tr><td>encoder_layers / decoder_layers</td><td class="num">1 / 1</td><td>Distinct parameter sets</td></tr>
+<tr><td>encoder_loops / decoder_loops</td><td class="num">2 / 2</td><td><i>T<sub>e</sub></i>, <i>T<sub>d</sub></i>; reuse costs no parameters</td></tr>
+<tr><td>encoder_heads / decoder_heads</td><td class="num">8 / 4</td><td>&mdash;</td></tr>
+<tr><td>encoder_ffn_dim / decoder_ffn_dim</td><td class="num">2048 / 512</td><td>Expansion factor 4</td></tr>
+<tr><td>gated</td><td class="num">true</td><td>Copy gate on every sub-layer</td></tr>
+<tr><td>norm / activation</td><td class="num">RMSNorm / GELU</td><td>&mdash;</td></tr>
+<tr><td>positional_encoding</td><td class="num">rope</td><td>Base 10000; not applied to cross-attention</td></tr>
+<tr><td>attention_bias / tie_embeddings</td><td class="num">false / false</td><td>No biases; output projection untied</td></tr>
+<tr><td>dropout / attention_dropout</td><td class="num">0.0 / 0.0</td><td>&mdash;</td></tr>
+<tr><td>q / base / digit_width</td><td class="num">251 / 81 / 2</td><td>Front end</td></tr>
+<tr><td>lsb_first / separator</td><td class="num">true / false</td><td>Representation R</td></tr>
+<tr><td>max_coordinates</td><td class="num">128</td><td>Coordinate table capacity</td></tr>
+<tr><td>use_numerical_features</td><td class="num">false</td><td>Removed by ablation</td></tr>
+<tr><td>use_zero_vector</td><td class="num">false</td><td>Removed by ablation</td></tr>
+<tr><td>use_sparse_attention_bias</td><td class="num">false</td><td>Removed by ablation</td></tr>
+<tr><td>encoder_tokens_per_coordinate</td><td class="num">1</td><td>The defining property of the architecture</td></tr>
+<tr><td><b>trainable_parameters</b></td><td class="num"><b>4,238,208</b></td><td>Verified three ways</td></tr>
+</tbody>
+</table>
+
+<h1 id="appb"><span class="chno">Appendix B</span>PROBE MULTIPLIERS AND RECOVERED SECRETS</h1>
+
+<p class="tcaption" id="tabb1">Table B.1: Probe multipliers, their ring separations and their
+outcome. The same ten multipliers were used at both dimensions.</p>
+<table>
+<thead><tr><th class="num" style="width:14%;">Multiplier <i>K</i></th><th class="num" style="width:14%;">Separation</th>
+<th style="width:24%;">Eligible for selection</th><th style="width:24%;">Outcome at <i>n</i> = 12</th>
+<th style="width:24%;">Outcome at <i>n</i> = 20</th></tr></thead>
+<tbody>
+<tr><td class="num">1</td><td class="num">1</td><td>No &mdash; negative control</td><td>Failed, as required</td><td>Failed, as required</td></tr>
+<tr><td class="num">31</td><td class="num">31</td><td>Yes</td><td>Correct</td><td>Correct</td></tr>
+<tr><td class="num">63</td><td class="num">63</td><td>Yes</td><td>Correct</td><td>Correct</td></tr>
+<tr><td class="num">94</td><td class="num">94</td><td>Yes</td><td>Correct</td><td>Correct</td></tr>
+<tr><td class="num">125</td><td class="num">125</td><td>Yes</td><td>Correct</td><td>Correct</td></tr>
+<tr><td class="num">126</td><td class="num">125</td><td>Yes</td><td>Correct</td><td>Correct</td></tr>
+<tr><td class="num">157</td><td class="num">94</td><td>Yes</td><td>Correct</td><td>Correct</td></tr>
+<tr><td class="num">188</td><td class="num">63</td><td>Yes &mdash; selected</td><td>Correct</td><td>Correct</td></tr>
+<tr><td class="num">220</td><td class="num">31</td><td>Yes</td><td>Correct</td><td>Correct</td></tr>
+<tr><td class="num">250</td><td class="num">1</td><td>No &mdash; negative control</td><td>Failed, as required</td><td>Failed, as required</td></tr>
+</tbody>
+</table>
+
+<p class="tcaption" id="tabb2">Table B.2: Recovered candidate secrets. Each equals the
+corresponding true secret in every coordinate. The true secrets were loaded only after the
+candidates had been produced and verified.</p>
+<table>
+<thead><tr><th style="width:16%;">Dimension</th><th>Recovered candidate</th></tr></thead>
+<tbody>
+<tr><td><i>n</i> = 12</td><td>0 0 1 0 0 0 0 0 0 0 1 0&nbsp;&nbsp;&nbsp;(support {2, 10})</td></tr>
+<tr><td><i>n</i> = 20</td><td>0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0&nbsp;&nbsp;&nbsp;(support {4, 17})</td></tr>
+</tbody>
+</table>
+
+<h1 id="appc"><span class="chno">Appendix C</span>REPRODUCIBILITY AND PROVENANCE</h1>
+
+<h2>C.1 Reproducing the reported results</h2>
+
+<p>Neither command below trains anything; each replays a stored checkpoint in under two
+seconds.</p>
+
+<p><tt>python scripts/run_pipeline.py configs/pipeline_n12.yaml</tt><br>
+<tt>python scripts/run_pipeline.py configs/pipeline_n20.yaml</tt><br>
+<tt>python scripts/run_pipeline.py configs/pipeline_n12.yaml --no-evaluate</tt><br>
+<tt>pytest -q</tt></p>
+
+<p>The third command runs the attack in its intended setting, with no ground truth consulted at
+any point. The fourth runs the test suite; the recorded result is 690 passed and 2 skipped.</p>
+
+<h2>C.2 Provenance of reported values</h2>
+
+<p class="tcaption" id="tabc1">Table C.1: Where each class of reported value is recorded.</p>
+<table>
+<thead><tr><th style="width:42%;">Reported quantity</th><th>Artefact</th></tr></thead>
+<tbody>
+<tr><td>Training metrics, <i>n</i> = 12</td><td>results/nact_ablation_F/nact_n12_h2_te2_F/seed_0/artifacts/summary.json</td></tr>
+<tr><td>Training metrics, <i>n</i> = 20</td><td>results/n20_nact_f_pilot/nact_n20_h2_te2_F/seed_0/artifacts/summary.json</td></tr>
+<tr><td>Recovery, verification, replay and test counts</td><td>results/final_pipeline/final_summary.json, pipeline_report.json</td></tr>
+<tr><td>Parameter breakdown and resolved specification</td><td>run_header.json in each run directory</td></tr>
+<tr><td>Baseline at <i>n</i> = 12 and <i>n</i> = 20</td><td>results/control_a_n12_h2/, results/control_b_n20_h2/</td></tr>
+<tr><td>Results at <i>n</i> = 30 for other architectures</td><td>results/pilot_gatedut_n30_r/, results/archive/pilot_control_n30_r/</td></tr>
+<tr><td>Sparse-input lift measurements</td><td>results/recovery_generalization/, results/nact_ablation_F/sparsity/</td></tr>
+<tr><td>Multi-secret control (full NACT)</td><td>results/v2_recovery_robustness/recovery_robustness.json</td></tr>
+<tr><td>Fidelity audit against the published method</td><td>results/original_fidelity_audit/</td></tr>
+<tr><td>Scalability analysis and forecast data</td><td>SCALABILITY_ANALYSIS.md, results/scalability_forecast/</td></tr>
+</tbody>
+</table>
+
+<h2>C.3 Note on historical identifiers</h2>
+
+<p>Directory and file names containing <tt>nact_f</tt> or <tt>NACT-F</tt> are the historical
+internal identifier for Modified NACT. They were not renamed, because renaming recorded artefacts
+would damage provenance and would not match the configuration fingerprints stored inside them.</p>
+
+<h2>C.4 Figure generation</h2>
+
+<p>The six figures in this report are produced by <tt>report/make_figures.py</tt>, which reads the
+recorded artefacts and trains nothing. The scalability figures and their underlying data table are
+produced by <tt>scripts/scalability_forecast.py</tt>, which writes a comma-separated data file in
+which every value carries an evidence class of observed, literature, theoretical, extrapolated or
+not estimable.</p>
+
+</section>
+
+
+</body>
+</html>
