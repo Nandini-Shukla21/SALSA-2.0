@@ -1,0 +1,434 @@
+================================================================================
+SALSA 2.0 — DRDO SAG INTERNSHIP REPORT
+CHANGE LOG FOR THE FINALISED VERSION
+================================================================================
+
+Finalised : 12 October 2026
+Source    : report/salsa2_report.html            (ORIGINAL — left untouched)
+Output    : report_final/SALSA_2.0_DRDO_SAG_Final_Report.html
+            report_final/SALSA_2.0_DRDO_SAG_Final_Report.pdf
+            report_final/SALSA_2.0_DRDO_SAG_Final_Report.docx
+            report_final/SALSA_2.0_Report_Figures/   (6 figures)
+            report_final/assets/drdo_logo.png
+
+Categories used below
+  [FORMAT]    formatting or layout correction, applied directly
+  [EDIT]      editorial or language correction, applied directly
+  [SCIENCE]   scientific correction, verified against project artefacts
+  [INPUT]     requires information from the student
+  [APPROVAL]  requires the supervisor or an official DRDO/SAG format
+  [NOTE]      verification result, no change required
+
+================================================================================
+SECTION A — SCIENTIFIC CORRECTIONS
+================================================================================
+
+A1. [SCIENCE] Over-strong claim about Hamming weight and dimension
+    Issue     : The report asserted categorically that increasing the lattice
+                dimension at a fixed Hamming weight of two does not increase
+                cryptographic difficulty. That is false as stated: the candidate
+                space C(n,2) = n(n-1)/2 does grow with n.
+    Original  : Abstract — "...exhaustive enumeration ... would succeed at every
+                dimension considered, without any neural network."
+                Section 8.3 — "increasing n while holding h = 2 does not
+                increase the cryptographic difficulty of the instance."
+                Section 6.8 and Chapter 9 carried the same assertion.
+    Change    : Rewritten in all four places. The report now states that the
+                candidate space grows QUADRATICALLY with n (66 at n = 12, 190 at
+                n = 20, 435 at n = 30, 8,128 at n = 128), that this is growth in
+                the right direction but small in absolute terms across the
+                tested range, and that exhaustive enumeration therefore remains
+                a CREDIBLE COMPETING BASELINE rather than a guaranteed success.
+                A new numbered equation (8.1) states C(n,2) explicitly.
+    Reason    : Accuracy. The original wording confused "does not grow" with
+                "does not grow fast enough to matter".
+
+A2. [SCIENCE] Unqualified cost claim for the enumeration baseline
+    Issue     : The enumeration baseline was presented as obviously practical,
+                with no statement of what had not been measured.
+    Change    : Section 8.3 now gives the cost explicitly — O(mn) per candidate,
+                about 2.1e9 multiply-accumulate operations at n = 128 with
+                m = 2,048 — and then states two qualifications that the project
+                has NOT measured: (i) the four acceptance criteria of Section
+                3.6 were calibrated for a single candidate and their
+                false-acceptance rate over thousands of candidates is unknown,
+                and no tie-breaking rule exists in the implementation; (ii) the
+                24-fold verifier separation was measured only at n = 12 and
+                n = 20.
+    Reason    : A baseline claim must carry its own uncertainty.
+
+A3. [SCIENCE] New future-work item added
+    Change    : Table 8.1 gained a row: "How reliable is the verifier over many
+                candidates?" — measure the false-acceptance rate of the four
+                criteria across a full C(n,2) enumeration, cost minutes of CPU
+                time.
+    Reason    : A2 identifies an unmeasured quantity; the work plan should name
+                the experiment that settles it.
+
+A4. [SCIENCE] Replay runtime made exact
+    Issue     : "replays ... in approximately one second" was an approximation
+                where the artefact holds exact values.
+    Original  : Section 5.4, Appendix C.1, Section 6.8 — "about one second".
+    Change    : Now 1.19 s at n = 12 and 1.59 s at n = 20, from
+                results/final_pipeline/pipeline_report.json
+                (runtime_seconds 1.1944 and 1.5947).
+    Reason    : The exact figure was available and is more useful.
+
+A5. [SCIENCE] Replay agreement described specifically
+    Original  : "Replay agreement: 12/12 checks."
+    Change    : Section 5.4 now names the six quantities re-derived per
+                dimension — exact recovery, coordinate accuracy, Hamming
+                distance, count of successful multipliers, verification outcome
+                and parameter count — which is what the artefact records.
+    Reason    : "12 checks" alone does not tell the reader what was checked.
+
+A6. [EDIT] Softened an unverifiable process claim
+    Original  : Declaration — "All software described in this report was written
+                from first principles during the internship."
+    Change    : "All software described in this report was written during the
+                internship." The sentence about the original SALSA code being
+                consulted as reference material and not copied is retained.
+    Reason    : "From first principles" is a claim about process that the
+                artefacts cannot evidence; the substantive claim (no code
+                copied) is retained and is supported by the fidelity audit.
+
+A7. [EDIT] Scalability wording aligned with the required distinction
+    Original  : Section 7.2 — "input-shape compatibility is not learned
+                capability".
+    Change    : "technical compatibility with a dimension is not demonstrated
+                secret-recovery capability at that dimension".
+    Reason    : States the intended distinction unambiguously.
+
+A8. [EDIT] Forecast curves labelled on the figure note
+    Change    : The note under Figure 7.1 now ends: "The dashed and dotted
+                curves are forecasts, not measurements."
+    Reason    : The figure mixes one measured series with two predicted ones.
+
+A9. [EDIT] Citation added for a tool already in use
+    Issue     : AdamW appeared in the configuration tables and in the reference
+                list as [15], but was never cited in the text.
+    Change    : Section 2.2 now ends "The optimiser used throughout is AdamW
+                [15]."
+    Reason    : Every reference should be cited at the point it is used.
+
+A10. [EDIT] Symbol list completed
+    Change    : Added m (number of samples) and C(n,h) (binomial coefficient) to
+                the list of principal symbols; both are used in the text.
+
+================================================================================
+SECTION B — LOGO, COVER PAGE AND FRONT MATTER
+================================================================================
+
+B1. [FORMAT] Official DRDO logo added
+    Source    : https://drdo.gov.in/drdo/sites/default/files/default_images/
+                logo_0_1.png  (downloaded 12 October 2026)
+    File      : report_final/assets/drdo_logo.png — 1999 x 1999 px, PNG, RGBA,
+                741 KB. The official emblem, unmodified: not redrawn,
+                recoloured, stretched or substituted.
+    Placement : Centred at the top of the cover page, above the title, at 33 mm
+                (1.30 in) height. The image is square, so the aspect ratio is
+                preserved at 33 x 33 mm. It appears on the cover only.
+    Note      : No SAG logo, government seal or approval mark was added, because
+                none was supplied and none may be fabricated.
+
+B2. [FORMAT] Cover page rebuilt with an explicit visual hierarchy
+    Order     : DRDO logo -> rule -> project title -> rule -> degree-requirement
+                statement -> degree and branch -> student name and roll number
+                -> supervisor name and designation -> SAG and DRDO
+                identification with laboratory address -> internship period ->
+                rule -> university -> month and year.
+    Change    : Consistent centring, graduated type sizes (19 pt title, 14 pt
+                names, 12 pt organisation, 11.5 pt supporting text), two thin
+                horizontal rules, no decorative colour, borders or shadows.
+                The internship period was added; it was absent from the original
+                cover.
+
+B3. [APPROVAL] Certificate page
+    Original  : A red warning paragraph stating that an official format must be
+                used.
+    Change    : Converted into a clearly bounded draft notice box reading
+                "DRAFT FOR SUPERVISOR REVIEW — NOT AN ISSUED CERTIFICATE", with
+                the reasons stated. A signature rule was added above the
+                supervisor's name and left blank. A sentence was added — "The
+                work was carried out under my supervision, and to the best of my
+                knowledge it is the candidate's own work" — as draft wording for
+                review.
+    NOT DONE  : No signature, seal, approval number or registration number was
+                generated, and the page does not assert DRDO or SAG approval.
+
+B4. [FORMAT] Declaration page
+    Change    : Signature rule added above the student's name. Content otherwise
+                unchanged apart from A6.
+
+================================================================================
+SECTION C — PLACEHOLDERS
+================================================================================
+
+Every [[...]] production placeholder in the original has been resolved. The
+table below records how.
+
+  [[LOGO]]          -> RESOLVED. Replaced by the official DRDO logo (B1).
+  [[TOC]]           -> RESOLVED. A contents list covering the front matter, all
+                       9 chapters, their 50 numbered sections, the references
+                       and the 3 appendices. Every entry is an internal link.
+                       Cross-checked: 50 of 50 numbered sections present, none
+                       missing.
+  [[LOF]]           -> RESOLVED. Generated from the six actual figure captions;
+                       all six anchors link correctly.
+  [[LOT]]           -> RESOLVED. Generated from the nineteen actual numbered
+                       table captions; all nineteen anchors link correctly.
+                       NOTE: the three lists carry no printed page numbers in
+                       the PDF. Chrome implements the CSS paged-media margin
+                       boxes but not target-counter(), which is what would pull
+                       a page number into a contents entry. The entries are
+                       live links instead. The DOCX route (Section G) produces
+                       all three as Word fields with real page numbers.
+  [[SECTIONBREAK]]  -> RESOLVED. In the HTML and PDF the marker is gone and the
+                       front matter and body are separate flow sections, each
+                       chapter starting on a new page. In the DOCX route it
+                       becomes a real Word section break. See D8 for numbering.
+  [[ROLL]]          -> RETAINED as a visible placeholder:
+                       "[ROLL NUMBER — TO BE SUPPLIED]"          [INPUT]
+  [[DATE]]          -> RETAINED as "[DATE]" on the certificate and declaration
+                       signature blocks.                          [INPUT]
+  [[MONTHYEAR]]     -> RETAINED as
+                       "[MONTH AND YEAR OF SUBMISSION — TO BE CONFIRMED]"
+                                                                  [INPUT]
+
+A search of the finalised HTML for the pattern [[...]] returns no matches. The
+three retained items above are deliberate, are printed in red so they cannot be
+missed, and are listed in Section F below.
+
+================================================================================
+SECTION D — FORMATTING AND LAYOUT
+================================================================================
+
+D1. [FORMAT] Page geometry
+    A4 throughout. Margins 25 mm top, 22 mm right, 20 mm bottom, 32 mm left; the
+    wider left margin is a binding allowance. The cover uses 18/20/18/20 mm.
+
+D2. [FORMAT] Typography
+    Body Times New Roman 12 pt, line spacing 1.5, justified, hyphenated, with
+    orphan and widow control set to 3 lines. Chapter headings 16 pt bold with a
+    rule beneath and a small-capital chapter label above; section headings
+    13 pt bold; subsection headings 12 pt bold. Headings are black, not Word's
+    default blue, and are kept with the text that follows them.
+
+D3. [FORMAT] Page-break control
+    Every chapter starts on a new page. Headings cannot be stranded at the foot
+    of a page. Tables, table rows, figures and equations do not split across
+    pages. Captions and their explanatory notes are kept with the object they
+    describe.
+
+D4. [FORMAT] Tables
+    Header rows are marked up as <thead> so Word and any print renderer repeat
+    them when a table spans pages. Numeric columns are right-aligned, text
+    columns left-aligned, borders consistent at 0.6 pt. Font reduced to 9.5 pt
+    (9 pt for the three widest tables) so that no table overflows the text
+    width. Table captions sit above their tables; figure captions sit below
+    their figures, matching the reference report.
+
+D5. [FORMAT] Figures
+    All six are centred, constrained to the printable width, and rendered at
+    200-220 dpi so they remain sharp at normal PDF zoom. Source resolutions are
+    1609x889 to 2089x1028 px.
+
+D6. [FORMAT] Equations
+    Centred on their own lines, numbered (3.1)-(3.10), (4.1), (7.1) and the new
+    (8.1), with the number set flush right and every equation referenced in the
+    text.
+
+D7. [FORMAT] Captions and notes
+    Caption labels are bold ("Figure 4.1:", "Table 6.1:"). The "what this shows
+    / what this does not establish" paragraph under each figure and table is
+    rendered as an indented note with a grey left rule, so it reads as commentary
+    rather than body text.
+
+D8. [FORMAT] Page numbering
+    Continuous arabic throughout, centred in the bottom margin, with the cover
+    page left unnumbered. Verified in the rendered PDF: the footer strip of
+    page 1 contains no marks, pages 9 and 25 carry their numbers.
+    Roman front matter was attempted first and withdrawn. Chrome honours the
+    @page margin boxes and named pages in the stylesheet, so lower-roman front
+    matter rendered correctly, but it does not honour a mid-document
+    "counter-reset: page", so the body continued from xiii to 14 instead of
+    restarting at 1. A single consistent scheme was judged better than a
+    half-working two-part one. If you want roman front matter with the body
+    restarting at 1, build the DOCX (Section G) — Word does this with real
+    section breaks.
+
+D9. [FORMAT] Document metadata
+    Title, author (Nandini Shukla), subject (research internship report,
+    Scientific Analysis Group, DRDO) and keywords are set in the HTML head and
+    carried into the PDF.
+
+================================================================================
+SECTION E — VERIFICATION PERFORMED (no change required)
+================================================================================
+
+E1. [NOTE] Figure assets
+    All six referenced images exist, open correctly, and depict what their
+    captions claim. Checked individually. Copied to
+    report_final/SALSA_2.0_Report_Figures/ so the deliverable is self-contained.
+    The originals in report/figures/ were not modified.
+
+E2. [NOTE] Numerical claims re-checked against artefacts
+    Parameter count 4,238,208                     — run_header.json, both runs.
+                                                    Component breakdown sums
+                                                    exactly: encoder 3,822,592 +
+                                                    decoder 415,616.
+    Validation loss 0.9891 / 0.9764               — summary.json, both runs
+                                                    (0.989069, 0.976393).
+    acc_tau 0.9839 / 0.9863                       — summary.json (0.983887,
+                                                    0.986328).
+    Exact recovery, 1 secret per dimension        — final_summary.json.
+    Coordinate accuracy 1.0, Hamming distance 0   — final_summary.json.
+    8 of 8 informative multipliers                — final_summary.json
+                                                    (successful_k = 8 of 10
+                                                    probed, 2 excluded).
+    Probe decode validity 1.000                   — final_summary.json.
+    Residual std 2.998 / 2.941 vs sigma 3.0       — final_summary.json
+                                                    (2.99827..., 2.94147...).
+    Uniform reference 72.457                      — final_summary.json.
+    V1 loss 1.7413, acc_tau 0.3550                — ablation_F.json and
+                                                    v1_v2_comparison.json
+                                                    (1.741287, 0.35498).
+    V1 probe decode validity 0.417                — ablation_F.json
+                                                    (0.4166666...).
+    Lift table, both rows                         — ablation_F.json, sparsity
+                                                    sweep. See E3.
+    n = 30 results for the two other models       — pilot_gatedut_n30_r and
+                                                    archive/pilot_control_n30_r
+                                                    summary.json.
+    Chance baselines 1.86498 / 0.19287 / 0.00398
+      / 0.44622                                   — chance_baselines in every
+                                                    summary.json.
+    Test suite 690 passed, 2 skipped, 0 failed    — final_summary.json. See E5.
+    Replay 12 of 12                               — pipeline_report.json; the
+                                                    12 checks were counted and
+                                                    all report matches = true.
+
+E3. [NOTE] Lift table — column mapping checked
+    The artefact records NINE sparsity levels, two of which have nnz = 12 (the
+    validation distribution and the first synthetic level) and two of which have
+    nnz = 1 (the synthetic level and the K.e_i probes). The report's eight
+    columns use the synthetic sweep consistently, that is artefact entries 1-8.
+    Every value in Table 6.5 matches its artefact entry. No correction needed,
+    but the duplication is recorded here in case the table is ever regenerated.
+
+E4. [NOTE] Citations
+    All fifteen references were checked against a primary source — publisher
+    page or arXiv abstract — rather than from memory. Author lists for SALSA
+    PICANTE [13] and SALSA VERDE [14] and for RoFormer [11] were confirmed in
+    full. The FIPS 203 publication date (13 August 2024) was confirmed on
+    csrc.nist.gov. Charton [8] was confirmed as a TMLR 2022 paper. No DOI was
+    invented; where a DOI was not verified the citation gives the venue and the
+    arXiv identifier instead.
+
+E5. [NOTE] Two claims NOT re-executed during finalisation
+    PyTorch is not installed in the environment used for this finalisation, so
+    the test suite and the replay pipeline could not be re-run. The figures
+    quoted (690 passed / 2 skipped / 0 failed; replay 12 of 12; 1.19 s and
+    1.59 s) are read from the recorded artefacts, which is how they are
+    attributed in the report. If you want them re-confirmed, run
+    "pytest -q" and the two run_pipeline.py commands in an environment that has
+    PyTorch installed.
+
+E6. [NOTE] College name
+    The finalised report was searched for any college name or abbreviation.
+    None is present. The institutional affiliation is given only as "J.C. Bose
+    University of Science and Technology, YMCA, Faridabad, Haryana, India", on
+    the cover, in the certificate, in the declaration, in the acknowledgement
+    and in the document metadata.
+
+E7. [NOTE] Supervisor details
+    "Mr. Yogesh Adhana, Scientist 'F', Scientific Analysis Group (SAG), DRDO,
+    Metcalfe House, Civil Lines, Delhi - 110054" appears exactly as supplied, on
+    the cover, in the certificate and in the acknowledgement.
+
+E8. [NOTE] Separation of evidence classes
+    Chapter 7 continues to label every statement as observed, literature,
+    theoretical or extrapolated, and gives no numerical forecast of loss,
+    acc_tau, probe success, decode validity or recovery probability at any
+    dimension above 20. Those remain marked "not reliably estimable".
+
+================================================================================
+SECTION F — OUTSTANDING ITEMS FOR YOU OR YOUR SUPERVISOR
+================================================================================
+
+F1. [INPUT]    Roll number. Appears twice (cover, declaration).
+F2. [INPUT]    Submission month and year. Appears once (cover).
+F3. [INPUT]    Date for the certificate and declaration signature blocks.
+F4. [INPUT]    University logo, if your university requires one on the cover.
+               Only the DRDO logo was supplied and added.
+F5. [APPROVAL] Certificate. Must be reproduced on the official SAG format and
+               signed. The draft wording is for review only.
+F6. [APPROVAL] Internship dates (20 April 2026 - 20 October 2026) must be
+               confirmed against the official internship document.
+F7. [APPROVAL] Technical content should be confirmed as cleared for external
+               circulation before the report leaves SAG.
+F8. [INPUT]    Confirm that the degree-requirement wording on the cover matches
+               your university's current format.
+
+After filling F1-F4 in the DOCX, select all (Ctrl+A) and press F9, choosing
+"Update entire table" for each of the three lists, then re-export the PDF so the
+page numbers remain correct.
+
+================================================================================
+SECTION G — HOW THE PDF WAS PRODUCED
+================================================================================
+
+The PDF is rendered from the finalised HTML by headless Google Chrome, driven
+through the DevTools Protocol (Page.printToPDF with preferCSSPageSize), so the
+page size and margins come from the document's own @page rule rather than from
+a browser default. This is a true document export: the text is selectable, the
+six figures and the DRDO logo are embedded images, and the fonts are embedded
+as subsets. It is not a screenshot.
+
+Verified on the delivered file:
+    58 pages
+    MediaBox 594.96 x 841.92 pt = 209.9 x 297.0 mm (A4)
+    8 embedded images
+    6 embedded font subsets (Times New Roman roman/bold/italic/bold-italic,
+      Cambria Math for the mathematical symbols, Consolas for code)
+    tagged PDF, valid %%EOF
+Pages 1, 2, 9, 22, 25, 31 and 46 were rasterised and inspected by eye. Cover
+layout, certificate, the contents lists, a chapter opening, a full-page figure
+with its caption and note, and a wide table that splits across a page boundary
+with its header row correctly repeated were all checked. No clipping, no
+overlap, no overflow, no stranded heading and no unintended blank page was
+found.
+
+Two earlier routes were tried and rejected:
+
+  Paged.js (the CSS Paged Media polyfill) was the first choice, because it
+  would have supplied target-counter() page numbers inside the three contents
+  lists. It stalled after laying out two pages of this document and never
+  signalled completion, under virtual-time budgets up to 600 seconds and with
+  named pages and heading page-breaks removed as tests. Rejected rather than
+  shipped truncated. report_final/build_pdf.ps1 keeps that attempt for the
+  record; it runs but its output is incomplete.
+
+  Microsoft Word via COM automation produces a 62-page document with live
+  TOC/LoF/LoT fields carrying real page numbers, a genuine section break and
+  roman-to-arabic numbering, plus a DOCX. It works — it reached "Repaginated:
+  62 pages" and updated all three lists — but a single save of a document this
+  size takes roughly ten minutes headless, and the run was interrupted twice.
+  It remains available: run report_final/build_docx_pdf.ps1 and allow about
+  fifteen minutes. Use it if you want the DOCX or printed page numbers in the
+  contents lists.
+
+No third-party PDF library (reportlab, WeasyPrint, wkhtmltopdf, Pandoc,
+LibreOffice, LaTeX) is installed in this environment; none was installed.
+
+To regenerate:
+    python report/make_figures.py
+    powershell -ExecutionPolicy Bypass -File report_final/build_pdf_chromium.ps1
+    powershell -ExecutionPolicy Bypass -File report_final/preview_pdf_pages.ps1 -Pages "1,9,25,46"
+
+The third command rasterises chosen pages to PNG using the Windows PDF
+renderer, for checking the layout by eye.
+
+================================================================================
+END OF CHANGE LOG
+================================================================================
